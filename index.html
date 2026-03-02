@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Clarity</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#FAFAF9}
+    .fade-in{animation:fadeIn .4s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:#2D5A3D!important;box-shadow:0 0 0 3px rgba(45,90,61,.1)!important}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState}=React;
+
+// Theme
+const t={bg:'#FAFAF9',card:'#FFF',text:'#1A1A1A',textSec:'#52525B',textMuted:'#A1A1AA',
+  primary:'#2D5A3D',primaryLight:'#E8F0EA',accent:'#B45309',accentLight:'#FEF3C7',
+  danger:'#DC2626',dangerLight:'#FEE2E2',purple:'#7C3AED',purpleLight:'#EDE9FE',
+  border:'#E4E4E7',shadow:'0 1px 3px rgba(0,0,0,.06)'};
+
+// Career Database with 8 detailed careers
+const careers={
+  'product-manager':{title:'Product Manager',emoji:'📱',cat:'Tech',salary:'$95K-$200K+',difficulty:2,time:'6-12mo',
+    desc:'You decide what gets built and why — the CEO of your product',
+    truthBombs:["60% meetings - if you hate meetings, skip this","Responsibility without authority","More communication than creativity","At big co you own a button, at startup you own everything"],
+    bestTypes:['explorer','architect','connector'],skills:['analytical','strategic','communication','user-focused'],
+    transitions:{
+      'software-engineer':{d:'Easy',t:'3-6mo',p:'You speak the language. Focus on business skills and customer empathy.'},
+      'designer':{d:'Easy',t:'3-9mo',p:'You understand users. Build business acumen and technical fluency.'},
+      'marketing':{d:'Medium',t:'6-12mo',p:'You know customers. Gap is technical fluency. Consider PMM as bridge.'},
+      'data-analyst':{d:'Easy',t:'4-8mo',p:'Analytical skills are gold. Develop product intuition and communication.'},
+      'consultant':{d:'Medium',t:'6-12mo',p:'Strategic thinking transfers. Shift from advising to owning.'},
+      'default':{d:'Medium',t:'9-15mo',p:'Learn fundamentals via courses. Build something small. Do PM work where you are.'}
+    },
+    resources:[{n:"Lenny's Newsletter",c:'Free',u:'lennysnewsletter.com'},{n:'Inspired (Book)',c:'$20',u:'amazon.com'},{n:'Reforge',c:'$2K',u:'reforge.com'},{n:'Product School',c:'$4K',u:'productschool.com'}],
+    week1:['Read "Inspired" or detailed summary','Subscribe to Lenny\'s Newsletter','List 5 products you use daily and why'],
+    week2:['Find 5 PMs on LinkedIn with similar background','Send outreach messages','Prepare 10 questions to ask'],
+    week3:['Write a product spec for feature you wish existed','Do 5 user interviews about a problem','Learn basic SQL'],
+    week4:['Decide: still excited after learning more?','If yes: plan internal transfer or apply to APM programs','If no: explore your #2 career option']
+  },
+  'ux-researcher':{title:'UX Researcher',emoji:'🔬',cat:'Tech',salary:'$75K-$160K',difficulty:2,time:'4-9mo',
+    desc:'You uncover what users really need — the detective of product development',
+    truthBombs:["Research often gets ignored - you must sell insights internally","More scientific than creative","Mixed methods (qual+quant) in higher demand","You inform decisions, you don't make them"],
+    bestTypes:['analyst','explorer','caretaker'],skills:['analytical','empathetic','curious','research'],
+    transitions:{
+      'psychology':{d:'Easy',t:'2-4mo',p:'Research methods transfer directly. Learn UX-specific tools.'},
+      'marketing':{d:'Easy',t:'3-6mo',p:'Market research to UX is natural. Learn product context.'},
+      'journalist':{d:'Medium',t:'4-8mo',p:'Interviewing skills transfer. Add research rigor.'},
+      'teacher':{d:'Medium',t:'6-10mo',p:'Observation and empathy transfer. Build methodology.'},
+      'default':{d:'Medium',t:'6-12mo',p:'Get Google UX Research certificate. Build portfolio through volunteer projects.'}
+    },
+    resources:[{n:'Google UX Research Cert',c:'$200',u:'coursera.org'},{n:'Just Enough Research',c:'$20',u:'abookapart.com'},{n:'NNGroup Articles',c:'Free',u:'nngroup.com'}],
+    week1:['Read "Just Enough Research"','Watch 5 UX research talks on YouTube','Learn generative vs evaluative research'],
+    week2:['Interview 5 people about a product they use','Practice creating discussion guides','Record and transcribe one interview'],
+    week3:['Synthesize interviews into insights','Create a research report','Join ResearchOps Slack community'],
+    week4:['Talk to 3 working UX researchers','Decide: pursue certificate or portfolio-first','Apply to junior roles or volunteer gigs']
+  },
+  'data-analyst':{title:'Data Analyst',emoji:'📊',cat:'Tech',salary:'$60K-$120K+',difficulty:2,time:'3-9mo',
+    desc:'You turn data into insights that drive business decisions',
+    truthBombs:["80% of job is cleaning data - analysis is the fun 20%","Your insights often get ignored due to politics","Technical skills plateau - business acumen differentiates","Career path leads to data science, engineering, or management"],
+    bestTypes:['analyst','optimizer','specialist'],skills:['analytical','detail-oriented','technical','problem-solver'],
+    transitions:{
+      'finance':{d:'Easy',t:'2-4mo',p:'Excel skills transfer. Learn SQL and visualization tools.'},
+      'marketing':{d:'Medium',t:'4-8mo',p:'Analytics exposure helps. Deepen SQL and Python.'},
+      'consultant':{d:'Easy',t:'3-6mo',p:'Analytical mindset transfers. Learn tools and build portfolio.'},
+      'default':{d:'Medium',t:'4-9mo',p:'Learn SQL (free). Build portfolio with public datasets. Google cert is good start.'}
+    },
+    resources:[{n:'Google Data Analytics Cert',c:'$200',u:'coursera.org'},{n:'Mode SQL Tutorial',c:'Free',u:'mode.com'},{n:'Kaggle',c:'Free',u:'kaggle.com'}],
+    week1:['Start SQL tutorial on Mode','Complete first 2 SQL modules','Explore 3 datasets on Kaggle'],
+    week2:['Complete analysis on public dataset','Document as portfolio piece','Learn data visualization basics'],
+    week3:['Second portfolio project in domain you care about','Talk to 3 working data analysts','Start applying to entry roles'],
+    week4:['Third portfolio project','Polish portfolio on GitHub','Apply to 10 roles this week']
+  },
+  'startup-founder':{title:'Startup Founder',emoji:'🚀',cat:'Entrepreneurship',salary:'$0-$10M+',difficulty:3,time:'Start now',
+    desc:'You build a company from nothing — maximum risk, maximum autonomy',
+    truthBombs:["90%+ fail. You must be okay with that.","You'll make less than minimum wage for years","It's lonely even with co-founder","Success takes 7-10 years, not 2-3"],
+    bestTypes:['builder','explorer','advocate'],skills:['resilient','autonomous','sales','resourceful'],
+    transitions:{
+      'software-engineer':{d:'Medium',t:'Now',p:'You can build. Gap is sales and hiring. Find business co-founder.'},
+      'product-manager':{d:'Easy',t:'Now',p:'You understand product and business. Find technical co-founder.'},
+      'sales':{d:'Medium',t:'Now',p:'You can sell. Need technical co-founder or learn no-code.'},
+      'default':{d:'Hard',t:'Now',p:'Start side project while employed. Validate before quitting. Find complementary co-founders.'}
+    },
+    resources:[{n:'YC Startup School',c:'Free',u:'startupschool.org'},{n:'The Mom Test',c:'$15',u:'amazon.com'},{n:'Indie Hackers',c:'Free',u:'indiehackers.com'}],
+    week1:['List 20 problems you personally have','Talk to 10 people about their problems','Read "The Mom Test"'],
+    week2:['Pick 3 promising problems','Interview 5 people for each','Assess: would they pay?'],
+    week3:['Build smallest possible solution for 1','Get 1 person to try it','Iterate based on feedback'],
+    week4:['Can you see path to 10 paying customers?','Love this problem for 10 years?','Commit or pivot to next idea']
+  },
+  'freelance-consultant':{title:'Freelance Consultant',emoji:'💼',cat:'Entrepreneurship',salary:'$80K-$300K+',difficulty:2,time:'1-3mo',
+    desc:'You sell your expertise to companies without being an employee',
+    truthBombs:["You trade 1 boss for many (clients)","Income is lumpy - feast and famine","30-50% time on non-billable work","Loneliness is the unexpected hard part"],
+    bestTypes:['specialist','advisor','explorer'],skills:['expert','autonomous','sales','self-directed'],
+    transitions:{
+      'default':{d:'Medium',t:'1-3mo',p:'Package your best skill. Start with former employer as first client. Raise rates aggressively.'}
+    },
+    resources:[{n:'The Business of Expertise',c:'$25',u:'amazon.com'},{n:'Toptal/Catalant',c:'Free',u:'toptal.com'},{n:'Jonathan Stark Newsletter',c:'Free',u:'jonathanstark.com'}],
+    week1:['Define your specific expertise','Create one-page service description','Set initial rate (aim higher than comfortable)'],
+    week2:['Email 10 former colleagues','Post on LinkedIn you\'re available','Reach out to 5 potential clients'],
+    week3:['Take any discovery meeting','Practice scoping and pricing','Send 3 proposals'],
+    week4:['Land first client (discount OK)','Over-deliver on first project','Ask for referral and testimonial']
+  },
+  'health-coach':{title:'Health & Wellness Coach',emoji:'🌱',cat:'Wellness',salary:'$40K-$120K+',difficulty:1,time:'3-6mo',
+    desc:'You help people change their habits and transform their health',
+    truthBombs:["Real money is in own practice - requires marketing skills","Credentials matter more than they should","Emotional absorption is real - boundaries needed","Success depends on client results"],
+    bestTypes:['caretaker','advisor','connector'],skills:['empathetic','supportive','patient','health-focused'],
+    transitions:{
+      'healthcare':{d:'Easy',t:'2-4mo',p:'You understand health. Add coaching methodology.'},
+      'teacher':{d:'Medium',t:'4-8mo',p:'Teaching transfers. Learn health content and coaching methods.'},
+      'default':{d:'Medium',t:'4-8mo',p:'Get certified (NBC-HWC). Coach friends for free. Build from there.'}
+    },
+    resources:[{n:'NBC-HWC Certification',c:'$3-5K',u:'nbhwc.org'},{n:'Precision Nutrition',c:'$1K',u:'precisionnutrition.com'},{n:'Coach.me',c:'Free',u:'coach.me'}],
+    week1:['Interview 3 working health coaches','Research certification options','Try coaching a friend informally'],
+    week2:['Coach 3 people for free','Document what works','Decide your niche'],
+    week3:['Enroll in certification','Start building social presence','Define ideal client'],
+    week4:['Announce coaching to network','Get 3 paying clients (discount OK)','Commit to 90 days before judging']
+  },
+  'content-creator':{title:'Content Creator',emoji:'🎬',cat:'Creative',salary:'$0-$500K+',difficulty:3,time:'1-3 years',
+    desc:'You build an audience around your ideas — video, writing, podcasting',
+    truthBombs:["Overnight success takes 3-5 years","Algorithm is your fickle boss","Most creators have day jobs","More business than art - consistency beats talent"],
+    bestTypes:['creator','connector','specialist'],skills:['creative','consistent','authentic','entrepreneurial'],
+    transitions:{
+      'default':{d:'Hard',t:'1-3 years',p:'Start alongside job. Pick ONE platform. Post consistently for 2 years minimum.'}
+    },
+    resources:[{n:'Part-Time YouTuber Academy',c:'$1K',u:'aliabdaal.com'},{n:'Ship 30 for 30',c:'$300',u:'ship30for30.com'},{n:'Creator Economy Newsletter',c:'Free',u:'creatoreconomy.so'}],
+    week1:['Pick ONE platform','Study 10 creators in your niche','Identify your unique angle'],
+    week2:['Create and publish first piece','Create 5 more (quantity over quality)','Don\'t obsess over stats'],
+    week3:['Analyze what performed slightly better','Engage with others daily','Create 5 more'],
+    week4:['Can you commit for 2 years minimum?','If yes: set weekly schedule','If no: pick different career']
+  },
+  'technical-writer':{title:'Technical Writer',emoji:'📝',cat:'Tech',salary:'$65K-$130K+',difficulty:1,time:'2-6mo',
+    desc:'You make complex things simple — docs, guides, help content',
+    truthBombs:["It's about clarity, not creativity","You become expert-adjacent, not expert","Engineers undervalue docs until they need them","Growth paths limited without moving to mgmt"],
+    bestTypes:['specialist','analyst','creator'],skills:['writing','learning','organized','clear-communicator'],
+    transitions:{
+      'teacher':{d:'Easy',t:'2-4mo',p:'Explaining complex things is your job. Learn tech context.'},
+      'journalist':{d:'Easy',t:'2-4mo',p:'Research and writing transfer. Add tech context.'},
+      'software-engineer':{d:'Easy',t:'1-3mo',p:'Technical knowledge is huge advantage. Focus on writing clarity.'},
+      'default':{d:'Medium',t:'3-6mo',p:'Build portfolio of doc samples. Contribute to open source docs. Learn Git and Markdown.'}
+    },
+    resources:[{n:'Google Tech Writing Courses',c:'Free',u:'developers.google.com/tech-writing'},{n:'Write the Docs',c:'Free',u:'writethedocs.org'},{n:'Docs as Code',c:'Free',u:'docslikecode.com'}],
+    week1:['Complete Google Tech Writing Course 1','Rewrite one confusing doc you find','Learn Markdown basics'],
+    week2:['Contribute to open source docs','Build first portfolio sample','Join Write the Docs Slack'],
+    week3:['Second portfolio piece','Interview 2 tech writers','Learn Git basics'],
+    week4:['Apply to 10 roles','Consider contract work to start','Refine portfolio based on job reqs']
+  }
+};
+
+// Role options
+const roles=[
+  {v:'software-engineer',l:'Software Engineer'},{v:'designer',l:'Designer (UX/Product/Graphic)'},{v:'data-analyst',l:'Data Analyst'},
+  {v:'marketing',l:'Marketing / Growth'},{v:'sales',l:'Sales / BD'},{v:'product-manager',l:'Product Manager'},
+  {v:'project-manager',l:'Project Manager'},{v:'consultant',l:'Consultant'},{v:'finance',l:'Finance / Accounting'},
+  {v:'operations',l:'Operations'},{v:'healthcare',l:'Healthcare'},{v:'teacher',l:'Teacher / Professor'},
+  {v:'psychology',l:'Psychology / Therapy'},{v:'journalist',l:'Journalist / Writer'},{v:'hr',l:'HR / People'},
+  {v:'customer-support',l:'Customer Support'},{v:'other',l:'Other'},{v:'student',l:'Student'},{v:'unemployed',l:'Between jobs'}
+];
+
+// Skills
+const skillOpts=[
+  {id:'writing',l:'Writing'},{id:'analytical',l:'Data & Analytics'},{id:'creative',l:'Creative & Design'},
+  {id:'technical',l:'Technical / Coding'},{id:'people',l:'People & Relationships'},{id:'strategic',l:'Strategy'},
+  {id:'sales',l:'Sales & Persuasion'},{id:'teaching',l:'Teaching'},{id:'organizing',l:'Organizing'},{id:'research',l:'Research'}
+];
+
+// Energy questions
+const energyQs=[
+  {id:'e1',t:'Researching something fascinating',tags:{explorer:2,analyst:1}},
+  {id:'e2',t:'Building something tangible',tags:{builder:2,creator:1}},
+  {id:'e3',t:'Helping someone through a challenge',tags:{caretaker:2,advisor:1}},
+  {id:'e4',t:'Organizing chaos into a system',tags:{optimizer:2,architect:1}},
+  {id:'e5',t:'Presenting ideas to a group',tags:{connector:2,advisor:1}},
+  {id:'e6',t:'Mastering a skill through practice',tags:{specialist:2}},
+  {id:'e7',t:'Advocating for something you believe in',tags:{advocate:2}},
+  {id:'e8',t:'Analyzing data to find insights',tags:{analyst:2}},
+  {id:'e9',t:'Making things beautiful',tags:{creator:2}},
+  {id:'e10',t:'Selling or persuading someone',tags:{connector:2,builder:1}},
+];
+
+// Deal breakers
+const dealBreakerOpts=[
+  {id:'meetings',l:'Lots of meetings'},{id:'unstable-income',l:'Unstable income'},{id:'sales',l:'Sales/cold calling'},
+  {id:'long-hours',l:'50+ hour weeks'},{id:'travel',l:'Frequent travel'},{id:'managing',l:'Managing people'},
+  {id:'slow-pace',l:'Slow bureaucracy'},{id:'remote-no',l:'Must be in-office'}
+];
+
+const typeInfo={explorer:{n:'Explorer',e:'🧭'},builder:{n:'Builder',e:'🔨'},analyst:{n:'Analyst',e:'🔬'},
+  caretaker:{n:'Caretaker',e:'💚'},connector:{n:'Connector',e:'🤝'},creator:{n:'Creator',e:'🎨'},
+  optimizer:{n:'Optimizer',e:'⚡'},architect:{n:'Architect',e:'📐'},specialist:{n:'Specialist',e:'🔍'},
+  advisor:{n:'Advisor',e:'🎓'},advocate:{n:'Advocate',e:'📢'}};
+
+// Fear responses
+const fearMsgs={
+  'wrong-choice':"There's no perfect choice. Many paths could make you happy. The real risk is staying stuck, not picking wrong.",
+  'not-qualified':"Imposter syndrome lies. Most people felt unqualified when starting. Skills can be learned — drive and fit matter more.",
+  'money':"Valid concern. That's why we factor in your finances. The careers I'm recommending have clear income paths.",
+  'starting-over':"You're not starting over — you're starting from experience. Career changers often outperform with fresh perspective.",
+  'judgment':"Others' opinions fade fast. A year from now, they'll only see your results, not their initial surprise.",
+  'none':"Love the confidence. Let's channel it into action."
+};
+
+function App(){
+  const[step,setStep]=useState(0);
+  const[d,setD]=useState({name:'',email:'',role:'',yrs:'',income:'',sat:null,urg:null,fin:null,fear:null,
+    skills:[],energy:{},workStyle:{},dealBreakers:[],dreamJob:'',topCareers:[],topType:null});
+  const u=(x)=>setD(p=>({...p,...x}));
+  const key=(e,fn,v=true)=>{if(e.key==='Enter'&&v){e.preventDefault();fn();}};
+
+  // Calculate results
+  const calc=()=>{
+    const ts={};Object.keys(typeInfo).forEach(x=>ts[x]=0);
+    Object.entries(d.energy).forEach(([id,val])=>{
+      const q=energyQs.find(x=>x.id===id);
+      if(q?.tags){const m=val-3;Object.entries(q.tags).forEach(([type,w])=>{ts[type]=(ts[type]||0)+m*w;});}
+    });
+    // Skills boost
+    if(d.skills.includes('analytical'))ts.analyst+=5;
+    if(d.skills.includes('creative'))ts.creator+=5;
+    if(d.skills.includes('people')){ts.connector+=3;ts.caretaker+=3;}
+    if(d.skills.includes('technical'))ts.builder+=5;
+    if(d.skills.includes('strategic'))ts.architect+=5;
+    
+    const sorted=Object.entries(ts).sort((a,b)=>b[1]-a[1]);
+    const topType=sorted[0][0],secondType=sorted[1][0];
+    
+    // Score careers
+    const scored=Object.entries(careers).map(([id,c])=>{
+      let sc=0;
+      if(c.bestTypes.includes(topType))sc+=20;
+      if(c.bestTypes.includes(secondType))sc+=12;
+      c.skills?.forEach(s=>{if(d.skills.includes(s))sc+=5;});
+      if(d.workStyle.collab==='solo'&&id==='product-manager')sc-=8;
+      if(d.workStyle.structure==='autonomous'&&['startup-founder','freelance-consultant','content-creator'].includes(id))sc+=8;
+      if(d.fin==='tight'&&c.difficulty===3)sc-=15;
+      if(d.fin==='tight'&&c.salary.includes('$0'))sc-=20;
+      if(d.urg==='urgent'&&c.difficulty===3)sc-=10;
+      const tr=c.transitions[d.role]||c.transitions.default;
+      if(tr?.d==='Easy')sc+=12;if(tr?.d==='Hard')sc-=8;
+      d.dealBreakers.forEach(db=>{
+        if(db==='meetings'&&id==='product-manager')sc-=15;
+        if(db==='unstable-income'&&['startup-founder','content-creator','freelance-consultant'].includes(id))sc-=20;
+        if(db==='sales'&&['startup-founder','freelance-consultant'].includes(id))sc-=15;
+      });
+      return{id,...c,score:sc,transition:tr};
+    }).sort((a,b)=>b.score-a.score);
+    
+    u({topType,secondType,topCareers:scored});
+    setStep(100);
+  };
+
+  // Styles
+  const s={
+    container:{minHeight:'100vh',display:'flex',flexDirection:'column',alignItems:'center',padding:'24px 20px',background:t.bg},
+    content:{maxWidth:540,width:'100%'},
+    title:{fontFamily:"'Fraunces',serif",fontSize:24,fontWeight:600,color:t.text,marginBottom:8,lineHeight:1.35},
+    sub:{fontSize:15,color:t.textSec,marginBottom:24,lineHeight:1.6},
+    card:{background:t.card,borderRadius:16,padding:24,marginBottom:16,boxShadow:t.shadow,border:`1px solid ${t.border}`},
+    input:{width:'100%',padding:'14px 16px',border:`1.5px solid ${t.border}`,borderRadius:10,fontSize:16,fontFamily:'Inter',color:t.text,background:t.card,marginBottom:16},
+    btn:{width:'100%',padding:'14px 24px',borderRadius:10,fontSize:15,fontWeight:600,cursor:'pointer',border:'none',fontFamily:'Inter',display:'flex',alignItems:'center',justifyContent:'center',gap:8},
+    btnP:{background:t.primary,color:'#fff'},
+    btnS:{background:t.card,color:t.text,border:`1.5px solid ${t.border}`},
+    opt:{width:'100%',padding:'16px 20px',borderRadius:12,fontSize:15,cursor:'pointer',border:`2px solid ${t.border}`,background:t.card,textAlign:'left',marginBottom:10,fontFamily:'Inter',color:t.text,transition:'all .15s'},
+    prog:{width:'100%',height:4,background:t.border,borderRadius:2,marginBottom:32},
+    progBar:{height:'100%',background:t.primary,borderRadius:2,transition:'width .3s'},
+    chip:{padding:'10px 16px',borderRadius:20,fontSize:14,cursor:'pointer',border:`1.5px solid ${t.border}`,background:t.card,display:'inline-flex',margin:4},
+    hint:{fontSize:13,color:t.textMuted,textAlign:'center',marginTop:12}
+  };
+  const Prog=({p})=><div style={s.prog}><div style={{...s.progBar,width:`${p}%`}}/></div>;
+
+  // Step 0: Intro
+  if(step===0)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <div style={{textAlign:'center',marginTop:40,marginBottom:32}}>
+        <div style={{fontSize:52,marginBottom:16}}>🧭</div>
+        <h1 style={{...s.title,fontSize:28}}>Let's find your next career.</h1>
+        <p style={s.sub}>8 minutes. 3 personalized career recommendations with specific action plans.</p>
+      </div>
+      <div style={{...s.card,marginBottom:24}}>
+        <div style={{fontSize:14,color:t.textSec,lineHeight:1.8}}>
+          <strong style={{color:t.text}}>What we'll cover:</strong><br/>
+          • Your situation & constraints<br/>• Your skills & strengths<br/>• What energizes vs drains you<br/>• Work style preferences<br/>• Deal-breakers to avoid
+        </div>
+      </div>
+      <button style={{...s.btn,...s.btnP}} onClick={()=>setStep(1)}>Let's Go →</button>
+    </div></div>
+  );
+
+  // Step 1: Name
+  if(step===1)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <Prog p={5}/>
+      <h1 style={s.title}>What should I call you?</h1>
+      <input style={s.input} placeholder="First name" value={d.name} onChange={e=>u({name:e.target.value})} onKeyDown={e=>key(e,()=>setStep(2),d.name.trim())} autoFocus/>
+      <button style={{...s.btn,...s.btnP,opacity:d.name.trim()?1:.5}} onClick={()=>d.name.trim()&&setStep(2)}>Continue →</button>
+      <p style={s.hint}>Press Enter ↵</p>
+    </div></div>
+  );
+
+  // Step 2: Role
+  if(step===2)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <Prog p={10}/>
+      <h1 style={s.title}>What do you currently do, {d.name}?</h1>
+      <p style={s.sub}>Helps me suggest realistic transition paths.</p>
+      <select style={{...s.input,cursor:'pointer'}} value={d.role} onChange={e=>{u({role:e.target.value});setStep(3);}}>
+        <option value="">Select role...</option>
+        {roles.map(r=><option key={r.v} value={r.v}>{r.l}</option>)}
+      </select>
+    </div></div>
+  );
+
+  // Step 3: Years + Income
+  if(step===3)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <Prog p={15}/>
+      <h1 style={s.title}>A bit more context...</h1>
+      <label style={{display:'block',fontSize:14,fontWeight:500,marginBottom:6}}>Years of experience</label>
+      <select style={s.input} value={d.yrs} onChange={e=>u({yrs:e.target.value})}>
+        <option value="">Select...</option><option value="0-2">0-2</option><option value="3-5">3-5</option><option value="6-10">6-10</option><option value="10+">10+</option><option value="student">Student</option>
+      </select>
+      <label style={{display:'block',fontSize:14,fontWeight:500,marginBottom:6}}>Current income range</label>
+      <select style={s.input} value={d.income} onChange={e=>u({income:e.target.value})}>
+        <option value="">Select...</option><option value="<50k">&lt;$50K</option><option value="50-75k">$50-75K</option><option value="75-100k">$75-100K</option><option value="100-150k">$100-150K</option><option value="150k+">$150K+</option><option value="skip">Prefer not to say</option>
+      </select>
+      <button style={{...s.btn,...s.btnP,opacity:d.yrs?1:.5}} onClick={()=>d.yrs&&setStep(4)}>Continue →</button>
+    </div></div>
+  );
+
+  // Step 4: Satisfaction
+  if(step===4)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <Prog p={20}/>
+      <h1 style={s.title}>How do you feel about your current career?</h1>
+      {[{v:1,l:'😫 Miserable',d:'I dread most days'},{v:2,l:'😕 Unhappy',d:'Something needs to change'},{v:3,l:'😐 Meh',d:'Okay but not exciting'},{v:4,l:'🙂 Good',d:'Just exploring'},{v:5,l:'😊 Great',d:'Curious what else exists'}].map(o=>
+        <button key={o.v} style={s.opt} onClick={()=>{u({sat:o.v});setStep(5);}} onMouseOver={e=>e.currentTarget.style.borderColor=t.primary} onMouseOut={e=>e.currentTarget.style.borderColor=t.border}>
+          <div style={{fontWeight:600}}>{o.l}</div><div style={{fontSize:13,color:t.textMuted}}>{o.d}</div>
+        </button>
+      )}
+    </div></div>
+  );
+
+  // Step 5: Urgency
+  if(step===5)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <Prog p={25}/>
+      <h1 style={s.title}>How urgently do you want to change?</h1>
+      {[{v:'exploring',l:'🔍 Just exploring',d:'No rush'},{v:'considering',l:'🤔 Seriously considering',d:'Might change in next year'},{v:'ready',l:'🚀 Ready to move',d:'Actively looking'},{v:'urgent',l:'⚡ Need to move now',d:'Job loss, burnout, or life change'}].map(o=>
+        <button key={o.v} style={s.opt} onClick={()=>{u({urg:o.v});setStep(6);}} onMouseOver={e=>e.currentTarget.style.borderColor=t.primary} onMouseOut={e=>e.currentTarget.style.borderColor=t.border}>
+          <div style={{fontWeight:600}}>{o.l}</div><div style={{fontSize:13,color:t.textMuted}}>{o.d}</div>
+        </button>
+      )}
+    </div></div>
+  );
+
+  // Step 6: Financial
+  if(step===6)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <Prog p={30}/>
+      <h1 style={s.title}>How much financial flexibility?</h1>
+      {[{v:'tight',l:'Very tight',d:"Can't take pay cut or gap"},{v:'some',l:'Some flexibility',d:'Small temporary pay cut OK'},{v:'comfortable',l:'Comfortable',d:'6+ months savings'},{v:'very',l:'Very flexible',d:'Money not the constraint'}].map(o=>
+        <button key={o.v} style={s.opt} onClick={()=>{u({fin:o.v});setStep(7);}} onMouseOver={e=>e.currentTarget.style.borderColor=t.primary} onMouseOut={e=>e.currentTarget.style.borderColor=t.border}>
+          <div style={{fontWeight:600}}>{o.l}</div><div style={{fontSize:13,color:t.textMuted}}>{o.d}</div>
+        </button>
+      )}
+    </div></div>
+  );
+
+  // Step 7: Fear
+  if(step===7)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <Prog p={35}/>
+      <h1 style={s.title}>Biggest fear about changing?</h1>
+      {[{v:'wrong-choice',l:'Making the wrong choice'},{v:'not-qualified',l:'Not being qualified'},{v:'money',l:'Financial risk'},{v:'starting-over',l:'Starting over'},{v:'judgment',l:'What others think'},{v:'none',l:'Not really afraid'}].map(o=>
+        <button key={o.v} style={s.opt} onClick={()=>{u({fear:o.v});setStep(10);}} onMouseOver={e=>e.currentTarget.style.borderColor=t.primary} onMouseOut={e=>e.currentTarget.style.borderColor=t.border}>
+          {o.l}
+        </button>
+      )}
+    </div></div>
+  );
+
+  // Step 10: Skills
+  if(step===10)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <Prog p={40}/>
+      <h1 style={s.title}>What are your strongest skills?</h1>
+      <p style={s.sub}>Select all that apply</p>
+      <div style={{display:'flex',flexWrap:'wrap',marginBottom:20}}>
+        {skillOpts.map(sk=><button key={sk.id} style={{...s.chip,...(d.skills.includes(sk.id)?{background:t.primaryLight,borderColor:t.primary,color:t.primary}:{})}} onClick={()=>u({skills:d.skills.includes(sk.id)?d.skills.filter(x=>x!==sk.id):[...d.skills,sk.id]})}>{sk.l}</button>)}
+      </div>
+      <button style={{...s.btn,...s.btnP,opacity:d.skills.length>=2?1:.5}} onClick={()=>d.skills.length>=2&&setStep(15)}>Continue →</button>
+      <p style={s.hint}>Select at least 2</p>
+    </div></div>
+  );
+
+  // Steps 15-24: Energy questions
+  if(step>=15&&step<=24){
+    const i=step-15,q=energyQs[i];
+    return(
+      <div style={s.container}><div style={s.content} className="fade-in">
+        <Prog p={45+i*4}/>
+        <div style={{fontSize:13,color:t.textMuted,textAlign:'center',marginBottom:12}}>{i+1} / {energyQs.length}</div>
+        <h1 style={{...s.title,textAlign:'center',fontSize:20}}>{q.t}</h1>
+        <div style={{display:'flex',justifyContent:'center',gap:10,marginTop:32}}>
+          {[{v:1,e:'😫'},{v:2,e:'😕'},{v:3,e:'😐'},{v:4,e:'🙂'},{v:5,e:'😍'}].map(o=>
+            <button key={o.v} onClick={()=>{u({energy:{...d.energy,[q.id]:o.v}});setStep(i<energyQs.length-1?step+1:30);}}
+              style={{width:58,height:64,borderRadius:12,border:`2px solid ${t.border}`,background:t.card,cursor:'pointer',fontSize:28,display:'flex',alignItems:'center',justifyContent:'center'}}
+              onMouseOver={e=>{e.currentTarget.style.borderColor=t.primary;e.currentTarget.style.transform='translateY(-2px)';}}
+              onMouseOut={e=>{e.currentTarget.style.borderColor=t.border;e.currentTarget.style.transform='translateY(0)';}}>
+              {o.e}
+            </button>
+          )}
+        </div>
+        <div style={{display:'flex',justifyContent:'space-between',marginTop:12,fontSize:12,color:t.textMuted}}><span>Hate</span><span>Love</span></div>
+      </div></div>
+    );
+  }
+
+  // Step 30: Work style
+  if(step===30)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <Prog p={85}/>
+      <h1 style={s.title}>Work style preferences</h1>
+      <div style={{marginBottom:20}}>
+        <div style={{fontSize:14,fontWeight:500,marginBottom:10}}>Collaboration?</div>
+        <div style={{display:'flex',gap:8}}>
+          {[{v:'collab',l:'🤝 Team'},{v:'solo',l:'🧘 Solo'},{v:'mix',l:'↔️ Mix'}].map(o=>
+            <button key={o.v} style={{...s.chip,flex:1,justifyContent:'center',...(d.workStyle.collab===o.v?{background:t.primaryLight,borderColor:t.primary}:{})}} onClick={()=>u({workStyle:{...d.workStyle,collab:o.v}})}>{o.l}</button>
+          )}
+        </div>
+      </div>
+      <div style={{marginBottom:20}}>
+        <div style={{fontSize:14,fontWeight:500,marginBottom:10}}>Structure?</div>
+        <div style={{display:'flex',gap:8}}>
+          {[{v:'structured',l:'📋 Structured'},{v:'autonomous',l:'🎯 Autonomous'},{v:'mix',l:'↔️ Mix'}].map(o=>
+            <button key={o.v} style={{...s.chip,flex:1,justifyContent:'center',...(d.workStyle.structure===o.v?{background:t.primaryLight,borderColor:t.primary}:{})}} onClick={()=>u({workStyle:{...d.workStyle,structure:o.v}})}>{o.l}</button>
+          )}
+        </div>
+      </div>
+      <button style={{...s.btn,...s.btnP}} onClick={()=>setStep(31)}>Continue →</button>
+    </div></div>
+  );
+
+  // Step 31: Deal breakers
+  if(step===31)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <Prog p={90}/>
+      <h1 style={s.title}>Any deal-breakers?</h1>
+      <p style={s.sub}>I'll avoid recommending careers with these</p>
+      <div style={{display:'flex',flexWrap:'wrap',marginBottom:20}}>
+        {dealBreakerOpts.map(db=><button key={db.id} style={{...s.chip,...(d.dealBreakers.includes(db.id)?{background:t.dangerLight,borderColor:t.danger,color:t.danger}:{})}} onClick={()=>u({dealBreakers:d.dealBreakers.includes(db.id)?d.dealBreakers.filter(x=>x!==db.id):[...d.dealBreakers,db.id]})}>{db.l}</button>)}
+      </div>
+      <button style={{...s.btn,...s.btnP}} onClick={()=>setStep(32)}>Continue →</button>
+    </div></div>
+  );
+
+  // Step 32: Email
+  if(step===32)return(
+    <div style={s.container}><div style={s.content} className="fade-in">
+      <Prog p={95}/>
+      <div style={{textAlign:'center',marginTop:20}}><div style={{fontSize:48,marginBottom:16}}>🎉</div></div>
+      <h1 style={{...s.title,textAlign:'center'}}>Almost there, {d.name}!</h1>
+      <p style={{...s.sub,textAlign:'center'}}>Enter email to see your 3 personalized recommendations</p>
+      <input style={{...s.input,textAlign:'center'}} type="email" placeholder="you@email.com" value={d.email} onChange={e=>u({email:e.target.value})} onKeyDown={e=>key(e,calc,/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email))} autoFocus/>
+      <button style={{...s.btn,...s.btnP,opacity:/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)?1:.5}} onClick={()=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)&&calc()}>See My Results →</button>
+      <p style={s.hint}>No spam</p>
+    </div></div>
+  );
+
+  // RESULTS
+  if(step===100){
+    const top3=d.topCareers.slice(0,3);
+    const primary=typeInfo[d.topType];
+    const roleLabel=roles.find(r=>r.v===d.role)?.l||d.role;
+    
+    return(
+      <div style={s.container}><div style={s.content}>
+        {/* Hero */}
+        <div className="fade-in" style={{...s.card,background:t.primary,color:'#fff',textAlign:'center',padding:32,marginTop:20}}>
+          <div style={{fontSize:12,textTransform:'uppercase',letterSpacing:1,opacity:.8,marginBottom:8}}>Your top 3 career matches</div>
+          <div style={{fontSize:28,fontFamily:"'Fraunces',serif",fontWeight:600}}>
+            {top3.map((c,i)=><span key={i}>{c.emoji}{i<2?' · ':''}</span>)}
+          </div>
+        </div>
+
+        {/* Type */}
+        <div className="fade-in" style={s.card}>
+          <div style={{fontSize:13,fontWeight:600,color:t.primary,marginBottom:8}}>YOUR TYPE</div>
+          <div style={{fontSize:20,fontWeight:600}}>{primary.e} {primary.n}</div>
+          <p style={{fontSize:14,color:t.textSec,marginTop:8}}>Based on your answers, you're energized by {d.topType==='explorer'?'curiosity and novelty':d.topType==='builder'?'creating tangible things':d.topType==='analyst'?'finding patterns in data':d.topType==='caretaker'?'helping and supporting others':d.topType==='connector'?'building relationships':d.topType==='creator'?'making beautiful things':d.topType==='optimizer'?'improving systems':'strategic thinking'}.</p>
+        </div>
+
+        {/* Fear response */}
+        <div className="fade-in" style={{...s.card,background:t.purpleLight,borderColor:t.purple}}>
+          <div style={{fontSize:13,fontWeight:600,color:t.purple,marginBottom:8}}>🫂 ABOUT YOUR FEAR</div>
+          <p style={{fontSize:14,color:t.text,lineHeight:1.7,margin:0}}>{fearMsgs[d.fear]}</p>
+        </div>
+
+        {/* 3 Career Recommendations */}
+        {top3.map((career,idx)=>(
+          <div key={career.id} className="fade-in" style={{...s.card,border:idx===0?`2px solid ${t.primary}`:`1px solid ${t.border}`,background:idx===0?t.primaryLight:t.card}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+              <div style={{fontSize:12,fontWeight:600,color:t.primary}}>#{idx+1} RECOMMENDATION</div>
+              <div style={{fontSize:12,color:t.textMuted}}>{career.cat}</div>
+            </div>
+            
+            <div style={{fontSize:22,fontWeight:600,marginBottom:4}}>{career.emoji} {career.title}</div>
+            <div style={{fontSize:14,color:t.textSec,marginBottom:12}}>{career.desc}</div>
+            
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
+              <div style={{padding:12,background:t.bg,borderRadius:10}}>
+                <div style={{fontSize:11,color:t.textMuted}}>SALARY</div>
+                <div style={{fontSize:15,fontWeight:600,color:t.primary}}>{career.salary}</div>
+              </div>
+              <div style={{padding:12,background:t.bg,borderRadius:10}}>
+                <div style={{fontSize:11,color:t.textMuted}}>TRANSITION TIME</div>
+                <div style={{fontSize:15,fontWeight:600}}>{career.transition?.t||career.time}</div>
+              </div>
+            </div>
+
+            {/* Transition path */}
+            {career.transition&&(
+              <div style={{background:t.accentLight,borderRadius:10,padding:14,marginBottom:16}}>
+                <div style={{fontSize:12,fontWeight:600,color:t.accent,marginBottom:6}}>YOUR PATH FROM {roleLabel.toUpperCase()}</div>
+                <div style={{fontSize:13,color:t.text,lineHeight:1.6}}><strong>{career.transition.d}</strong> transition: {career.transition.p}</div>
+              </div>
+            )}
+
+            {/* Truth bombs */}
+            <div style={{marginBottom:16}}>
+              <div style={{fontSize:12,fontWeight:600,color:t.textMuted,marginBottom:8}}>REALITY CHECK</div>
+              <ul style={{fontSize:13,color:t.textSec,paddingLeft:18,margin:0,lineHeight:1.7}}>
+                {career.truthBombs.slice(0,2).map((tb,i)=><li key={i}>{tb}</li>)}
+              </ul>
+            </div>
+
+            {/* Week by week */}
+            <div style={{marginBottom:16}}>
+              <div style={{fontSize:12,fontWeight:600,color:t.textMuted,marginBottom:8}}>4-WEEK ACTION PLAN</div>
+              {[career.week1,career.week2,career.week3,career.week4].map((tasks,wi)=>(
+                <div key={wi} style={{marginBottom:12,paddingLeft:12,borderLeft:`2px solid ${t.border}`}}>
+                  <div style={{fontSize:12,fontWeight:600,color:t.primary}}>Week {wi+1}</div>
+                  <ul style={{fontSize:13,color:t.textSec,paddingLeft:16,margin:'4px 0 0',lineHeight:1.6}}>
+                    {tasks.map((task,ti)=><li key={ti}>{task}</li>)}
+                  </ul>
+                </div>
+              ))}
+            </div>
+
+            {/* Resources */}
+            <div>
+              <div style={{fontSize:12,fontWeight:600,color:t.textMuted,marginBottom:8}}>RESOURCES</div>
+              {career.resources.map((r,ri)=>(
+                <div key={ri} style={{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:ri<career.resources.length-1?`1px solid ${t.border}`:'none'}}>
+                  <span style={{fontSize:13,color:t.text}}>{r.n}</span>
+                  <span style={{fontSize:13,fontWeight:600,color:t.primary}}>{r.c}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {/* Tomorrow's action */}
+        <div className="fade-in" style={{...s.card,background:t.accentLight,borderColor:t.accent}}>
+          <div style={{fontSize:13,fontWeight:600,color:t.accent,marginBottom:10}}>📌 YOUR ACTION FOR TOMORROW</div>
+          <p style={{fontSize:14,color:t.text,lineHeight:1.7,marginBottom:16}}>
+            Pick your #1 recommendation ({top3[0].title}). Find 3 people on LinkedIn with that title. Send this message:
+          </p>
+          <div style={{background:t.card,borderRadius:10,padding:14,fontSize:13,color:t.textSec,lineHeight:1.6,border:`1px solid ${t.border}`}}>
+            "Hi [Name], I'm a {roleLabel} exploring a move into {top3[0].title.toLowerCase()}. Would you have 15 minutes to share how you made the transition? No ask beyond the conversation. Thanks!"
+          </div>
+        </div>
+
+        {/* Share */}
+        <button style={{...s.btn,...s.btnS,marginBottom:24}} onClick={()=>{navigator.clipboard.writeText(`My top career matches:\n1. ${top3[0].title}\n2. ${top3[1].title}\n3. ${top3[2].title}\n\nFind yours → CareerClarity.com`);alert('Copied!');}}>
+          📋 Share Results
+        </button>
+
+        {/* Feedback */}
+        <div style={{textAlign:'center',padding:24}}>
+          <div style={{fontSize:13,color:t.textMuted,marginBottom:12}}>Was this helpful?</div>
+          <div style={{display:'flex',justifyContent:'center',gap:12}}>
+            <button style={{padding:'8px 20px',borderRadius:8,border:`1px solid ${t.border}`,background:t.card,cursor:'pointer',fontSize:14}}>👍 Yes</button>
+            <button style={{padding:'8px 20px',borderRadius:8,border:`1px solid ${t.border}`,background:t.card,cursor:'pointer',fontSize:14}}>👎 Not really</button>
+          </div>
+        </div>
+      </div></div>
+    );
+  }
+
+  return null;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
