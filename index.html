@@ -254,6 +254,33 @@ function App(){
     }).sort((a,b)=>b.score-a.score);
     
     u({topType,secondType,topCareers:scored});
+    
+    // Send to Google Sheets
+    const top3=scored.slice(0,3);
+    fetch('https://script.google.com/macros/s/AKfycbxi-vcsL2izUXE-UCNb98PFbAZHWv4QFCN-WYJic-o7Qg8W04VDgOb-nrQbUJUzfxWD/exec',{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name:d.name,
+        email:d.email,
+        currentRole:d.role,
+        yearsExp:d.yrs,
+        income:d.income,
+        satisfaction:d.sat,
+        urgency:d.urg,
+        financialFlex:d.fin,
+        fear:d.fear,
+        skills:d.skills.join(', '),
+        workStyle:JSON.stringify(d.workStyle),
+        dealBreakers:d.dealBreakers.join(', '),
+        topCareer1:top3[0]?.title||'',
+        topCareer2:top3[1]?.title||'',
+        topCareer3:top3[2]?.title||'',
+        topType:topType
+      })
+    }).catch(err=>console.log('Sheet submission error:',err));
+    
     setStep(100);
   };
 
