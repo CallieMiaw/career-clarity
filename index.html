@@ -438,14 +438,14 @@ function App(){
         <div className="fade-up">
           <div style={{fontSize:72,marginBottom:24}} className="float">🧭</div>
           <h1 style={{fontSize:48,fontWeight:800,marginBottom:20,lineHeight:1.1}}>
-            Discover careers you<br/>didn't know existed
+            What if the right career is one<br/>you haven't heard of yet?
           </h1>
           <p style={{fontSize:20,color:'#52525B',maxWidth:520,margin:'0 auto 40px',lineHeight:1.6}}>
-            You don't need to have it figured out. Take a 5-minute assessment and see what actually fits.
+            Take a 5-minute quiz to see what careers could be a great match for you — based on your personality and interests.
           </p>
           
           <button className="btn btn-primary pop" style={{fontSize:20,padding:'22px 48px'}} onClick={()=>setMode('quiz')}>
-            Start exploring
+            Take the quiz
           </button>
           
           <p style={{marginTop:20,fontSize:14,color:'#A1A1AA'}}>
@@ -457,9 +457,9 @@ function App(){
           <h2 style={{fontSize:24,fontWeight:700,marginBottom:24,textAlign:'center'}}>What you'll get</h2>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:20}}>
             {[
-              {emoji:'🎯',title:'Your work personality',desc:'What energizes you vs. what drains you'},
-              {emoji:'🗺️',title:'122 career paths',desc:'Including ones you\'ve probably never considered'},
-              {emoji:'⚡',title:'Honest trade-offs',desc:'What nobody tells you before you commit'}
+              {emoji:'🎯',title:'Your work personality',desc:'Understand why some work energizes you and other work drains you'},
+              {emoji:'🗺️',title:'122 career paths',desc:'See careers you\'d never find on a job board'},
+              {emoji:'⚡',title:'Honest trade-offs',desc:'Know the real trade-offs before you commit'}
             ].map((f,i)=>(
               <div key={i} className={"card fade-up delay-"+(i+1)} style={{padding:24}}>
                 <div style={{fontSize:36,marginBottom:12}}>{f.emoji}</div>
