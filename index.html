@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Career Clarity — Find Work You'll Actually Love</title>
+  <title>Career Clarity — Discover Careers You Didn't Know Existed</title>
+  <meta name="description" content="A 5-minute assessment that matches you with careers based on what energizes you. 122 real paths. Free.">
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -13,128 +14,51 @@
     *{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{font-family:'DM Sans',sans-serif;background:#FFFBF5;color:#1a1a2e;overflow-x:hidden}
-    
-    /* Fun gradient background */
-    .gradient-bg{
-      background:linear-gradient(135deg,#FF6B6B 0%,#FFE66D 25%,#4ECDC4 50%,#A8E6CF 75%,#FFE66D 100%);
-      background-size:400% 400%;
-      animation:gradientShift 15s ease infinite;
-    }
+    .gradient-bg{background:linear-gradient(135deg,#FF6B6B 0%,#FFE66D 25%,#4ECDC4 50%,#A8E6CF 75%,#FFE66D 100%);background-size:400% 400%;animation:gradientShift 15s ease infinite}
     @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-    
-    /* Blob shapes */
-    .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:0.6;pointer-events:none;z-index:0}
+    .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:0.5;pointer-events:none;z-index:0}
     .blob-1{width:400px;height:400px;background:#FF6B6B;top:-100px;left:-100px}
     .blob-2{width:300px;height:300px;background:#4ECDC4;top:200px;right:-50px}
     .blob-3{width:350px;height:350px;background:#FFE66D;bottom:-100px;left:30%}
-    
-    /* Animations */
     .fade-up{animation:fadeUp .6s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
     @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-    .delay-1{animation-delay:.1s}
-    .delay-2{animation-delay:.2s}
-    .delay-3{animation-delay:.3s}
-    .delay-4{animation-delay:.4s}
-    
-    .bounce{animation:bounce 2s infinite}
-    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-    
-    .wiggle:hover{animation:wiggle .5s ease}
-    @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
-    
+    .delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}.delay-3{animation-delay:.3s}
+    .float{animation:float 6s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
     .pop{transition:all .2s cubic-bezier(.68,-.55,.265,1.55)}
-    .pop:hover{transform:scale(1.05)}
-    .pop:active{transform:scale(0.95)}
-    
-    /* Cards */
-    .card{
-      background:#fff;
-      border-radius:24px;
-      border:3px solid #1a1a2e;
-      box-shadow:6px 6px 0 #1a1a2e;
-      transition:all .2s ease;
-    }
+    .pop:hover{transform:scale(1.02)}
+    .card{background:#fff;border-radius:24px;border:3px solid #1a1a2e;box-shadow:6px 6px 0 #1a1a2e;transition:all .2s ease}
     .card:hover{box-shadow:8px 8px 0 #1a1a2e;transform:translate(-2px,-2px)}
-    
-    .card-flat{
-      background:#fff;
-      border-radius:20px;
-      border:2px solid #e8e8e8;
-    }
-    
-    /* Buttons */
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;gap:10px;
-      padding:18px 36px;border-radius:100px;font-size:18px;font-weight:700;
-      cursor:pointer;transition:all .2s cubic-bezier(.68,-.55,.265,1.55);
-      font-family:'DM Sans',sans-serif;border:3px solid #1a1a2e;
-    }
+    .card-flat{background:#fff;border-radius:20px;border:2px solid #e8e8e8}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:18px 36px;border-radius:100px;font-size:18px;font-weight:700;cursor:pointer;transition:all .2s cubic-bezier(.68,-.55,.265,1.55);font-family:'DM Sans',sans-serif;border:3px solid #1a1a2e}
     .btn-primary{background:#FFE66D;color:#1a1a2e;box-shadow:4px 4px 0 #1a1a2e}
     .btn-primary:hover{box-shadow:6px 6px 0 #1a1a2e;transform:translate(-2px,-2px)}
-    .btn-primary:active{box-shadow:2px 2px 0 #1a1a2e;transform:translate(2px,2px)}
-    
     .btn-secondary{background:#fff;color:#1a1a2e;box-shadow:4px 4px 0 #1a1a2e}
-    .btn-secondary:hover{background:#f5f5f5;box-shadow:6px 6px 0 #1a1a2e;transform:translate(-2px,-2px)}
-    
     .btn-ghost{background:transparent;border:2px solid #1a1a2e;box-shadow:none}
     .btn-ghost:hover{background:#1a1a2e;color:#fff}
-    
-    /* Pills/Chips */
-    .pill{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:10px 20px;border-radius:100px;font-size:14px;font-weight:600;
-      border:2px solid #1a1a2e;cursor:pointer;transition:all .15s ease;
-      background:#fff;
-    }
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;font-size:14px;font-weight:600;border:2px solid #1a1a2e;cursor:pointer;transition:all .15s ease;background:#fff}
     .pill:hover{transform:translateY(-2px)}
     .pill.active{background:#1a1a2e;color:#fff}
-    
-    /* Progress bar */
     .progress-track{height:12px;background:#e8e8e8;border-radius:100px;overflow:hidden;border:2px solid #1a1a2e}
     .progress-fill{height:100%;background:linear-gradient(90deg,#FF6B6B,#FFE66D,#4ECDC4);border-radius:100px;transition:width .4s cubic-bezier(.16,1,.3,1)}
-    
-    /* Emoji ratings */
-    .emoji-btn{
-      font-size:48px;cursor:pointer;transition:all .2s cubic-bezier(.68,-.55,.265,1.55);
-      filter:grayscale(100%);opacity:0.5;
-    }
+    .emoji-btn{font-size:44px;cursor:pointer;transition:all .2s cubic-bezier(.68,-.55,.265,1.55);filter:grayscale(100%);opacity:0.4}
     .emoji-btn:hover{transform:scale(1.2);filter:grayscale(0%);opacity:1}
     .emoji-btn.active{transform:scale(1.3);filter:grayscale(0%);opacity:1}
-    
-    /* Option cards */
-    .option{
-      padding:20px 24px;border-radius:16px;cursor:pointer;
-      border:3px solid #e8e8e8;background:#fff;
-      transition:all .15s ease;font-size:16px;
-    }
+    .option{padding:20px 24px;border-radius:16px;cursor:pointer;border:3px solid #e8e8e8;background:#fff;transition:all .15s ease;font-size:16px}
     .option:hover{border-color:#1a1a2e;transform:translateX(4px)}
     .option.active{border-color:#1a1a2e;background:#FFE66D}
-    
-    /* Typography */
     h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;line-height:1.1}
-    
-    /* Confetti */
     .confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000}
     .confetti-piece{position:absolute;width:12px;height:12px;animation:confettiFall 3s linear forwards}
-    @keyframes confettiFall{
-      0%{transform:translateY(-100px) rotate(0deg);opacity:1}
-      100%{transform:translateY(100vh) rotate(720deg);opacity:0}
-    }
-    
-    /* Responsive */
-    @media(max-width:640px){
-      .btn{padding:16px 28px;font-size:16px}
-      .emoji-btn{font-size:40px}
-      h1{font-size:36px!important}
-    }
+    @keyframes confettiFall{0%{transform:translateY(-100px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+    @media(max-width:640px){.btn{padding:16px 28px;font-size:16px}.emoji-btn{font-size:36px}h1{font-size:32px!important}.blob{opacity:0.3}}
   </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const {useState,useMemo,useEffect}=React;
+const {useState,useMemo}=React;
 
-// Career Database
 const C={
 'product-manager':{t:'Product Manager',e:'📱',c:'Tech',s:[95,140,200],d:2,tm:'6-12mo',desc:'Decide what gets built and why',traits:['analytical','strategic','collaborative'],vals:['impact','variety'],life:{r:'Often',h:'45-55'},truth:['60% meetings','Responsibility without authority','More communication than creativity'],res:['Lenny\'s Newsletter|Free','Inspired book|$20','Product School|$4K']},
 'software-engineer':{t:'Software Engineer',e:'💻',c:'Tech',s:[80,140,200],d:2,tm:'6-18mo',desc:'Build the technology that powers modern life',traits:['builder','analytical','problem-solver'],vals:['building','logic','autonomy'],life:{r:'Very common',h:'40-50'},truth:['Debugging is 50% of job','Tech changes constantly','Remote but isolating'],res:['freeCodeCamp|Free','The Odin Project|Free','Bootcamp|$15K']},
@@ -198,6 +122,7 @@ const C={
 'auto-mechanic':{t:'Auto Mechanic',e:'🚗',c:'Trades',s:[30,50,75],d:2,tm:'6mo-2yrs',desc:'Diagnose and repair vehicles',traits:['problem-solver','technical','patient'],vals:['fixing','cars'],life:{r:'No',h:'40-50'},truth:['EVs changing the field','ASE certifications help','Tools are expensive'],res:['Trade school|$10-20K','ASE certifications|$40 each','Dealership training|Free']},
 'aircraft-mechanic':{t:'Aircraft Mechanic',e:'✈️',c:'Trades',s:[45,70,95],d:2,tm:'18-24mo',desc:'Maintain and repair aircraft',traits:['precise','detail-oriented','safety-focused'],vals:['safety','aviation'],life:{r:'No',h:'40-50'},truth:['FAA certification required','High responsibility','Good job security'],res:['A&P school|$15-30K','FAA certification|Included','Military training|Free']},
 'cnc-machinist':{t:'CNC Machinist',e:'🔩',c:'Trades',s:[40,55,75],d:2,tm:'1-2yrs',desc:'Operate computer-controlled machines',traits:['precise','technical','patient'],vals:['precision','manufacturing'],life:{r:'No',h:'40-50'},truth:['Tech skills increasingly important','Manufacturing is coming back','Air-conditioned work'],res:['Trade school|$5-15K','NIMS certification|$200-400','Apprenticeship|Varies']},
+
 'park-ranger':{t:'Park Ranger',e:'🏞️',c:'Outdoors',s:[35,50,70],d:2,tm:'Degree + experience',desc:'Protect and manage natural areas',traits:['outdoorsy','educator','enforcer'],vals:['nature','service'],life:{r:'No',h:'40-50'},truth:['Competitive - everyone wants this job','Low pay for the lifestyle','Seasonal positions common'],res:['Natural resources degree|$40K','Seasonal positions|Entry path','Law enforcement training|Varies']},
 'wildlife-biologist':{t:'Wildlife Biologist',e:'🦌',c:'Outdoors',s:[45,60,80],d:3,tm:'Masters often needed',desc:'Study and protect wildlife populations',traits:['scientific','patient','outdoorsy'],vals:['animals','conservation'],life:{r:'No',h:'Varies'},truth:['Fieldwork is unglamorous','Academic path often needed','Funding is challenging'],res:['Biology degree|$40K','Graduate school|$30-60K','Research experience|Free']},
 'arborist':{t:'Arborist / Tree Surgeon',e:'🌳',c:'Outdoors',s:[35,55,80],d:2,tm:'6mo-2yrs',desc:'Care for trees - pruning, removal, health',traits:['physical','technical','outdoorsy'],vals:['nature','physical work'],life:{r:'No',h:'40-50'},truth:['Physically dangerous','Good money for skilled climbers','Year-round work'],res:['ISA certification|$200-400','Climbing training|$500-2K','Apprenticeship|Varies']},
@@ -212,10 +137,12 @@ const C={
 'executive-coach':{t:'Executive Coach',e:'🎯',c:'Coaching',s:[80,150,250],d:2,tm:'6-18mo cert',desc:'Coach leaders to improve effectiveness',traits:['empathetic','strategic','experienced'],vals:['leadership','development'],life:{r:'Often',h:'Varies'},truth:['Credentials matter less than results','Long sales cycles','High client expectations'],res:['ICF Certification|$5-15K','Executive experience|Required','Network|Essential']},
 'career-coach':{t:'Career Coach',e:'🧭',c:'Coaching',s:[40,75,120],d:1,tm:'2-6mo',desc:'Help people navigate career transitions',traits:['empathetic','strategic','listener'],vals:['helping','careers'],life:{r:'Very common',h:'Varies'},truth:['Marketing yourself is key','Results vary by client effort','Imposter syndrome ironic'],res:['ICF ACC|$3-10K','Career coaching courses|Varies','Online platforms|Free']},
 'college-professor':{t:'College Professor',e:'🎓',c:'Education',s:[50,80,130],d:3,tm:'5-10yrs PhD+',desc:'Teach and research at universities',traits:['expert','researcher','communicator'],vals:['knowledge','autonomy'],life:{r:'Sometimes',h:'50-70'},truth:['Tenure track brutal','Adjunct pay is poverty','Publish or perish'],res:['PhD|5-8 years','Postdoc|1-3 years','Job market|Competitive']},
+
 'lawyer':{t:'Lawyer / Attorney',e:'⚖️',c:'Legal',s:[60,130,250],d:3,tm:'4-7yrs',desc:'Provide legal advice and representation',traits:['analytical','communicator','detail-oriented'],vals:['justice','prestige'],life:{r:'Varies',h:'50-80'},truth:['Law school expensive','Billable hours brutal','Many lawyers hate it'],res:['Law school|$100-250K','LSAT prep|$500-3K','Bar prep|$2-5K']},
 'paralegal':{t:'Paralegal',e:'📑',c:'Legal',s:[40,55,75],d:1,tm:'3-12mo',desc:'Support lawyers with legal research and docs',traits:['organized','detail-oriented','researcher'],vals:['order','law'],life:{r:'Sometimes',h:'40-50'},truth:['Lots of paperwork','Tight deadlines','Limited advancement without law degree'],res:['Paralegal certificate|$3-10K','ABA programs|Varies','Legal research|Learn']},
 'mediator':{t:'Mediator / Arbitrator',e:'🤝',c:'Legal',s:[50,80,140],d:2,tm:'Certificate + experience',desc:'Help parties resolve disputes without court',traits:['neutral','patient','communicator'],vals:['peace','resolution'],life:{r:'Sometimes',h:'Varies'},truth:['Often part-time','Experience required','Growing field'],res:['Mediation training|$2-5K','Court certification|Varies','Legal background|Helpful']},
 'compliance-officer':{t:'Compliance Officer',e:'✅',c:'Legal',s:[60,90,140],d:2,tm:'3-5yrs experience',desc:'Ensure organizations follow laws and regulations',traits:['detail-oriented','ethical','communicator'],vals:['rules','protection'],life:{r:'Sometimes',h:'40-50'},truth:['More regulations = more jobs','Can feel like the police','Industry knowledge key'],res:['Industry experience|Required','Compliance certs|$500-2K','Legal knowledge|Helpful']},
+
 'foreign-service-officer':{t:'Foreign Service Officer',e:'🌐',c:'Government',s:[55,85,130],d:3,tm:'1-2yr process',desc:'Represent US interests abroad as a diplomat',traits:['communicator','adaptable','analytical'],vals:['service','world'],life:{r:'No (abroad)',h:'Varies'},truth:['Extremely competitive exam','Posted anywhere in world','Move every 2-3 years'],res:['FSO exam prep|Free-$500','Language skills|Key','Patience|Required']},
 'policy-analyst':{t:'Policy Analyst',e:'📊',c:'Government',s:[50,75,110],d:2,tm:'Masters typical',desc:'Research and analyze public policy',traits:['analytical','writer','researcher'],vals:['impact','policy'],life:{r:'Sometimes',h:'40-50'},truth:['Politics always involved','Change is slow','Think tanks and government options'],res:['Public policy degree|$40-80K','Research skills|Essential','Writing samples|Portfolio']},
 'city-manager':{t:'City Manager',e:'🏛️',c:'Government',s:[80,120,180],d:2,tm:'MPA + 10yrs',desc:'Run day-to-day operations of a city',traits:['leader','diplomat','manager'],vals:['service','community'],life:{r:'No',h:'50-60'},truth:['Political pressure constant','Job security depends on council','Very demanding role'],res:['MPA degree|$40-80K','ICMA membership|$200','Municipal experience|Required']},
@@ -228,6 +155,7 @@ const C={
 'event-planner':{t:'Event Planner',e:'🎉',c:'Hospitality',s:[35,55,85],d:1,tm:'1-6mo',desc:'Plan and execute events',traits:['organized','creative','calm-under-pressure'],vals:['celebration','service'],life:{r:'No',h:'Varies'},truth:['Evenings and weekends always','Stressful day-of execution','Vendor management hard'],res:['Event certification|$500-2K','Vendor network|Build it','Portfolio|Essential']},
 'hotel-manager':{t:'Hotel Manager',e:'🏨',c:'Hospitality',s:[40,60,90],d:2,tm:'2-5yrs experience',desc:'Manage hotel operations',traits:['leader','service-oriented','problem-solver'],vals:['hospitality','operations'],life:{r:'No',h:'50+'},truth:['Always on call','Guest complaints constant','Career ladder clear'],res:['Hospitality degree|$40K','Hotel experience|Required','Management training|Internal']},
 'travel-advisor':{t:'Travel Advisor',e:'✈️',c:'Hospitality',s:[30,50,80],d:1,tm:'1-3mo',desc:'Plan trips and experiences for clients',traits:['organized','knowledgeable','service-oriented'],vals:['travel','service'],life:{r:'Common',h:'Varies'},truth:['Commission-based often','Need to travel to know destinations','Competing with internet'],res:['Host agency|$200-500','FAM trips|Discounted travel','Certifications|$200-1K']},
+
 'professional-organizer':{t:'Professional Organizer',e:'📦',c:'Unique',s:[35,55,85],d:1,tm:'1-3mo',desc:'Help people declutter and organize spaces',traits:['organized','patient','empathetic'],vals:['order','helping'],life:{r:'No',h:'Varies'},truth:['Low barrier to entry','Emotional work with hoarders','Marketing yourself key'],res:['NAPO membership|$200','Training courses|$500-2K','Insurance|$300-500']},
 'pet-sitter':{t:'Professional Pet Sitter',e:'🐕',c:'Unique',s:[25,40,65],d:1,tm:'Immediate',desc:'Care for pets while owners are away',traits:['animal-lover','reliable','independent'],vals:['animals','flexibility'],life:{r:'Yes',h:'Varies'},truth:['Can scale to business','Holidays are busy','Liability concerns'],res:['Pet First Aid|$50-100','Rover/Wag|Free','Insurance|$200-400']},
 'doula':{t:'Birth Doula',e:'👶',c:'Unique',s:[30,50,80],d:1,tm:'2-6mo',desc:'Support families through childbirth',traits:['calm','supportive','knowledgeable'],vals:['birth','families'],life:{r:'Sometimes',h:'On-call'},truth:['On-call for weeks around due date','Emotionally intense','Growing demand'],res:['Doula training|$500-2K','Certification|$200-500','Mentorship|Varies']},
@@ -260,275 +188,173 @@ const C={
 'real-estate-agent':{t:'Real Estate Agent',e:'🏠',c:'Business',s:[30,60,150],d:1,tm:'1-3mo license',desc:'Help people buy and sell properties',traits:['salesperson','networker','persistent'],vals:['money','helping'],life:{r:'Sometimes',h:'Varies'},truth:['100% commission','First year is brutal','Top agents make great money'],res:['Real estate license|$500-2K','Brokerage|Join one','Sphere of influence|Build it']},
 };
 
-const catColors={
-  Tech:'#4ECDC4',Creative:'#FF6B6B',Consulting:'#A8E6CF',Entrepreneurship:'#FFE66D',
-  Business:'#95E1D3',Finance:'#F38181',Wellness:'#AA96DA',Healthcare:'#FF6B6B',
-  Trades:'#F9B208',Outdoors:'#A8E6CF',Education:'#DDA0DD',Coaching:'#AA96DA',
-  Legal:'#95E1D3',Government:'#4ECDC4',Food:'#F9B208',Hospitality:'#FF6B6B',
-  Unique:'#AA96DA',Science:'#4ECDC4'
+
+const catColors={Tech:'#4ECDC4',Creative:'#FF6B6B',Consulting:'#A8E6CF',Entrepreneurship:'#FFE66D',Business:'#95E1D3',Finance:'#F38181',Wellness:'#AA96DA',Healthcare:'#FF6B6B',Trades:'#F9B208',Outdoors:'#A8E6CF',Education:'#DDA0DD',Coaching:'#AA96DA',Legal:'#95E1D3',Government:'#4ECDC4',Food:'#F9B208',Hospitality:'#FF6B6B',Unique:'#AA96DA',Science:'#4ECDC4'};
+
+const personalityTypes={
+  builder:{name:'The Builder',emoji:'🔨',color:'#F9B208',bg:'#FFF8E1',desc:'You think by doing. Ideas are nice, but you need to make things — to see your work exist in the world. You\'re happiest when you can point to something and say "I made that."',strengths:['Creating from scratch','Turning ideas into reality','Shipping things']},
+  analyst:{name:'The Analyst',emoji:'🔬',color:'#4ECDC4',bg:'#E0F7FA',desc:'You notice what others miss. Patterns, inconsistencies, deeper meanings — your mind naturally organizes information. You trust evidence over gut feelings.',strengths:['Finding patterns','Research','Data-driven thinking']},
+  helper:{name:'The Helper',emoji:'💚',color:'#A8E6CF',bg:'#E8F5E9',desc:'Other people\'s wins feel like your wins. You\'re energized by supporting others, and you measure success by your impact on people\'s lives.',strengths:['Empathy','Guiding others','Building trust']},
+  communicator:{name:'The Communicator',emoji:'📣',color:'#FF6B6B',bg:'#FFEBEE',desc:'You think out loud. Ideas become real when you share them. You\'re energized by persuading, presenting, and bringing people along.',strengths:['Presenting','Building relationships','Translating ideas']},
+  optimizer:{name:'The Optimizer',emoji:'⚙️',color:'#AA96DA',bg:'#F3E5F5',desc:'Inefficiency bothers you. You see how things could work better, and you can\'t rest until you\'ve fixed them. Systems and processes are your thing.',strengths:['Process improvement','Organization','Big picture thinking']},
+  creative:{name:'The Creator',emoji:'🎨',color:'#FF6B6B',bg:'#FCE4EC',desc:'You see the world differently. Aesthetics matter — not as decoration, but as meaning. You make things that are beautiful, original, or thought-provoking.',strengths:['Original thinking','Visual sense','New perspectives']},
+  explorer:{name:'The Explorer',emoji:'🧭',color:'#4ECDC4',bg:'#E0F7FA',desc:'Routine is the enemy. You\'re drawn to new challenges and unfamiliar territory. You\'d rather be uncomfortable and learning than comfortable and bored.',strengths:['Adapting quickly','Learning fast','Handling uncertainty']},
+  specialist:{name:'The Specialist',emoji:'🎯',color:'#F9B208',bg:'#FFF8E1',desc:'You go deep while others go wide. Mastery matters to you. You want to be the person others come to when they need a real expert.',strengths:['Deep expertise','Focused dedication','Technical mastery']}
 };
 
-// Personality Types
-const personalityTypes = {
-  builder:{name:'The Builder',emoji:'🔨',color:'#F9B208',bg:'#FFF8E1',desc:'You come alive when creating tangible things. Ideas alone don\'t satisfy you — you need to ship.',strengths:['Creating from scratch','Technical problem-solving','Seeing projects through']},
-  analyst:{name:'The Analyst',emoji:'🔬',color:'#4ECDC4',bg:'#E0F7FA',desc:'You see patterns others miss. Data and deep understanding are your superpowers.',strengths:['Pattern recognition','Research & investigation','Data-driven decisions']},
-  helper:{name:'The Helper',emoji:'💚',color:'#A8E6CF',bg:'#E8F5E9',desc:'You\'re energized by supporting others. Empathy is your superpower.',strengths:['Empathy & listening','Supporting through difficulty','Building trust']},
-  communicator:{name:'The Communicator',emoji:'📣',color:'#FF6B6B',bg:'#FFEBEE',desc:'You thrive on connection and influence. You know how to move people.',strengths:['Public speaking','Persuasion & influence','Building relationships']},
-  optimizer:{name:'The Optimizer',emoji:'⚙️',color:'#AA96DA',bg:'#F3E5F5',desc:'Chaos is your playground. You bring order to disorder.',strengths:['Process improvement','Organization & systems','Efficiency optimization']},
-  creative:{name:'The Creator',emoji:'🎨',color:'#FF6B6B',bg:'#FCE4EC',desc:'Beauty matters to you. You make things that are aesthetically meaningful.',strengths:['Aesthetic sensibility','Original thinking','Visual communication']},
-  explorer:{name:'The Explorer',emoji:'🧭',color:'#4ECDC4',bg:'#E0F7FA',desc:'Novelty fuels you. You\'re curious about everything.',strengths:['Curiosity & learning','Adaptability','Embracing uncertainty']},
-  specialist:{name:'The Specialist',emoji:'🎯',color:'#F9B208',bg:'#FFF8E1',desc:'You go deep, not wide. You master your craft.',strengths:['Deep expertise','Focused dedication','Technical mastery']}
-};
+const currentRoles=[{v:'software-engineer',l:'Software / Engineering'},{v:'designer',l:'Design'},{v:'data',l:'Data / Analytics'},{v:'product',l:'Product'},{v:'marketing',l:'Marketing / Growth'},{v:'sales',l:'Sales'},{v:'finance',l:'Finance / Accounting'},{v:'operations',l:'Operations'},{v:'hr',l:'HR / People'},{v:'consulting',l:'Consulting'},{v:'healthcare',l:'Healthcare'},{v:'education',l:'Education'},{v:'creative',l:'Creative / Arts'},{v:'trades',l:'Trades / Labor'},{v:'student',l:'Student'},{v:'searching',l:'Looking for work'},{v:'other',l:'Something else'}];
 
-// Question data (condensed for space)
-const currentRoles=[{v:'software-engineer',l:'Software Engineer'},{v:'designer',l:'Designer'},{v:'data',l:'Data Analyst/Scientist'},{v:'product',l:'Product Manager'},{v:'marketing',l:'Marketing/Growth'},{v:'sales',l:'Sales'},{v:'finance',l:'Finance/Accounting'},{v:'operations',l:'Operations'},{v:'hr',l:'HR/Recruiting'},{v:'consulting',l:'Consulting'},{v:'healthcare',l:'Healthcare'},{v:'education',l:'Education/Teaching'},{v:'creative',l:'Creative/Arts'},{v:'trades',l:'Trades/Labor'},{v:'student',l:'Student'},{v:'unemployed',l:'Between jobs'},{v:'other',l:'Other'}];
-const experienceLevels=[{v:'0-1',l:'< 1 year'},{v:'1-3',l:'1-3 years'},{v:'3-5',l:'3-5 years'},{v:'5-10',l:'5-10 years'},{v:'10+',l:'10+ years'}];
-const educationLevels=[{v:'hs',l:'High school'},{v:'some-college',l:'Some college'},{v:'bachelors',l:'Bachelor\'s'},{v:'masters',l:'Master\'s'},{v:'phd',l:'PhD'},{v:'trade',l:'Trade school'}];
+const experienceLevels=[{v:'0-1',l:'Less than a year'},{v:'1-3',l:'1–3 years'},{v:'3-5',l:'3–5 years'},{v:'5-10',l:'5–10 years'},{v:'10+',l:'10+ years'}];
+
+const educationLevels=[{v:'hs',l:'High school'},{v:'some-college',l:'Some college'},{v:'bachelors',l:'Bachelor\'s degree'},{v:'masters',l:'Master\'s degree'},{v:'phd',l:'PhD'},{v:'trade',l:'Trade school / certification'}];
+
 const energyQuestions=[
-  {id:'e1',q:'Diving deep into research',tags:{analyst:3,specialist:2}},
-  {id:'e2',q:'Building something tangible',tags:{builder:3,creative:1}},
-  {id:'e3',q:'Helping someone through a challenge',tags:{helper:3}},
-  {id:'e4',q:'Organizing chaos into systems',tags:{optimizer:3}},
-  {id:'e5',q:'Presenting to a group',tags:{communicator:3}},
+  {id:'e1',q:'Researching something until you really get it',tags:{analyst:3,specialist:2}},
+  {id:'e2',q:'Building or making something from scratch',tags:{builder:3,creative:1}},
+  {id:'e3',q:'Helping someone work through a problem',tags:{helper:3}},
+  {id:'e4',q:'Bringing order to something chaotic',tags:{optimizer:3}},
+  {id:'e5',q:'Explaining ideas to a group',tags:{communicator:3}},
   {id:'e6',q:'Working alone in deep focus',tags:{specialist:3,analyst:1}},
-  {id:'e7',q:'Negotiating or persuading',tags:{communicator:2,explorer:1}},
-  {id:'e8',q:'Creating something beautiful',tags:{creative:3}},
-  {id:'e9',q:'Leading a team',tags:{optimizer:2,communicator:1}},
-  {id:'e10',q:'Solving complex puzzles',tags:{analyst:3,builder:2}},
-  {id:'e11',q:'Being physically active at work',tags:{explorer:2,builder:1}},
-  {id:'e12',q:'Meeting new people',tags:{communicator:3,explorer:2}},
+  {id:'e7',q:'Convincing someone to see your point',tags:{communicator:2,explorer:1}},
+  {id:'e8',q:'Making something beautiful',tags:{creative:3}},
+  {id:'e9',q:'Leading or coordinating a team',tags:{optimizer:2,communicator:1}},
+  {id:'e10',q:'Solving puzzles or debugging problems',tags:{analyst:3,builder:2}},
+  {id:'e11',q:'Being physically active, not at a desk',tags:{explorer:2,builder:1}},
+  {id:'e12',q:'Meeting and talking with new people',tags:{communicator:3,explorer:2}}
 ];
+
 const workStyleQuestions=[
-  {id:'ws1',q:'How do you prefer to work?',opts:[{v:'solo',l:'Mostly alone',tags:{specialist:3}},{v:'small',l:'Small team (2-5)',tags:{builder:2}},{v:'large',l:'Large team',tags:{optimizer:2}},{v:'mixed',l:'Mix of both',tags:{explorer:1}}]},
-  {id:'ws2',q:'What structure do you prefer?',opts:[{v:'structured',l:'Clear processes & rules',tags:{optimizer:2}},{v:'flexible',l:'Figure-it-out freedom',tags:{explorer:3}},{v:'guided',l:'Some structure, some freedom',tags:{creative:2}}]},
-  {id:'ws3',q:'Public visibility?',opts:[{v:'spotlight',l:'Love the spotlight',tags:{communicator:3}},{v:'behind',l:'Behind the scenes',tags:{specialist:2,analyst:2}},{v:'sometimes',l:'Sometimes visible',tags:{optimizer:1}}]},
-  {id:'ws4',q:'What pace feels right?',opts:[{v:'fast',l:'Fast & high-energy',tags:{communicator:2,explorer:2}},{v:'steady',l:'Steady & predictable',tags:{specialist:2}},{v:'variable',l:'Bursts of intensity',tags:{creative:2}}]}
+  {id:'ws1',q:'How do you do your best work?',opts:[{v:'solo',l:'Alone — I need space to think',tags:{specialist:3}},{v:'small',l:'Small team, close collaboration',tags:{builder:2}},{v:'large',l:'Larger org with clear structure',tags:{optimizer:2}},{v:'mixed',l:'Depends on the work',tags:{explorer:1}}]},
+  {id:'ws2',q:'What environment suits you?',opts:[{v:'structured',l:'Clear expectations and processes',tags:{optimizer:2}},{v:'flexible',l:'Freedom to figure it out myself',tags:{explorer:3}},{v:'guided',l:'Mix of structure and freedom',tags:{creative:2}}]},
+  {id:'ws3',q:'How do you feel about visibility?',opts:[{v:'spotlight',l:'I like recognition',tags:{communicator:3}},{v:'behind',l:'Behind-the-scenes is fine',tags:{specialist:2,analyst:2}},{v:'sometimes',l:'Comfortable when needed',tags:{optimizer:1}}]},
+  {id:'ws4',q:'What pace works for you?',opts:[{v:'fast',l:'Fast — I like intensity',tags:{communicator:2,explorer:2}},{v:'steady',l:'Steady and predictable',tags:{specialist:2}},{v:'variable',l:'Bursts with breaks between',tags:{creative:2}}]}
 ];
+
 const valueQuestions=[
-  {id:'v1',q:'Which matters more?',a:'💰 High income',b:'⚖️ Work-life balance',tagA:'money',tagB:'balance'},
-  {id:'v2',q:'Which matters more?',a:'🔒 Job stability',b:'📈 Growth potential',tagA:'stability',tagB:'growth'},
-  {id:'v3',q:'Which matters more?',a:'🤝 Helping people',b:'🔨 Building things',tagA:'helping',tagB:'building'},
-  {id:'v4',q:'Which matters more?',a:'⭐ Prestige',b:'❤️ Meaning',tagA:'prestige',tagB:'meaning'},
-  {id:'v5',q:'Which matters more?',a:'🎲 Variety',b:'🎯 Mastery',tagA:'variety',tagB:'mastery'},
-  {id:'v6',q:'Which matters more?',a:'👥 Working with people',b:'🧘 Working alone',tagA:'social',tagB:'independent'},
+  {id:'v1',q:'If you had to choose:',a:'Higher pay',b:'More free time',tagA:'money',tagB:'balance'},
+  {id:'v2',q:'If you had to choose:',a:'Job security',b:'Career growth',tagA:'stability',tagB:'growth'},
+  {id:'v3',q:'If you had to choose:',a:'Helping people',b:'Building things',tagA:'helping',tagB:'building'},
+  {id:'v4',q:'If you had to choose:',a:'Recognition',b:'Meaning',tagA:'prestige',tagB:'meaning'},
+  {id:'v5',q:'If you had to choose:',a:'Variety',b:'Expertise',tagA:'variety',tagB:'mastery'},
+  {id:'v6',q:'If you had to choose:',a:'Teamwork',b:'Independence',tagA:'social',tagB:'independent'}
 ];
+
 const dealBreakers=[
-  {id:'db1',l:'📅 Lots of meetings',tag:'meetings'},{id:'db2',l:'💸 Unstable income',tag:'unstable'},
-  {id:'db3',l:'📞 Sales/cold calls',tag:'sales'},{id:'db4',l:'⏰ 50+ hour weeks',tag:'longhours'},
-  {id:'db5',l:'✈️ Frequent travel',tag:'travel'},{id:'db6',l:'💪 Physical labor',tag:'physical'},
-  {id:'db7',l:'🪑 Desk all day',tag:'desk'},{id:'db8',l:'🎓 Requires degree',tag:'degree'},
-  {id:'db9',l:'😰 High stress',tag:'stress'},{id:'db10',l:'👔 Managing people',tag:'management'}
+  {id:'db1',l:'Endless meetings',tag:'meetings'},
+  {id:'db2',l:'Unpredictable income',tag:'unstable'},
+  {id:'db3',l:'Sales or cold-calling',tag:'sales'},
+  {id:'db4',l:'50+ hour weeks',tag:'longhours'},
+  {id:'db5',l:'Regular travel',tag:'travel'},
+  {id:'db6',l:'Physical demands',tag:'physical'},
+  {id:'db7',l:'Stuck at a desk',tag:'desk'},
+  {id:'db8',l:'Years of school',tag:'degree'},
+  {id:'db9',l:'High-stakes stress',tag:'stress'},
+  {id:'db10',l:'Managing people',tag:'management'}
 ];
-const satisfactionLevels=[{v:1,l:'😫 Miserable'},{v:2,l:'😕 Unhappy'},{v:3,l:'😐 Meh'},{v:4,l:'🙂 Okay'},{v:5,l:'😊 Happy'}];
-const timeframes=[{v:'asap',l:'🚀 ASAP',urgency:5},{v:'soon',l:'📅 6 months',urgency:4},{v:'year',l:'📆 Within a year',urgency:3},{v:'exploring',l:'🔍 Just exploring',urgency:1}];
-const financialFlex=[{v:'tight',l:'💵 Need stable income now'},{v:'some',l:'💰 Some flexibility'},{v:'comfortable',l:'🏦 Can invest in transition'},{v:'runway',l:'🛫 Have 6+ months runway'}];
-const riskTolerance=[{v:'low',l:'🐢 Low — prefer stability'},{v:'medium',l:'⚖️ Medium — calculated risks'},{v:'high',l:'🚀 High — big risks OK'}];
-const locationPrefs=[{v:'remote',l:'🏠 Fully remote'},{v:'hybrid',l:'🔄 Hybrid'},{v:'inperson',l:'🏢 In-person'},{v:'flexible',l:'🤷 Flexible'}];
+
+const satisfactionLevels=[{v:1,l:'Really struggling',e:'😫'},{v:2,l:'Not great',e:'😕'},{v:3,l:'It\'s okay',e:'😐'},{v:4,l:'Pretty good',e:'🙂'},{v:5,l:'Going well',e:'😊'}];
+const timeframes=[{v:'asap',l:'As soon as possible',urgency:5},{v:'soon',l:'In the next 6 months',urgency:4},{v:'year',l:'Sometime this year',urgency:3},{v:'exploring',l:'No timeline — just curious',urgency:1}];
+const financialFlex=[{v:'tight',l:'I need stable income right now'},{v:'some',l:'Some flexibility for the right move'},{v:'comfortable',l:'Room to invest in a transition'},{v:'runway',l:'I have savings to take my time'}];
+const riskTolerance=[{v:'low',l:'I prefer stability'},{v:'medium',l:'Some uncertainty is okay'},{v:'high',l:'Comfortable with risk for upside'}];
+const locationPrefs=[{v:'remote',l:'Remote — location flexibility'},{v:'hybrid',l:'Hybrid — mix works'},{v:'inperson',l:'In-person — I like a workplace'},{v:'flexible',l:'Open to anything'}];
+
 const fearMessages={
-  'wrong-choice':"There's no perfect choice. Many paths could make you happy. The real risk? Staying stuck.",
-  'not-qualified':"Imposter syndrome lies. Most successful people felt unqualified at first. Skills can be learned.",
-  'money':"Valid concern. We've factored in your finances. Every recommendation has a clear income path.",
-  'starting-over':"You're not starting over — you're starting FROM experience. That's an advantage.",
-  'age':"It's not too late. People change careers at every age. Your experience is an asset.",
-  'judgment':"Others' opinions fade fast. A year from now, they'll only see your results.",
-  'none':"Love the confidence! Let's channel that energy."
+  'wrong-choice':"Here's the thing: there's no single right answer. Many paths could work. The bigger risk is staying stuck because you're afraid to choose.",
+  'not-qualified':"Almost everyone feels this before a transition. Most skills transfer more than you think. And what doesn't? You can learn.",
+  'money':"Real constraint. We've factored it into your matches. Every career here has a path to income.",
+  'starting-over':"You're not starting from zero. Everything you've done counts. Career changers often have an edge — fresh perspective.",
+  'age':"People change careers at every age. What feels 'late' is actually 'experienced.' That's valuable.",
+  'judgment':"Others' opinions feel big now but fade fast. A year from now, they'll just see you made a change.",
+  'none':"Good. Let's put that energy to work."
 };
 
-// Confetti component
-const Confetti = () => {
-  const colors = ['#FF6B6B','#FFE66D','#4ECDC4','#A8E6CF','#AA96DA'];
-  const pieces = Array.from({length:50}).map((_,i) => ({
-    id:i,
-    left: Math.random() * 100 + '%',
-    delay: Math.random() * 2 + 's',
-    color: colors[Math.floor(Math.random() * colors.length)],
-    size: Math.random() * 8 + 8
-  }));
-  return (
-    <div className="confetti">
-      {pieces.map(p => (
-        <div key={p.id} className="confetti-piece" style={{
-          left:p.left,
-          animationDelay:p.delay,
-          background:p.color,
-          width:p.size,
-          height:p.size,
-          borderRadius: Math.random() > 0.5 ? '50%' : '2px'
-        }}/>
-      ))}
-    </div>
-  );
+const Confetti=()=>{
+  const colors=['#FF6B6B','#FFE66D','#4ECDC4','#A8E6CF','#AA96DA'];
+  const pieces=Array.from({length:50}).map((_,i)=>({id:i,left:Math.random()*100+'%',delay:Math.random()*2+'s',color:colors[Math.floor(Math.random()*colors.length)],size:Math.random()*8+8}));
+  return(<div className="confetti">{pieces.map(p=>(<div key={p.id} className="confetti-piece" style={{left:p.left,animationDelay:p.delay,background:p.color,width:p.size,height:p.size,borderRadius:Math.random()>.5?'50%':'2px'}}/>))}</div>);
 };
 
-// PDF Generation
-const generatePDF = (userData) => {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({orientation:'portrait',unit:'pt',format:'letter'});
-  const pageWidth = 612, pageHeight = 792, margin = 50;
-  const pType = personalityTypes[userData.topType] || personalityTypes.explorer;
+const generatePDF=(userData)=>{
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'pt',format:'letter'});
+  const pageWidth=612,pageHeight=792,margin=50;
+  const pType=personalityTypes[userData.topType]||personalityTypes.explorer;
   
-  // Page 1
-  doc.setFillColor(255,251,245);
-  doc.rect(0,0,pageWidth,pageHeight,'F');
-  
-  // Header bar
-  doc.setFillColor(26,26,46);
-  doc.rect(0,0,pageWidth,100,'F');
-  
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(14);
-  doc.setFont('helvetica','bold');
+  doc.setFillColor(255,251,245);doc.rect(0,0,pageWidth,pageHeight,'F');
+  doc.setFillColor(26,26,46);doc.rect(0,0,pageWidth,100,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
   doc.text('CAREER CLARITY',margin,45);
-  doc.setFontSize(28);
-  doc.text(userData.name + "'s Career DNA",margin,75);
+  doc.setFontSize(28);doc.text(userData.name+"'s Career DNA",margin,75);
   
-  // Personality card
-  let y = 130;
-  doc.setFillColor(255,230,109);
-  doc.roundedRect(margin,y,pageWidth-margin*2,120,12,12,'F');
-  doc.setFillColor(26,26,46);
-  doc.roundedRect(margin+3,y+3,pageWidth-margin*2,120,12,12,'S');
+  let y=130;
+  doc.setFillColor(255,230,109);doc.roundedRect(margin,y,pageWidth-margin*2,120,12,12,'F');
+  doc.setFillColor(26,26,46);doc.roundedRect(margin+3,y+3,pageWidth-margin*2,120,12,12,'S');
+  doc.setTextColor(26,26,46);doc.setFontSize(36);doc.text(pType.emoji+' '+pType.name.toUpperCase(),margin+20,y+50);
+  doc.setFontSize(12);doc.setFont('helvetica','normal');
+  const descLines=doc.splitTextToSize(pType.desc,pageWidth-margin*2-40);
+  doc.text(descLines,margin+20,y+75);
   
-  doc.setTextColor(26,26,46);
-  doc.setFontSize(36);
-  doc.text(pType.emoji + ' ' + pType.name.toUpperCase(),margin+20,y+50);
-  doc.setFontSize(12);
-  doc.setFont('helvetica','normal');
-  const descLines = doc.splitTextToSize(pType.desc,pageWidth-margin*2-40);
-  doc.text(descLines,margin+20,y+80);
+  y+=150;
+  doc.setFontSize(16);doc.setFont('helvetica','bold');doc.text('YOUR TOP MATCHES',margin,y);y+=30;
   
-  y += 150;
-  
-  // Top matches
-  doc.setFontSize(16);
-  doc.setFont('helvetica','bold');
-  doc.text('YOUR TOP CAREER MATCHES',margin,y);
-  y += 30;
-  
-  userData.results.slice(0,3).forEach((c,i) => {
-    doc.setFillColor(255,255,255);
-    doc.roundedRect(margin,y,pageWidth-margin*2,60,8,8,'F');
-    doc.setDrawColor(26,26,46);
-    doc.setLineWidth(2);
-    doc.roundedRect(margin,y,pageWidth-margin*2,60,8,8,'S');
-    
-    doc.setFontSize(24);
-    doc.setFont('helvetica','bold');
-    doc.setTextColor(26,26,46);
-    doc.text((i+1)+'.',margin+15,y+35);
-    doc.text(c.e + ' ' + c.t,margin+50,y+35);
-    
-    doc.setFontSize(14);
-    doc.setFont('helvetica','bold');
-    doc.setTextColor(78,205,196);
-    doc.text(c.score + '% match',pageWidth-margin-80,y+35);
-    
-    y += 75;
+  userData.results.slice(0,3).forEach((c,i)=>{
+    doc.setFillColor(255,255,255);doc.roundedRect(margin,y,pageWidth-margin*2,60,8,8,'F');
+    doc.setDrawColor(26,26,46);doc.setLineWidth(2);doc.roundedRect(margin,y,pageWidth-margin*2,60,8,8,'S');
+    doc.setFontSize(24);doc.setFont('helvetica','bold');doc.setTextColor(26,26,46);
+    doc.text((i+1)+'.',margin+15,y+35);doc.text(c.e+' '+c.t,margin+50,y+35);
+    doc.setFontSize(14);doc.setTextColor(78,205,196);doc.text(c.score+'%',pageWidth-margin-50,y+35);
+    y+=75;
   });
   
-  // Footer
-  doc.setFillColor(26,26,46);
-  doc.rect(0,pageHeight-60,pageWidth,60,'F');
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(12);
-  doc.text('Take the quiz: careerclarity.com',margin,pageHeight-28);
+  doc.setFillColor(26,26,46);doc.rect(0,pageHeight-60,pageWidth,60,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(12);doc.text('careerclarity.com',margin,pageHeight-28);
   
-  // Page 2
   doc.addPage();
-  doc.setFillColor(255,251,245);
-  doc.rect(0,0,pageWidth,pageHeight,'F');
+  doc.setFillColor(255,251,245);doc.rect(0,0,pageWidth,pageHeight,'F');
+  doc.setFillColor(26,26,46);doc.rect(0,0,pageWidth,70,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(20);doc.setFont('helvetica','bold');
+  doc.text('Detailed Results',margin,45);
   
-  doc.setFillColor(26,26,46);
-  doc.rect(0,0,pageWidth,70,'F');
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(20);
-  doc.setFont('helvetica','bold');
-  doc.text('Your Detailed Results',margin,45);
-  
-  y = 100;
-  
-  const topCareer = userData.results[0];
-  if(topCareer) {
-    doc.setFontSize(14);
-    doc.setFont('helvetica','bold');
-    doc.setTextColor(26,26,46);
-    doc.text('🎯 YOUR #1 MATCH',margin,y);
-    y += 25;
-    
-    doc.setFillColor(232,245,233);
-    doc.roundedRect(margin,y,pageWidth-margin*2,180,10,10,'F');
-    
-    doc.setFontSize(22);
-    doc.text(topCareer.e + ' ' + topCareer.t,margin+20,y+35);
-    
-    doc.setFontSize(11);
-    doc.setFont('helvetica','normal');
-    doc.setTextColor(82,82,91);
-    doc.text('Salary: $'+(topCareer.s?.[0]||0)+'K - $'+(topCareer.s?.[2]||0)+'K+',margin+20,y+60);
-    doc.text('Transition: '+topCareer.tm,margin+20,y+78);
-    
-    doc.setFont('helvetica','bold');
-    doc.setTextColor(26,26,46);
-    doc.text('Reality Check:',margin+20,y+105);
-    doc.setFont('helvetica','normal');
-    doc.setTextColor(82,82,91);
-    (topCareer.truth||[]).slice(0,3).forEach((t,i) => {
-      doc.text('• '+t,margin+20,y+122+i*16);
-    });
-    
-    y += 200;
+  y=100;
+  const topCareer=userData.results[0];
+  if(topCareer){
+    doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(26,26,46);
+    doc.text('YOUR #1 MATCH',margin,y);y+=25;
+    doc.setFillColor(232,245,233);doc.roundedRect(margin,y,pageWidth-margin*2,150,10,10,'F');
+    doc.setFontSize(22);doc.text(topCareer.e+' '+topCareer.t,margin+20,y+35);
+    doc.setFontSize(11);doc.setFont('helvetica','normal');doc.setTextColor(82,82,91);
+    doc.text('$'+(topCareer.s?.[0]||0)+'K - $'+(topCareer.s?.[2]||0)+'K+  •  '+topCareer.tm,margin+20,y+58);
+    doc.setFont('helvetica','bold');doc.setTextColor(26,26,46);doc.text('What to know:',margin+20,y+85);
+    doc.setFont('helvetica','normal');doc.setTextColor(82,82,91);
+    (topCareer.truth||[]).slice(0,3).forEach((t,i)=>{doc.text('• '+t,margin+20,y+100+i*15);});
+    y+=170;
   }
   
-  // Other matches
-  doc.setFontSize(14);
-  doc.setFont('helvetica','bold');
-  doc.setTextColor(26,26,46);
-  doc.text('OTHER STRONG MATCHES',margin,y);
-  y += 25;
-  
-  userData.results.slice(1,5).forEach((c,i) => {
-    doc.setFontSize(12);
-    doc.setFont('helvetica','bold');
-    doc.text('#'+(i+2)+' '+c.e+' '+c.t,margin,y);
-    doc.setFont('helvetica','normal');
-    doc.setTextColor(82,82,91);
-    doc.text(c.score+'% • $'+(c.s?.[0]||0)+'K-$'+(c.s?.[2]||0)+'K+ • '+c.tm,margin+220,y);
-    doc.setTextColor(26,26,46);
-    y += 22;
+  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(26,26,46);
+  doc.text('ALSO WORTH EXPLORING',margin,y);y+=25;
+  userData.results.slice(1,5).forEach((c,i)=>{
+    doc.setFontSize(12);doc.setFont('helvetica','bold');doc.text('#'+(i+2)+' '+c.e+' '+c.t,margin,y);
+    doc.setFont('helvetica','normal');doc.setTextColor(82,82,91);
+    doc.text(c.score+'%  •  $'+(c.s?.[0]||0)+'K-$'+(c.s?.[2]||0)+'K+',margin+200,y);
+    doc.setTextColor(26,26,46);y+=22;
   });
   
-  y += 20;
-  
-  // Action
-  doc.setFontSize(14);
-  doc.setFont('helvetica','bold');
-  doc.text('📌 YOUR NEXT STEP',margin,y);
-  y += 20;
-  
-  doc.setFillColor(255,230,109);
-  doc.roundedRect(margin,y,pageWidth-margin*2,70,8,8,'F');
-  doc.setFontSize(11);
-  doc.setFont('helvetica','normal');
-  doc.setTextColor(26,26,46);
-  const actionText = 'Find 3 people on LinkedIn with the title "'+topCareer?.t+'". Send them a message asking for 15 minutes to learn how they got there.';
-  const actionLines = doc.splitTextToSize(actionText,pageWidth-margin*2-40);
-  doc.text(actionLines,margin+20,y+28);
+  y+=25;
+  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.text('NEXT STEP',margin,y);y+=20;
+  doc.setFillColor(255,230,109);doc.roundedRect(margin,y,pageWidth-margin*2,60,8,8,'F');
+  doc.setFontSize(11);doc.setFont('helvetica','normal');doc.setTextColor(26,26,46);
+  doc.text('Find 3 people on LinkedIn with the title "'+topCareer?.t+'".',margin+20,y+25);
+  doc.text('Ask for 15 minutes to learn about their path. Most say yes.',margin+20,y+42);
   
   doc.save(userData.name.replace(/\s+/g,'_')+'_Career_DNA.pdf');
 };
 
-// Main App
 function App(){
   const[mode,setMode]=useState('home');
   const[step,setStep]=useState(0);
   const[showConfetti,setShowConfetti]=useState(false);
   const[filter,setFilter]=useState({cat:'',search:''});
-  const[d,setD]=useState({
-    name:'',email:'',currentRole:'',experience:'',education:'',
-    satisfaction:null,timeframe:'',financialFlex:'',riskTolerance:'',location:'',
-    energy:{},workStyle:{},values:{},dealBreakers:[],fear:'',
-    results:[],topType:''
-  });
+  const[d,setD]=useState({name:'',email:'',currentRole:'',experience:'',education:'',satisfaction:null,timeframe:'',financialFlex:'',riskTolerance:'',location:'',energy:{},workStyle:{},values:{},dealBreakers:[],fear:'',results:[],topType:''});
   const u=x=>setD(p=>({...p,...x}));
   
   const totalSteps=33;
@@ -536,35 +362,23 @@ function App(){
   const categories=useMemo(()=>[...new Set(Object.values(C).map(c=>c.c))].sort(),[]);
   const filtered=useMemo(()=>Object.entries(C).filter(([id,c])=>{
     if(filter.cat&&c.c!==filter.cat)return false;
-    if(filter.search&&!c.t.toLowerCase().includes(filter.search.toLowerCase()))return false;
+    if(filter.search&&!c.t.toLowerCase().includes(filter.search.toLowerCase())&&!c.desc.toLowerCase().includes(filter.search.toLowerCase()))return false;
     return true;
   }).map(([id,c])=>({id,...c})),[filter]);
   
   const pType=personalityTypes[d.topType]||personalityTypes.explorer;
 
-  // Calculate results
   const calculateResults=()=>{
     const scores={};
     const typeScores={builder:0,analyst:0,helper:0,communicator:0,optimizer:0,creative:0,explorer:0,specialist:0};
     
     Object.entries(d.energy).forEach(([qId,rating])=>{
       const q=energyQuestions.find(x=>x.id===qId);
-      if(q?.tags){
-        const mult=(rating-3)/2;
-        Object.entries(q.tags).forEach(([tag,weight])=>{
-          if(typeScores.hasOwnProperty(tag))typeScores[tag]+=mult*weight;
-        });
-      }
+      if(q?.tags){const mult=(rating-3)/2;Object.entries(q.tags).forEach(([tag,weight])=>{if(typeScores.hasOwnProperty(tag))typeScores[tag]+=mult*weight;});}
     });
-    
     Object.entries(d.workStyle).forEach(([qId,val])=>{
-      const q=workStyleQuestions.find(x=>x.id===qId);
-      const opt=q?.opts.find(o=>o.v===val);
-      if(opt?.tags){
-        Object.entries(opt.tags).forEach(([tag,weight])=>{
-          if(typeScores.hasOwnProperty(tag))typeScores[tag]+=weight;
-        });
-      }
+      const q=workStyleQuestions.find(x=>x.id===qId);const opt=q?.opts.find(o=>o.v===val);
+      if(opt?.tags){Object.entries(opt.tags).forEach(([tag,weight])=>{if(typeScores.hasOwnProperty(tag))typeScores[tag]+=weight;});}
     });
     
     const sortedTypes=Object.entries(typeScores).sort((a,b)=>b[1]-a[1]);
@@ -573,39 +387,17 @@ function App(){
     
     Object.entries(C).forEach(([id,c])=>{
       let score=50;
-      if(c.traits){
-        c.traits.forEach(trait=>{
-          const tl=trait.toLowerCase();
-          topTypes.forEach((type,i)=>{
-            if(tl.includes(type.slice(0,4))||type.includes(tl.slice(0,4)))score+=(5-i)*3;
-          });
-        });
-      }
-      if(c.vals){
-        c.vals.forEach(val=>{
-          Object.entries(d.values).forEach(([qId,choice])=>{
-            const q=valueQuestions.find(x=>x.id===qId);
-            const chosenTag=choice==='a'?q.tagA:q.tagB;
-            if(val.includes(chosenTag)||chosenTag.includes(val))score+=8;
-          });
-        });
-      }
+      if(c.traits){c.traits.forEach(trait=>{const tl=trait.toLowerCase();topTypes.forEach((type,i)=>{if(tl.includes(type.slice(0,4))||type.includes(tl.slice(0,4)))score+=(5-i)*3;});});}
+      if(c.vals){c.vals.forEach(val=>{Object.entries(d.values).forEach(([qId,choice])=>{const q=valueQuestions.find(x=>x.id===qId);const chosenTag=choice==='a'?q.tagA:q.tagB;if(val.includes(chosenTag)||chosenTag.includes(val))score+=8;});});}
       
       const finFlex=financialFlex.findIndex(f=>f.v===d.financialFlex)+1||2;
       if(finFlex===1){if(c.d===3)score-=25;if(c.s?.[0]===0)score-=30;}
-      
       const urgency=timeframes.find(tf=>tf.v===d.timeframe)?.urgency||3;
-      if(urgency>=4&&c.d===3)score-=20;
-      if(urgency>=4&&c.d===1)score+=10;
-      
-      if(d.location==='remote'){
-        if(['Very common','Yes','Often','Common'].includes(c.life?.r))score+=10;
-        else if(['No','Rarely'].includes(c.life?.r))score-=15;
-      }
+      if(urgency>=4&&c.d===3)score-=20;if(urgency>=4&&c.d===1)score+=10;
+      if(d.location==='remote'){if(['Very common','Yes','Often','Common'].includes(c.life?.r))score+=10;else if(['No','Rarely'].includes(c.life?.r))score-=15;}
       
       d.dealBreakers.forEach(dbId=>{
-        const db=dealBreakers.find(x=>x.id===dbId);
-        if(!db)return;
+        const db=dealBreakers.find(x=>x.id===dbId);if(!db)return;
         if(db.tag==='meetings'&&c.truth?.some(t=>t.toLowerCase().includes('meeting')))score-=25;
         if(db.tag==='unstable'&&(c.s?.[0]===0||c.truth?.some(t=>t.toLowerCase().includes('famine'))))score-=30;
         if(db.tag==='sales'&&c.t.includes('Sales'))score-=25;
@@ -614,85 +406,92 @@ function App(){
         if(db.tag==='physical'&&(c.c==='Trades'||c.c==='Outdoors'))score-=25;
       });
       
-      if(c.d===1)score+=8;
-      if(c.d===3)score-=5;
-      
+      if(c.d===1)score+=8;if(c.d===3)score-=5;
       scores[id]=Math.max(0,Math.min(100,Math.round(score)));
     });
     
     const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]).slice(0,20).map(([id,score])=>({id,...C[id],score}));
     u({results:sorted,topType});
-    setShowConfetti(true);
-    setTimeout(()=>setShowConfetti(false),3000);
+    setShowConfetti(true);setTimeout(()=>setShowConfetti(false),3000);
     
     fetch('https://script.google.com/macros/s/AKfycbxi-vcsL2izUXE-UCNb98PFbAZHWv4QFCN-WYJic-o7Qg8W04VDgOb-nrQbUJUzfxWD/exec',{
       method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({name:d.name,email:d.email,website:'',topCareer1:sorted[0]?.t||'',topCareer2:sorted[1]?.t||'',topCareer3:sorted[2]?.t||'',topType})
-    }).catch(e=>console.log(e));
+    }).catch(console.log);
     
     setStep(100);
   };
 
-  // ======== RENDER ========
-
-  // HOME
+  // ======== HOME ========
   if(mode==='home')return(
     <div style={{minHeight:'100vh',position:'relative',overflow:'hidden'}}>
       <div className="blob blob-1"></div>
       <div className="blob blob-2"></div>
       <div className="blob blob-3"></div>
       
-      {/* Header */}
       <nav style={{padding:'20px 24px',display:'flex',justifyContent:'space-between',alignItems:'center',position:'relative',zIndex:10}}>
-        <div style={{fontFamily:"'Bricolage Grotesque'",fontSize:24,fontWeight:800}}>🧭 Career Clarity</div>
-        <button className="btn btn-ghost" style={{padding:'10px 20px',fontSize:14}} onClick={()=>setMode('browse')}>
-          Browse Careers
-        </button>
+        <div style={{fontFamily:"'Bricolage Grotesque'",fontSize:22,fontWeight:800}}>🧭 Career Clarity</div>
+        <button className="btn btn-ghost" style={{padding:'10px 20px',fontSize:14}} onClick={()=>setMode('browse')}>Explore careers</button>
       </nav>
       
-      {/* Hero */}
-      <div style={{maxWidth:900,margin:'0 auto',padding:'60px 24px',textAlign:'center',position:'relative',zIndex:10}}>
+      <div style={{maxWidth:800,margin:'0 auto',padding:'60px 24px',textAlign:'center',position:'relative',zIndex:10}}>
         <div className="fade-up">
-          <div style={{fontSize:80,marginBottom:20}} className="bounce">🧭</div>
-          <h1 style={{fontSize:56,fontWeight:800,marginBottom:20,lineHeight:1}}>
-            Find work you'll<br/><span style={{background:'linear-gradient(90deg,#FF6B6B,#FFE66D)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>actually love</span>
+          <div style={{fontSize:72,marginBottom:24}} className="float">🧭</div>
+          <h1 style={{fontSize:48,fontWeight:800,marginBottom:20,lineHeight:1.1}}>
+            Discover careers you<br/>didn't know existed
           </h1>
-          <p style={{fontSize:20,color:'#52525B',maxWidth:500,margin:'0 auto 40px',lineHeight:1.6}}>
-            5-minute quiz. 122 real careers. Personalized matches based on who you actually are.
+          <p style={{fontSize:20,color:'#52525B',maxWidth:520,margin:'0 auto 40px',lineHeight:1.6}}>
+            You don't need to have it figured out. Take a 5-minute assessment and see what actually fits.
           </p>
           
           <button className="btn btn-primary pop" style={{fontSize:20,padding:'22px 48px'}} onClick={()=>setMode('quiz')}>
-            Find My Path →
+            Start exploring
           </button>
           
           <p style={{marginTop:20,fontSize:14,color:'#A1A1AA'}}>
-            Free • No signup required • Get a PDF of your results
+            Free · No signup · Get a PDF of your results
           </p>
         </div>
         
-        {/* Feature cards */}
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:20,marginTop:80}}>
-          {[
-            {emoji:'🎯',title:'122 Real Careers',desc:'From Product Manager to Death Doula. Careers people actually do.'},
-            {emoji:'🔮',title:'Personality Match',desc:'Based on what energizes you, your values, and work style.'},
-            {emoji:'⚡',title:'Honest Truth Bombs',desc:'What nobody tells you before you commit.'},
-          ].map((f,i)=>(
-            <div key={i} className={"card fade-up delay-"+(i+1)} style={{padding:28,textAlign:'left'}}>
-              <div style={{fontSize:40,marginBottom:12}}>{f.emoji}</div>
-              <h3 style={{fontSize:20,fontWeight:700,marginBottom:8}}>{f.title}</h3>
-              <p style={{fontSize:15,color:'#52525B',lineHeight:1.5}}>{f.desc}</p>
-            </div>
-          ))}
+        <div style={{marginTop:80,textAlign:'left'}}>
+          <h2 style={{fontSize:24,fontWeight:700,marginBottom:24,textAlign:'center'}}>What you'll get</h2>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:20}}>
+            {[
+              {emoji:'🎯',title:'Your work personality',desc:'What energizes you vs. what drains you'},
+              {emoji:'🗺️',title:'122 career paths',desc:'Including ones you\'ve probably never considered'},
+              {emoji:'⚡',title:'Honest trade-offs',desc:'What nobody tells you before you commit'}
+            ].map((f,i)=>(
+              <div key={i} className={"card fade-up delay-"+(i+1)} style={{padding:24}}>
+                <div style={{fontSize:36,marginBottom:12}}>{f.emoji}</div>
+                <h3 style={{fontSize:18,fontWeight:700,marginBottom:8}}>{f.title}</h3>
+                <p style={{fontSize:15,color:'#52525B',lineHeight:1.5}}>{f.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
         
-        {/* Personality types preview */}
         <div style={{marginTop:80}}>
-          <h2 style={{fontSize:28,fontWeight:700,marginBottom:24}}>Discover your Career DNA</h2>
-          <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',gap:12}}>
-            {Object.values(personalityTypes).map((p,i)=>(
-              <div key={i} className="pill wiggle" style={{background:p.bg,borderColor:p.color}}>
-                <span style={{fontSize:20}}>{p.emoji}</span>
-                {p.name}
+          <h2 style={{fontSize:24,fontWeight:700,marginBottom:12}}>Beyond the obvious</h2>
+          <p style={{fontSize:16,color:'#52525B',marginBottom:24}}>Careers in our database you might not know:</p>
+          <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',gap:10}}>
+            {['🕊️ Death Doula','🍷 Sommelier','🔐 Ethical Hacker','🗺️ Location Scout','😴 Sleep Consultant','🧬 Genetic Counselor','🎮 Esports Manager','🌬️ Wind Turbine Tech'].map((c,i)=>(
+              <span key={i} className="pill">{c}</span>
+            ))}
+          </div>
+        </div>
+        
+        <div style={{marginTop:80,marginBottom:40}}>
+          <h2 style={{fontSize:24,fontWeight:700,marginBottom:24}}>This is for you if...</h2>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:16,textAlign:'left'}}>
+            {[
+              "You're figuring out what direction to go",
+              "You're wondering if there's something better out there",
+              "You're worried your job might change or disappear",
+              "You've been thinking about a change but don't know where to start"
+            ].map((t,i)=>(
+              <div key={i} className="card-flat" style={{padding:20,display:'flex',gap:12,alignItems:'flex-start'}}>
+                <span style={{fontSize:20,color:'#4ECDC4'}}>✓</span>
+                <span style={{fontSize:15,color:'#52525B'}}>{t}</span>
               </div>
             ))}
           </div>
@@ -701,48 +500,39 @@ function App(){
     </div>
   );
 
-  // BROWSE
+  // ======== BROWSE ========
   if(mode==='browse')return(
     <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
       <div style={{maxWidth:1100,margin:'0 auto'}}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24,flexWrap:'wrap',gap:16}}>
-          <h1 style={{fontSize:32,fontWeight:800}}>Browse All 122 Careers</h1>
+          <h1 style={{fontSize:28,fontWeight:800}}>Explore 122 careers</h1>
           <button className="btn btn-ghost" onClick={()=>setMode('home')}>← Back</button>
         </div>
         
         <div className="card" style={{padding:20,marginBottom:24}}>
           <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
-            <input 
-              placeholder="🔍 Search careers..." 
-              value={filter.search}
-              onChange={e=>setFilter(p=>({...p,search:e.target.value}))}
-              style={{flex:1,minWidth:200,padding:'14px 20px',borderRadius:100,border:'2px solid #e8e8e8',fontSize:16,fontFamily:'DM Sans'}}
-            />
-            <select 
-              value={filter.cat}
-              onChange={e=>setFilter(p=>({...p,cat:e.target.value}))}
-              style={{padding:'14px 20px',borderRadius:100,border:'2px solid #e8e8e8',fontSize:16,fontFamily:'DM Sans',background:'#fff',cursor:'pointer'}}
-            >
-              <option value="">All Categories</option>
+            <input placeholder="Search..." value={filter.search} onChange={e=>setFilter(p=>({...p,search:e.target.value}))} style={{flex:1,minWidth:200,padding:'14px 20px',borderRadius:100,border:'2px solid #e8e8e8',fontSize:16,fontFamily:'DM Sans'}}/>
+            <select value={filter.cat} onChange={e=>setFilter(p=>({...p,cat:e.target.value}))} style={{padding:'14px 20px',borderRadius:100,border:'2px solid #e8e8e8',fontSize:16,fontFamily:'DM Sans',background:'#fff'}}>
+              <option value="">All categories</option>
               {categories.map(c=><option key={c} value={c}>{c}</option>)}
             </select>
           </div>
         </div>
         
-        <p style={{marginBottom:16,color:'#52525B'}}>{filtered.length} careers found</p>
+        <p style={{marginBottom:16,color:'#52525B'}}>{filtered.length} careers</p>
         
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:20}}>
           {filtered.map(c=>(
             <div key={c.id} className="card pop" style={{padding:24}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
                 <span style={{padding:'6px 14px',borderRadius:100,fontSize:12,fontWeight:600,background:catColors[c.c]||'#ddd',color:'#fff'}}>{c.c}</span>
-                <span style={{fontSize:13,color:'#A1A1AA'}}>{c.d===1?'🟢 Easy':c.d===2?'🟡 Medium':'🔴 Hard'}</span>
+                <span style={{fontSize:13,color:'#A1A1AA'}}>{c.d===1?'Easier':c.d===2?'Medium':'Longer'}</span>
               </div>
               <div style={{fontSize:32,marginBottom:8}}>{c.e}</div>
               <h3 style={{fontSize:20,fontWeight:700,marginBottom:8}}>{c.t}</h3>
               <p style={{fontSize:14,color:'#52525B',marginBottom:16,lineHeight:1.5}}>{c.desc}</p>
               <div style={{fontSize:16,fontWeight:700,color:'#4ECDC4'}}>${c.s?.[0]}K – ${c.s?.[2]}K+</div>
-              <div style={{fontSize:13,color:'#A1A1AA',marginTop:4}}>{c.tm} transition</div>
+              <div style={{fontSize:13,color:'#A1A1AA',marginTop:4}}>{c.tm}</div>
             </div>
           ))}
         </div>
@@ -750,56 +540,37 @@ function App(){
     </div>
   );
 
-  // QUIZ
+  // ======== QUIZ ========
   if(mode==='quiz'){
-    const ProgressBar=()=>(
-      <div className="progress-track" style={{marginBottom:24}}>
-        <div className="progress-fill" style={{width:progress+'%'}}></div>
-      </div>
-    );
-    const BackBtn=({onClick})=>(
-      <button className="btn btn-ghost" style={{padding:'10px 20px',fontSize:14,marginBottom:20}} onClick={onClick||(()=>setStep(Math.max(0,step-1)))}>← Back</button>
-    );
+    const ProgressBar=()=>(<div className="progress-track" style={{marginBottom:24}}><div className="progress-fill" style={{width:progress+'%'}}></div></div>);
+    const BackBtn=({onClick})=>(<button className="btn btn-ghost" style={{padding:'10px 20px',fontSize:14,marginBottom:20}} onClick={onClick||(()=>setStep(Math.max(0,step-1)))}>← Back</button>);
 
-    // Step 0: Name
     if(step===0)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
           <button className="btn btn-ghost" style={{padding:'10px 20px',fontSize:14,marginBottom:20}} onClick={()=>setMode('home')}>← Back</button>
           <div className="card" style={{padding:32,textAlign:'center'}}>
-            <div style={{fontSize:64,marginBottom:16}}>👋</div>
-            <h1 style={{fontSize:32,fontWeight:800,marginBottom:12}}>Let's find your path!</h1>
-            <p style={{fontSize:16,color:'#52525B',marginBottom:24}}>This takes about 5 minutes. Be honest — there are no wrong answers!</p>
-            <input
-              placeholder="What's your first name?"
-              value={d.name}
-              onChange={e=>u({name:e.target.value})}
-              onKeyDown={e=>e.key==='Enter'&&d.name&&setStep(1)}
-              autoFocus
-              style={{width:'100%',padding:'18px 24px',borderRadius:16,border:'3px solid #e8e8e8',fontSize:18,fontFamily:'DM Sans',textAlign:'center',marginBottom:20}}
-            />
-            <button className="btn btn-primary" style={{width:'100%'}} disabled={!d.name.trim()} onClick={()=>setStep(1)}>
-              Let's go! 🚀
-            </button>
+            <div style={{fontSize:56,marginBottom:16}}>👋</div>
+            <h1 style={{fontSize:28,fontWeight:800,marginBottom:12}}>Let's start</h1>
+            <p style={{fontSize:16,color:'#52525B',marginBottom:24}}>This takes about 5 minutes. No right or wrong answers.</p>
+            <input placeholder="Your first name" value={d.name} onChange={e=>u({name:e.target.value})} onKeyDown={e=>e.key==='Enter'&&d.name&&setStep(1)} autoFocus style={{width:'100%',padding:'18px 24px',borderRadius:16,border:'3px solid #e8e8e8',fontSize:18,fontFamily:'DM Sans',textAlign:'center',marginBottom:20}}/>
+            <button className="btn btn-primary" style={{width:'100%'}} disabled={!d.name.trim()} onClick={()=>setStep(1)}>Continue</button>
           </div>
         </div>
       </div>
     );
 
-    // Generic option step renderer
-    const OptionStep=({title,options,value,onChange,emoji})=>(
+    const OptionStep=({title,subtitle,options,value,onChange})=>(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
           <BackBtn/>
           <ProgressBar/>
           <div className="card" style={{padding:32}}>
-            {emoji&&<div style={{fontSize:48,marginBottom:16}}>{emoji}</div>}
-            <h2 style={{fontSize:26,fontWeight:700,marginBottom:24}}>{title}</h2>
-            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+            <h2 style={{fontSize:22,fontWeight:700,marginBottom:subtitle?8:20}}>{title}</h2>
+            {subtitle&&<p style={{fontSize:15,color:'#52525B',marginBottom:20}}>{subtitle}</p>}
+            <div style={{display:'flex',flexDirection:'column',gap:10}}>
               {options.map(opt=>(
-                <div key={opt.v||opt.l} className={"option"+(value===(opt.v??opt.l)?' active':'')} onClick={()=>{onChange(opt.v??opt.l);setTimeout(()=>setStep(step+1),200);}}>
-                  {opt.l}
-                </div>
+                <div key={opt.v||opt.l} className={"option"+(value===(opt.v??opt.l)?' active':'')} onClick={()=>{onChange(opt.v??opt.l);setTimeout(()=>setStep(step+1),200);}}>{opt.l}</div>
               ))}
             </div>
           </div>
@@ -807,65 +578,52 @@ function App(){
       </div>
     );
 
-    // Steps 1-8: Context questions
-    if(step===1)return<OptionStep title={"What do you currently do, "+d.name+"?"} options={currentRoles} value={d.currentRole} onChange={v=>u({currentRole:v})} emoji="💼"/>;
-    if(step===2)return<OptionStep title="How long have you been working?" options={experienceLevels} value={d.experience} onChange={v=>u({experience:v})} emoji="📅"/>;
-    if(step===3)return<OptionStep title="Highest education?" options={educationLevels} value={d.education} onChange={v=>u({education:v})} emoji="🎓"/>;
-    if(step===4)return<OptionStep title="How do you feel about your current situation?" options={satisfactionLevels} value={d.satisfaction} onChange={v=>u({satisfaction:v})} emoji="🤔"/>;
-    if(step===5)return<OptionStep title="When do you want to make a change?" options={timeframes} value={d.timeframe} onChange={v=>u({timeframe:v})} emoji="⏰"/>;
-    if(step===6)return<OptionStep title="What's your financial flexibility?" options={financialFlex} value={d.financialFlex} onChange={v=>u({financialFlex:v})} emoji="💰"/>;
-    if(step===7)return<OptionStep title="What's your risk tolerance?" options={riskTolerance} value={d.riskTolerance} onChange={v=>u({riskTolerance:v})} emoji="🎲"/>;
-    if(step===8)return<OptionStep title="Where do you want to work?" options={locationPrefs} value={d.location} onChange={v=>u({location:v})} emoji="📍"/>;
+    if(step===1)return<OptionStep title={"What's your current situation, "+d.name+"?"} options={currentRoles} value={d.currentRole} onChange={v=>u({currentRole:v})}/>;
+    if(step===2)return<OptionStep title="How long have you been working?" subtitle="Any professional experience counts." options={experienceLevels} value={d.experience} onChange={v=>u({experience:v})}/>;
+    if(step===3)return<OptionStep title="Educational background?" subtitle="Helps us gauge realistic paths." options={educationLevels} value={d.education} onChange={v=>u({education:v})}/>;
+    if(step===4)return<OptionStep title="How's your current situation?" options={satisfactionLevels.map(s=>({v:s.v,l:s.e+' '+s.l}))} value={d.satisfaction} onChange={v=>u({satisfaction:v})}/>;
+    if(step===5)return<OptionStep title="How soon do you want to make a move?" options={timeframes} value={d.timeframe} onChange={v=>u({timeframe:v})}/>;
+    if(step===6)return<OptionStep title="What's your financial flexibility?" subtitle="Some transitions require investment or time without income." options={financialFlex} value={d.financialFlex} onChange={v=>u({financialFlex:v})}/>;
+    if(step===7)return<OptionStep title="How do you feel about risk?" options={riskTolerance} value={d.riskTolerance} onChange={v=>u({riskTolerance:v})}/>;
+    if(step===8)return<OptionStep title="Where do you want to work?" options={locationPrefs} value={d.location} onChange={v=>u({location:v})}/>;
 
-    // Steps 9-20: Energy questions
+    // Energy questions
     if(step>=9&&step<=20){
-      const qi=step-9;
-      const q=energyQuestions[qi];
+      const qi=step-9;const q=energyQuestions[qi];
       return(
         <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
           <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
             <BackBtn/>
             <ProgressBar/>
             <div className="card" style={{padding:32,textAlign:'center'}}>
-              <p style={{fontSize:14,color:'#A1A1AA',marginBottom:8}}>Energy Check {qi+1}/12</p>
-              <h2 style={{fontSize:24,fontWeight:700,marginBottom:8}}>How do you feel about...</h2>
-              <p style={{fontSize:20,color:'#1a1a2e',marginBottom:32,fontWeight:500}}>"{q.q}"</p>
+              <p style={{fontSize:13,color:'#A1A1AA',marginBottom:16}}>{qi+1} of 12</p>
+              <h2 style={{fontSize:18,fontWeight:600,marginBottom:8,color:'#52525B'}}>How does this feel?</h2>
+              <p style={{fontSize:20,color:'#1a1a2e',marginBottom:32,fontWeight:600}}>"{q.q}"</p>
               <div style={{display:'flex',justifyContent:'space-between',marginBottom:16}}>
                 {['😫','😕','😐','🙂','😍'].map((em,i)=>(
-                  <span key={i} className={"emoji-btn"+(d.energy[q.id]===i+1?' active':'')} 
-                    onClick={()=>{u({energy:{...d.energy,[q.id]:i+1}});setTimeout(()=>setStep(step+1),300);}}>
-                    {em}
-                  </span>
+                  <span key={i} className={"emoji-btn"+(d.energy[q.id]===i+1?' active':'')} onClick={()=>{u({energy:{...d.energy,[q.id]:i+1}});setTimeout(()=>setStep(step+1),250);}}>{em}</span>
                 ))}
               </div>
-              <div style={{display:'flex',justifyContent:'space-between',fontSize:13,color:'#A1A1AA'}}>
-                <span>Drains me</span><span>Energizes me</span>
-              </div>
+              <div style={{display:'flex',justifyContent:'space-between',fontSize:13,color:'#A1A1AA'}}><span>Drains me</span><span>Energizes me</span></div>
             </div>
           </div>
         </div>
       );
     }
 
-    // Steps 21-24: Work style
+    // Work style
     if(step>=21&&step<=24){
-      const qi=step-21;
-      const q=workStyleQuestions[qi];
+      const qi=step-21;const q=workStyleQuestions[qi];
       return(
         <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
           <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
             <BackBtn/>
             <ProgressBar/>
             <div className="card" style={{padding:32}}>
-              <p style={{fontSize:14,color:'#A1A1AA',marginBottom:8}}>Work Style {qi+1}/4</p>
-              <h2 style={{fontSize:24,fontWeight:700,marginBottom:24}}>{q.q}</h2>
-              <div style={{display:'flex',flexDirection:'column',gap:12}}>
-                {q.opts.map(opt=>(
-                  <div key={opt.v} className={"option"+(d.workStyle[q.id]===opt.v?' active':'')}
-                    onClick={()=>{u({workStyle:{...d.workStyle,[q.id]:opt.v}});setTimeout(()=>setStep(step+1),200);}}>
-                    {opt.l}
-                  </div>
-                ))}
+              <p style={{fontSize:13,color:'#A1A1AA',marginBottom:8}}>Work style {qi+1}/4</p>
+              <h2 style={{fontSize:22,fontWeight:700,marginBottom:20}}>{q.q}</h2>
+              <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                {q.opts.map(opt=>(<div key={opt.v} className={"option"+(d.workStyle[q.id]===opt.v?' active':'')} onClick={()=>{u({workStyle:{...d.workStyle,[q.id]:opt.v}});setTimeout(()=>setStep(step+1),200);}}>{opt.l}</div>))}
               </div>
             </div>
           </div>
@@ -873,30 +631,23 @@ function App(){
       );
     }
 
-    // Steps 25-30: Values
+    // Values
     if(step>=25&&step<=30){
-      const qi=step-25;
-      const q=valueQuestions[qi];
+      const qi=step-25;const q=valueQuestions[qi];
       return(
         <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
           <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
             <BackBtn/>
             <ProgressBar/>
             <div className="card" style={{padding:32,textAlign:'center'}}>
-              <p style={{fontSize:14,color:'#A1A1AA',marginBottom:8}}>Values {qi+1}/6</p>
-              <h2 style={{fontSize:24,fontWeight:700,marginBottom:32}}>{q.q}</h2>
+              <p style={{fontSize:13,color:'#A1A1AA',marginBottom:16}}>Values {qi+1}/6</p>
+              <h2 style={{fontSize:22,fontWeight:700,marginBottom:24}}>{q.q}</h2>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
-                <div className={"card pop"+(d.values[q.id]==='a'?' gradient-bg':'')} 
-                  style={{padding:24,cursor:'pointer',textAlign:'center'}}
-                  onClick={()=>{u({values:{...d.values,[q.id]:'a'}});setTimeout(()=>setStep(step+1),200);}}>
-                  <div style={{fontSize:32,marginBottom:8}}>{q.a.split(' ')[0]}</div>
-                  <div style={{fontSize:14,fontWeight:600}}>{q.a.slice(2)}</div>
+                <div className={"card pop"+(d.values[q.id]==='a'?' gradient-bg':'')} style={{padding:24,cursor:'pointer'}} onClick={()=>{u({values:{...d.values,[q.id]:'a'}});setTimeout(()=>setStep(step+1),200);}}>
+                  <div style={{fontSize:15,fontWeight:600}}>{q.a}</div>
                 </div>
-                <div className={"card pop"+(d.values[q.id]==='b'?' gradient-bg':'')}
-                  style={{padding:24,cursor:'pointer',textAlign:'center'}}
-                  onClick={()=>{u({values:{...d.values,[q.id]:'b'}});setTimeout(()=>setStep(step+1),200);}}>
-                  <div style={{fontSize:32,marginBottom:8}}>{q.b.split(' ')[0]}</div>
-                  <div style={{fontSize:14,fontWeight:600}}>{q.b.slice(2)}</div>
+                <div className={"card pop"+(d.values[q.id]==='b'?' gradient-bg':'')} style={{padding:24,cursor:'pointer'}} onClick={()=>{u({values:{...d.values,[q.id]:'b'}});setTimeout(()=>setStep(step+1),200);}}>
+                  <div style={{fontSize:15,fontWeight:600}}>{q.b}</div>
                 </div>
               </div>
             </div>
@@ -905,23 +656,17 @@ function App(){
       );
     }
 
-    // Step 31: Deal breakers
+    // Deal breakers
     if(step===31)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
           <BackBtn/>
           <ProgressBar/>
           <div className="card" style={{padding:32}}>
-            <div style={{fontSize:48,marginBottom:16}}>🚫</div>
-            <h2 style={{fontSize:24,fontWeight:700,marginBottom:8}}>Any deal breakers?</h2>
-            <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Select anything you absolutely can't tolerate.</p>
+            <h2 style={{fontSize:22,fontWeight:700,marginBottom:8}}>Any deal breakers?</h2>
+            <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Things you won't tolerate in a job.</p>
             <div style={{display:'flex',flexWrap:'wrap',gap:10,marginBottom:24}}>
-              {dealBreakers.map(db=>(
-                <span key={db.id} className={"pill"+(d.dealBreakers.includes(db.id)?' active':'')}
-                  onClick={()=>u({dealBreakers:d.dealBreakers.includes(db.id)?d.dealBreakers.filter(x=>x!==db.id):[...d.dealBreakers,db.id]})}>
-                  {db.l}
-                </span>
-              ))}
+              {dealBreakers.map(db=>(<span key={db.id} className={"pill"+(d.dealBreakers.includes(db.id)?' active':'')} onClick={()=>u({dealBreakers:d.dealBreakers.includes(db.id)?d.dealBreakers.filter(x=>x!==db.id):[...d.dealBreakers,db.id]})}>{db.l}</span>))}
             </div>
             <button className="btn btn-primary" style={{width:'100%'}} onClick={()=>setStep(32)}>Continue</button>
           </div>
@@ -929,140 +674,101 @@ function App(){
       </div>
     );
 
-    // Step 32: Fear
-    if(step===32)return<OptionStep title="What's your biggest fear about changing careers?" options={[
-      {v:'wrong-choice',l:'😰 Making the wrong choice'},
-      {v:'not-qualified',l:'🤔 Not being qualified'},
-      {v:'money',l:'💸 Taking a financial hit'},
-      {v:'starting-over',l:'🔄 Starting over'},
-      {v:'age',l:'⏳ Being too old'},
-      {v:'judgment',l:'👀 What others think'},
-      {v:'none',l:'💪 I\'m not afraid!'}
-    ]} value={d.fear} onChange={v=>u({fear:v})} emoji="😨"/>;
+    // Fear
+    if(step===32)return<OptionStep title="What's your biggest concern about making a change?" options={[{v:'wrong-choice',l:'Choosing wrong'},{v:'not-qualified',l:'Not being qualified'},{v:'money',l:'Financial impact'},{v:'starting-over',l:'Starting over'},{v:'age',l:'Being too old/young'},{v:'judgment',l:'What others think'},{v:'none',l:'Not particularly worried'}]} value={d.fear} onChange={v=>u({fear:v})}/>;
 
-    // Step 33: Email
+    // Email
     if(step===33)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
           <BackBtn/>
           <ProgressBar/>
           <div className="card" style={{padding:32,textAlign:'center'}}>
-            <div style={{fontSize:64,marginBottom:16}}>🎉</div>
-            <h2 style={{fontSize:28,fontWeight:700,marginBottom:12}}>Almost done!</h2>
-            <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Where should we send your Career DNA report?</p>
-            <input
-              type="email"
-              placeholder="your@email.com"
-              value={d.email}
-              onChange={e=>u({email:e.target.value})}
-              style={{width:'100%',padding:'18px 24px',borderRadius:16,border:'3px solid #e8e8e8',fontSize:18,fontFamily:'DM Sans',textAlign:'center',marginBottom:16}}
-            />
-            <button className="btn btn-primary" style={{width:'100%',marginBottom:12}} onClick={calculateResults}>
-              See My Results! 🚀
-            </button>
-            <button className="btn btn-ghost" style={{width:'100%'}} onClick={calculateResults}>
-              Skip — just show me
-            </button>
+            <div style={{fontSize:56,marginBottom:16}}>🎉</div>
+            <h2 style={{fontSize:24,fontWeight:700,marginBottom:12}}>Almost there</h2>
+            <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Where should we send your results?</p>
+            <input type="email" placeholder="your@email.com" value={d.email} onChange={e=>u({email:e.target.value})} style={{width:'100%',padding:'18px 24px',borderRadius:16,border:'3px solid #e8e8e8',fontSize:18,fontFamily:'DM Sans',textAlign:'center',marginBottom:16}}/>
+            <button className="btn btn-primary" style={{width:'100%',marginBottom:12}} onClick={calculateResults}>See my results</button>
+            <button className="btn btn-ghost" style={{width:'100%'}} onClick={calculateResults}>Skip</button>
           </div>
         </div>
       </div>
     );
 
-    // RESULTS
+    // ======== RESULTS ========
     if(step===100)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24,position:'relative'}}>
         {showConfetti&&<Confetti/>}
         <div style={{maxWidth:600,margin:'0 auto'}}>
           
-          {/* Hero */}
-          <div className="card fade-up" style={{padding:40,textAlign:'center',background:'linear-gradient(135deg,#FFE66D 0%,#FF6B6B 100%)',marginBottom:24}}>
-            <p style={{fontSize:16,marginBottom:8}}>Hey {d.name}! 👋</p>
-            <h1 style={{fontSize:36,fontWeight:800,marginBottom:8}}>Your Career DNA</h1>
-            <p style={{fontSize:16,opacity:0.9}}>Here's what we discovered about you</p>
+          <div className="card fade-up" style={{padding:32,textAlign:'center',background:'linear-gradient(135deg,#FFE66D 0%,#FF6B6B 100%)',marginBottom:24}}>
+            <p style={{fontSize:16,marginBottom:8}}>Hey {d.name}</p>
+            <h1 style={{fontSize:32,fontWeight:800}}>Here's what we found</h1>
           </div>
           
-          {/* Personality Type */}
           <div className="card fade-up delay-1" style={{padding:32,textAlign:'center',background:pType.bg,marginBottom:24}}>
-            <div style={{fontSize:72,marginBottom:16}}>{pType.emoji}</div>
-            <h2 style={{fontSize:32,fontWeight:800,color:pType.color,marginBottom:12}}>{pType.name}</h2>
+            <div style={{fontSize:64,marginBottom:12}}>{pType.emoji}</div>
+            <h2 style={{fontSize:28,fontWeight:800,color:pType.color,marginBottom:12}}>{pType.name}</h2>
             <p style={{fontSize:16,color:'#52525B',marginBottom:20,lineHeight:1.6}}>{pType.desc}</p>
             <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',gap:8}}>
-              {pType.strengths.map((s,i)=>(
-                <span key={i} style={{background:'#fff',padding:'8px 16px',borderRadius:100,fontSize:14,fontWeight:600,border:'2px solid '+pType.color}}>
-                  {s}
-                </span>
-              ))}
+              {pType.strengths.map((s,i)=>(<span key={i} style={{background:'#fff',padding:'8px 16px',borderRadius:100,fontSize:14,fontWeight:600,border:'2px solid '+pType.color}}>{s}</span>))}
             </div>
           </div>
           
-          {/* Download PDF */}
-          <button className="btn btn-primary pop fade-up delay-2" style={{width:'100%',marginBottom:24,fontSize:20}} onClick={()=>generatePDF(d)}>
-            📥 Download Your Career DNA (PDF)
+          <button className="btn btn-primary pop" style={{width:'100%',marginBottom:24}} onClick={()=>generatePDF(d)}>
+            📥 Download PDF
           </button>
           
-          {/* Fear response */}
           {d.fear&&d.fear!=='none'&&(
-            <div className="card fade-up delay-2" style={{padding:24,background:'#FFF8E1',marginBottom:24}}>
-              <div style={{fontSize:14,fontWeight:700,color:'#F9B208',marginBottom:8}}>💭 ABOUT YOUR FEAR</div>
+            <div className="card fade-up" style={{padding:24,background:'#FFF8E1',marginBottom:24}}>
+              <div style={{fontSize:13,fontWeight:700,color:'#F9B208',marginBottom:8}}>About your concern</div>
               <p style={{fontSize:15,lineHeight:1.6,margin:0}}>{fearMessages[d.fear]}</p>
             </div>
           )}
           
-          {/* Career matches */}
-          <h2 style={{fontSize:24,fontWeight:700,marginBottom:16}}>Your Top Matches</h2>
+          <h2 style={{fontSize:22,fontWeight:700,marginBottom:16}}>Your top matches</h2>
           
           {d.results.slice(0,5).map((c,i)=>(
-            <div key={c.id} className={"card fade-up delay-"+(i+2)} style={{padding:24,marginBottom:16,border:i===0?'3px solid #4ECDC4':'3px solid #1a1a2e'}}>
+            <div key={c.id} className="card fade-up" style={{padding:24,marginBottom:16,border:i===0?'3px solid #4ECDC4':'3px solid #1a1a2e'}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
                 <div style={{display:'flex',alignItems:'center',gap:12}}>
-                  <span style={{width:32,height:32,borderRadius:'50%',background:'#1a1a2e',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700}}>{i+1}</span>
+                  <span style={{width:28,height:28,borderRadius:'50%',background:'#1a1a2e',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14}}>{i+1}</span>
                   <span style={{padding:'4px 12px',borderRadius:100,fontSize:12,fontWeight:600,background:catColors[c.c]||'#ddd',color:'#fff'}}>{c.c}</span>
                 </div>
-                <span style={{fontSize:18,fontWeight:700,color:'#4ECDC4'}}>{c.score}%</span>
+                <span style={{fontSize:16,fontWeight:700,color:'#4ECDC4'}}>{c.score}%</span>
               </div>
               
-              <div style={{fontSize:36,marginBottom:8}}>{c.e}</div>
-              <h3 style={{fontSize:22,fontWeight:700,marginBottom:8}}>{c.t}</h3>
+              <div style={{fontSize:32,marginBottom:8}}>{c.e}</div>
+              <h3 style={{fontSize:20,fontWeight:700,marginBottom:8}}>{c.t}</h3>
               <p style={{fontSize:15,color:'#52525B',marginBottom:16}}>{c.desc}</p>
               
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
                 <div style={{background:'#f5f5f5',padding:12,borderRadius:12}}>
-                  <div style={{fontSize:12,color:'#A1A1AA'}}>SALARY</div>
-                  <div style={{fontSize:18,fontWeight:700,color:'#4ECDC4'}}>${c.s?.[0]}K – ${c.s?.[2]}K+</div>
+                  <div style={{fontSize:11,color:'#A1A1AA'}}>SALARY</div>
+                  <div style={{fontSize:16,fontWeight:700,color:'#4ECDC4'}}>${c.s?.[0]}K – ${c.s?.[2]}K+</div>
                 </div>
                 <div style={{background:'#f5f5f5',padding:12,borderRadius:12}}>
-                  <div style={{fontSize:12,color:'#A1A1AA'}}>TRANSITION</div>
-                  <div style={{fontSize:18,fontWeight:700}}>{c.tm}</div>
+                  <div style={{fontSize:11,color:'#A1A1AA'}}>TRANSITION</div>
+                  <div style={{fontSize:16,fontWeight:700}}>{c.tm}</div>
                 </div>
               </div>
               
-              <div style={{fontSize:12,fontWeight:700,color:'#A1A1AA',marginBottom:8}}>⚠️ REALITY CHECK</div>
-              {c.truth?.map((t,j)=>(
-                <p key={j} style={{fontSize:14,color:'#52525B',marginBottom:4,paddingLeft:12,borderLeft:'3px solid #FFE66D'}}>
-                  {t}
-                </p>
-              ))}
+              <div style={{fontSize:12,fontWeight:700,color:'#A1A1AA',marginBottom:8}}>What to know</div>
+              {c.truth?.slice(0,3).map((t,j)=>(<p key={j} style={{fontSize:14,color:'#52525B',marginBottom:4,paddingLeft:12,borderLeft:'3px solid #FFE66D'}}>{t}</p>))}
             </div>
           ))}
           
-          {/* Action */}
-          <div className="card fade-up" style={{padding:24,background:'#E8F5E9',marginBottom:24}}>
-            <h3 style={{fontSize:18,fontWeight:700,marginBottom:12}}>📌 Your Next Step</h3>
+          <div className="card" style={{padding:24,background:'#E8F5E9',marginBottom:24}}>
+            <h3 style={{fontSize:18,fontWeight:700,marginBottom:12}}>Next step</h3>
             <p style={{fontSize:15,lineHeight:1.6,margin:0}}>
-              Find 3 people on LinkedIn with the title "<strong>{d.results[0]?.t}</strong>". Ask them for 15 minutes to learn how they got there.
+              Find 3 people on LinkedIn with the title "<strong>{d.results[0]?.t}</strong>". Send a short note asking for 15 minutes to learn about their path. Most people say yes.
             </p>
           </div>
           
-          <button className="btn btn-secondary" style={{width:'100%',marginBottom:12}} onClick={()=>setMode('browse')}>
-            Browse All 122 Careers
-          </button>
-          <button className="btn btn-ghost" style={{width:'100%'}} onClick={()=>{setStep(0);setD({name:'',email:'',currentRole:'',experience:'',education:'',satisfaction:null,timeframe:'',financialFlex:'',riskTolerance:'',location:'',energy:{},workStyle:{},values:{},dealBreakers:[],fear:'',results:[],topType:''});}}>
-            Retake Quiz
-          </button>
+          <button className="btn btn-secondary" style={{width:'100%',marginBottom:12}} onClick={()=>setMode('browse')}>Explore all careers</button>
+          <button className="btn btn-ghost" style={{width:'100%'}} onClick={()=>{setStep(0);setD({name:'',email:'',currentRole:'',experience:'',education:'',satisfaction:null,timeframe:'',financialFlex:'',riskTolerance:'',location:'',energy:{},workStyle:{},values:{},dealBreakers:[],fear:'',results:[],topType:''});}}>Start over</button>
           
-          <p style={{textAlign:'center',fontSize:14,color:'#A1A1AA',marginTop:24}}>
-            Found this helpful? Share it with a friend who's stuck! 💛
-          </p>
+          <p style={{textAlign:'center',fontSize:14,color:'#A1A1AA',marginTop:24}}>Know someone who'd find this useful? Share it.</p>
         </div>
       </div>
     );
