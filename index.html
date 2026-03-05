@@ -7,6 +7,7 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
@@ -20,12 +21,14 @@
     .emoji-btn{transition:all .15s ease;cursor:pointer}
     .emoji-btn:hover{transform:scale(1.2)}
     input:focus,select:focus{outline:none;border-color:#2D5A3D!important;box-shadow:0 0 0 3px rgba(45,90,61,.12)!important}
+    .download-btn{background:linear-gradient(135deg,#2D5A3D 0%,#1E3D2A 100%);color:#fff;border:none;padding:16px 32px;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;justify-content:center;width:100%;margin-bottom:12px;transition:all .2s ease}
+    .download-btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(45,90,61,.3)}
   </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const {useState,useMemo,useEffect}=React;
+const {useState,useMemo}=React;
 
 // Design tokens
 const t={
@@ -165,8 +168,20 @@ const C={
 // Category colors
 const catColors={Tech:'#3B82F6',Creative:'#8B5CF6',Consulting:'#EC4899',Entrepreneurship:'#F59E0B',Business:'#10B981',Finance:'#059669',Wellness:'#14B8A6',Healthcare:'#EF4444',Trades:'#F97316',Outdoors:'#22C55E',Education:'#6366F1',Coaching:'#A855F7',Legal:'#64748B',Government:'#0EA5E9',Food:'#EAB308',Hospitality:'#F472B6',Unique:'#7C3AED',Science:'#06B6D4'};
 
+// Personality Types
+const personalityTypes = {
+  builder: {name:'The Builder',emoji:'🔨',color:'#F59E0B',desc:'You come alive when creating tangible things. Ideas alone don\'t satisfy you — you need to ship, build, and see your work in the world.',strengths:['Creating from scratch','Technical problem-solving','Seeing projects through'],careers:['Software Engineer','No-Code Developer','Carpenter','Product Designer']},
+  analyst: {name:'The Analyst',emoji:'🔬',color:'#3B82F6',desc:'You see patterns others miss. Data, research, and deep understanding are your superpowers. You make decisions based on evidence, not gut.',strengths:['Pattern recognition','Research & investigation','Data-driven decisions'],careers:['Data Scientist','Financial Analyst','UX Researcher','Actuary']},
+  helper: {name:'The Helper',emoji:'💚',color:'#10B981',desc:'You\'re energized by supporting others through challenges. Empathy is your superpower, and you find meaning in making a difference in people\'s lives.',strengths:['Empathy & listening','Supporting through difficulty','Building trust'],careers:['Therapist','Health Coach','Career Coach','Nurse']},
+  communicator: {name:'The Communicator',emoji:'📣',color:'#EC4899',desc:'You thrive on connection and influence. Whether presenting, persuading, or building relationships, you know how to move people.',strengths:['Public speaking','Persuasion & influence','Building relationships'],careers:['Sales Rep','Developer Advocate','Corporate Trainer','Content Creator']},
+  optimizer: {name:'The Optimizer',emoji:'⚙️',color:'#8B5CF6',desc:'Chaos is your playground. You see inefficiency everywhere and can\'t rest until you\'ve built a better system. Order from disorder is your art.',strengths:['Process improvement','Organization & systems','Efficiency optimization'],careers:['Operations Manager','Project Manager','Management Consultant','Product Manager']},
+  creative: {name:'The Creator',emoji:'🎨',color:'#F472B6',desc:'Beauty matters to you. You\'re driven to make things that are not just functional but aesthetically meaningful. You see the world differently.',strengths:['Aesthetic sensibility','Original thinking','Visual communication'],careers:['Graphic Designer','Video Editor','Photographer','Art Director']},
+  explorer: {name:'The Explorer',emoji:'🧭',color:'#14B8A6',desc:'Novelty fuels you. You\'re curious about everything, easily bored by routine, and always looking for the next interesting challenge or opportunity.',strengths:['Curiosity & learning','Adaptability','Embracing uncertainty'],careers:['Startup Founder','Freelance Consultant','Travel Advisor','Foreign Service Officer']},
+  specialist: {name:'The Specialist',emoji:'🎯',color:'#6366F1',desc:'You go deep, not wide. While others dabble, you master. You find satisfaction in becoming the expert, the person others turn to for answers.',strengths:['Deep expertise','Focused dedication','Technical mastery'],careers:['Surgeon','Lawyer','Actuary','Software Architect']}
+};
+
 // ============================================
-// COMPREHENSIVE QUESTION BANK
+// QUESTION BANK (same as before)
 // ============================================
 
 const currentRoles = [
@@ -211,74 +226,45 @@ const educationLevels = [
   {v:'trade',l:'Trade school / Certification',score:2}
 ];
 
-const incomeRanges = [
-  {v:'<40',l:'Under $40K',mid:35},
-  {v:'40-60',l:'$40K - $60K',mid:50},
-  {v:'60-80',l:'$60K - $80K',mid:70},
-  {v:'80-100',l:'$80K - $100K',mid:90},
-  {v:'100-150',l:'$100K - $150K',mid:125},
-  {v:'150-200',l:'$150K - $200K',mid:175},
-  {v:'200+',l:'$200K+',mid:250}
-];
-
-// Energy/Activity questions - what gives you energy vs drains you
 const energyQuestions = [
-  {id:'e1',q:'Diving deep into research on a topic that fascinates you',tags:{curious:3,analytical:2,specialist:2}},
-  {id:'e2',q:'Building something with your hands or on a computer',tags:{builder:3,technical:2,creative:1}},
-  {id:'e3',q:'Helping someone work through a difficult problem or emotion',tags:{helper:3,empathetic:3,patient:2}},
-  {id:'e4',q:'Bringing order to chaos — organizing, systematizing, optimizing',tags:{optimizer:3,organized:2,analytical:1}},
-  {id:'e5',q:'Presenting ideas to a group or leading a meeting',tags:{communicator:3,leader:2,confident:2}},
-  {id:'e6',q:'Working alone in deep, uninterrupted focus',tags:{specialist:3,independent:3,analytical:1}},
-  {id:'e7',q:'Negotiating, persuading, or closing a deal',tags:{sales:3,competitive:2,communicator:1}},
-  {id:'e8',q:'Creating something beautiful or aesthetically pleasing',tags:{creative:3,artistic:3,visual:2}},
-  {id:'e9',q:'Managing and developing a team of people',tags:{leader:3,mentor:2,organized:1}},
-  {id:'e10',q:'Solving complex puzzles or debugging problems',tags:{analytical:3,technical:2,patient:2}},
-  {id:'e11',q:'Being physically active during work (not at a desk)',tags:{physical:3,active:3,outdoorsy:2}},
-  {id:'e12',q:'Meeting new people and building relationships',tags:{networker:3,social:3,communicator:2}},
+  {id:'e1',q:'Diving deep into research on a topic that fascinates you',tags:{analyst:3,specialist:2,explorer:1}},
+  {id:'e2',q:'Building something with your hands or on a computer',tags:{builder:3,creative:1}},
+  {id:'e3',q:'Helping someone work through a difficult problem or emotion',tags:{helper:3}},
+  {id:'e4',q:'Bringing order to chaos — organizing, systematizing, optimizing',tags:{optimizer:3,analyst:1}},
+  {id:'e5',q:'Presenting ideas to a group or leading a meeting',tags:{communicator:3}},
+  {id:'e6',q:'Working alone in deep, uninterrupted focus',tags:{specialist:3,builder:1,analyst:1}},
+  {id:'e7',q:'Negotiating, persuading, or closing a deal',tags:{communicator:2,explorer:1}},
+  {id:'e8',q:'Creating something beautiful or aesthetically pleasing',tags:{creative:3,builder:1}},
+  {id:'e9',q:'Managing and developing a team of people',tags:{optimizer:2,helper:1,communicator:1}},
+  {id:'e10',q:'Solving complex puzzles or debugging problems',tags:{analyst:3,builder:2,specialist:1}},
+  {id:'e11',q:'Being physically active during work (not at a desk)',tags:{explorer:2,builder:1}},
+  {id:'e12',q:'Meeting new people and building relationships',tags:{communicator:3,explorer:2,helper:1}},
 ];
 
-// Work style questions
 const workStyleQuestions = [
-  {
-    id:'ws1',
-    q:'How do you prefer to work with others?',
-    opts:[
-      {v:'solo',l:'Mostly alone — I do my best work independently',tags:{independent:3,specialist:2}},
-      {v:'small',l:'Small team (2-5 people) with close collaboration',tags:{collaborative:2,communicator:1}},
-      {v:'large',l:'Larger team with defined roles and structure',tags:{organized:2,structured:1}},
-      {v:'mixed',l:'Mix of solo and collaborative work',tags:{flexible:2}}
-    ]
-  },
-  {
-    id:'ws2',
-    q:'What kind of structure do you prefer?',
-    opts:[
-      {v:'structured',l:'Clear processes, defined expectations, predictable',tags:{structured:3,organized:2}},
-      {v:'flexible',l:'Flexible, autonomous, figure-it-out-yourself',tags:{autonomous:3,entrepreneurial:2}},
-      {v:'guided',l:'Some structure but room for creativity',tags:{balanced:2,creative:1}}
-    ]
-  },
-  {
-    id:'ws3',
-    q:'How do you feel about public visibility in your work?',
-    opts:[
-      {v:'spotlight',l:'Love it — I enjoy being visible and recognized',tags:{visible:3,communicator:2,confident:2}},
-      {v:'behind',l:'Prefer behind-the-scenes — let the work speak',tags:{specialist:2,independent:2}},
-      {v:'sometimes',l:'Comfortable with occasional visibility when needed',tags:{balanced:1}}
-    ]
-  },
-  {
-    id:'ws4',
-    q:'What pace feels right for you?',
-    opts:[
-      {v:'fast',l:'Fast-paced, high energy, always something happening',tags:{fastpaced:3,energetic:2,competitive:1}},
-      {v:'steady',l:'Steady and predictable — I like knowing what\'s coming',tags:{steady:3,structured:2}},
-      {v:'variable',l:'Variable — bursts of intensity with calmer periods',tags:{flexible:2,project:1}}
-    ]
-  }
+  {id:'ws1',q:'How do you prefer to work with others?',opts:[
+    {v:'solo',l:'Mostly alone — I do my best work independently',tags:{specialist:3,analyst:1}},
+    {v:'small',l:'Small team (2-5 people) with close collaboration',tags:{builder:2,helper:1}},
+    {v:'large',l:'Larger team with defined roles and structure',tags:{optimizer:2}},
+    {v:'mixed',l:'Mix of solo and collaborative work',tags:{explorer:1}}
+  ]},
+  {id:'ws2',q:'What kind of structure do you prefer?',opts:[
+    {v:'structured',l:'Clear processes, defined expectations, predictable',tags:{optimizer:2,specialist:1}},
+    {v:'flexible',l:'Flexible, autonomous, figure-it-out-yourself',tags:{explorer:3,builder:1}},
+    {v:'guided',l:'Some structure but room for creativity',tags:{creative:2,helper:1}}
+  ]},
+  {id:'ws3',q:'How do you feel about public visibility in your work?',opts:[
+    {v:'spotlight',l:'Love it — I enjoy being visible and recognized',tags:{communicator:3,creative:1}},
+    {v:'behind',l:'Prefer behind-the-scenes — let the work speak',tags:{specialist:2,analyst:2,builder:1}},
+    {v:'sometimes',l:'Comfortable with occasional visibility when needed',tags:{optimizer:1}}
+  ]},
+  {id:'ws4',q:'What pace feels right for you?',opts:[
+    {v:'fast',l:'Fast-paced, high energy, always something happening',tags:{communicator:2,explorer:2}},
+    {v:'steady',l:'Steady and predictable — I like knowing what\'s coming',tags:{specialist:2,optimizer:1}},
+    {v:'variable',l:'Variable — bursts of intensity with calmer periods',tags:{creative:2,builder:1}}
+  ]}
 ];
 
-// Values - forced choice to reveal true priorities
 const valueQuestions = [
   {id:'v1',q:'Which matters more to you?',a:'High income potential',b:'Work-life balance',tagA:'money',tagB:'balance'},
   {id:'v2',q:'Which matters more to you?',a:'Job stability and security',b:'Growth and advancement potential',tagA:'stability',tagB:'growth'},
@@ -288,7 +274,6 @@ const valueQuestions = [
   {id:'v6',q:'Which matters more to you?',a:'Working with people all day',b:'Working independently',tagA:'social',tagB:'independent'},
 ];
 
-// Practical constraints
 const dealBreakers = [
   {id:'db1',l:'Lots of meetings',tag:'meetings'},
   {id:'db2',l:'Unstable or variable income',tag:'unstable'},
@@ -304,7 +289,6 @@ const dealBreakers = [
   {id:'db12',l:'Must be in-office (no remote)',tag:'inoffice'}
 ];
 
-// Satisfaction and urgency
 const satisfactionLevels = [
   {v:1,l:'😫 Miserable — need to get out ASAP'},
   {v:2,l:'😕 Unhappy — actively looking for change'},
@@ -340,7 +324,6 @@ const locationPrefs = [
   {v:'flexible',l:'Flexible — depends on the opportunity'}
 ];
 
-// Fear/concern messages
 const fearMessages = {
   'wrong-choice': "There's no perfect choice. Many paths could make you happy. The real risk isn't picking wrong — it's staying stuck.",
   'not-qualified': "Imposter syndrome lies. Most successful people felt unqualified when they started. Skills can be learned — drive and fit matter more.",
@@ -349,6 +332,398 @@ const fearMessages = {
   'age': "It's not too late. People successfully change careers at every age. Your experience is an asset, not a liability.",
   'judgment': "Others' opinions fade fast. A year from now, they'll only see your results — not your transition.",
   'none': "Love the confidence. Let's channel that energy into finding your path."
+};
+
+// ============================================
+// PDF GENERATION FUNCTION
+// ============================================
+
+const generatePDF = (userData) => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({orientation:'portrait',unit:'pt',format:'letter'});
+  
+  const pageWidth = 612;
+  const pageHeight = 792;
+  const margin = 50;
+  const contentWidth = pageWidth - (margin * 2);
+  
+  // Colors
+  const primary = [45, 90, 61];
+  const primaryLight = [232, 240, 234];
+  const dark = [26, 26, 26];
+  const gray = [82, 82, 91];
+  const lightGray = [161, 161, 170];
+  const white = [255, 255, 255];
+  
+  // Get personality type
+  const pType = personalityTypes[userData.topType] || personalityTypes.explorer;
+  
+  // Helper functions
+  const hexToRgb = (hex) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [parseInt(result[1],16),parseInt(result[2],16),parseInt(result[3],16)] : [0,0,0];
+  };
+  
+  // ============ PAGE 1: THE SHAREABLE ONE ============
+  
+  // Header background
+  doc.setFillColor(...primary);
+  doc.rect(0, 0, pageWidth, 120, 'F');
+  
+  // Logo/Title
+  doc.setTextColor(...white);
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.text('CAREER CLARITY', margin, 45);
+  
+  doc.setFontSize(24);
+  doc.setFont('helvetica', 'bold');
+  doc.text(userData.name + "'s Career DNA", margin, 80);
+  
+  // Date
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  const today = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  doc.text(today, pageWidth - margin - 100, 45);
+  
+  // Main personality type card
+  const cardY = 150;
+  const cardHeight = 140;
+  
+  // Card background
+  doc.setFillColor(...primaryLight);
+  doc.roundedRect(margin, cardY, contentWidth, cardHeight, 10, 10, 'F');
+  
+  // Personality type
+  doc.setFontSize(36);
+  doc.setTextColor(...dark);
+  doc.text(pType.emoji + ' ' + pType.name.toUpperCase(), margin + 20, cardY + 45);
+  
+  // Description
+  doc.setFontSize(12);
+  doc.setTextColor(...gray);
+  const descLines = doc.splitTextToSize(pType.desc, contentWidth - 40);
+  doc.text(descLines, margin + 20, cardY + 75);
+  
+  // Energy Profile Section
+  let y = cardY + cardHeight + 40;
+  
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...dark);
+  doc.text('YOUR ENERGY PROFILE', margin, y);
+  
+  y += 25;
+  
+  // Calculate top energizers from quiz
+  const energyScores = {};
+  energyQuestions.forEach(q => {
+    const rating = userData.energy[q.id] || 3;
+    Object.entries(q.tags).forEach(([tag, weight]) => {
+      energyScores[tag] = (energyScores[tag] || 0) + ((rating - 3) / 2) * weight;
+    });
+  });
+  
+  // Normalize to 0-100
+  const maxScore = Math.max(...Object.values(energyScores), 1);
+  const minScore = Math.min(...Object.values(energyScores), 0);
+  const range = maxScore - minScore || 1;
+  
+  const topEnergizers = Object.entries(energyScores)
+    .sort((a,b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([k, v]) => ({
+      name: k.charAt(0).toUpperCase() + k.slice(1),
+      score: Math.round(((v - minScore) / range) * 60 + 40) // Scale 40-100
+    }));
+  
+  // Draw energy bars
+  topEnergizers.forEach((e, i) => {
+    const barY = y + (i * 28);
+    
+    // Label
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...gray);
+    doc.text(e.name, margin, barY + 4);
+    
+    // Background bar
+    const barX = margin + 100;
+    const barWidth = 280;
+    const barHeight = 12;
+    
+    doc.setFillColor(228, 228, 231);
+    doc.roundedRect(barX, barY - 8, barWidth, barHeight, 6, 6, 'F');
+    
+    // Filled bar
+    doc.setFillColor(...primary);
+    doc.roundedRect(barX, barY - 8, barWidth * (e.score / 100), barHeight, 6, 6, 'F');
+    
+    // Percentage
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...primary);
+    doc.text(e.score + '%', barX + barWidth + 15, barY + 3);
+  });
+  
+  y += 160;
+  
+  // Core Values Section
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...dark);
+  doc.text('YOUR CORE VALUES', margin, y);
+  
+  y += 20;
+  
+  // Get values from quiz
+  const chosenValues = Object.entries(userData.values || {}).map(([qId, choice]) => {
+    const q = valueQuestions.find(x => x.id === qId);
+    return choice === 'a' ? q?.tagA : q?.tagB;
+  }).filter(Boolean).slice(0, 4);
+  
+  // Draw value badges
+  let badgeX = margin;
+  chosenValues.forEach((val, i) => {
+    const text = val.charAt(0).toUpperCase() + val.slice(1);
+    const textWidth = doc.getTextWidth(text) + 24;
+    
+    doc.setFillColor(...primaryLight);
+    doc.roundedRect(badgeX, y, textWidth, 28, 14, 14, 'F');
+    
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...primary);
+    doc.text(text, badgeX + 12, y + 18);
+    
+    badgeX += textWidth + 12;
+  });
+  
+  y += 60;
+  
+  // Top 3 Career Matches
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...dark);
+  doc.text('YOUR TOP CAREER MATCHES', margin, y);
+  
+  y += 25;
+  
+  userData.results.slice(0, 3).forEach((career, i) => {
+    const matchY = y + (i * 45);
+    
+    // Rank
+    doc.setFillColor(...primary);
+    doc.circle(margin + 12, matchY + 8, 12, 'F');
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...white);
+    doc.text((i + 1).toString(), margin + 9, matchY + 12);
+    
+    // Career name
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...dark);
+    doc.text(career.e + '  ' + career.t, margin + 35, matchY + 12);
+    
+    // Match percentage
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...primary);
+    doc.text(career.score + '% match', pageWidth - margin - 80, matchY + 12);
+    
+    // Salary range
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...gray);
+    doc.text('$' + (career.s?.[0] || 0) + 'K - $' + (career.s?.[2] || 0) + 'K+  •  ' + career.tm, margin + 35, matchY + 28);
+  });
+  
+  // Footer
+  doc.setFillColor(...primaryLight);
+  doc.rect(0, pageHeight - 60, pageWidth, 60, 'F');
+  
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...primary);
+  doc.text('Take the quiz: careerclarity.com', margin, pageHeight - 30);
+  
+  doc.setTextColor(...gray);
+  doc.text('Share with a friend who needs clarity', pageWidth - margin - 170, pageHeight - 30);
+  
+  // ============ PAGE 2: THE DETAILED ONE ============
+  
+  doc.addPage();
+  
+  // Header
+  doc.setFillColor(...primary);
+  doc.rect(0, 0, pageWidth, 80, 'F');
+  
+  doc.setTextColor(...white);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text('CAREER CLARITY', margin, 35);
+  
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Your Detailed Results', margin, 58);
+  
+  y = 110;
+  
+  // Where You Are Section
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...primary);
+  doc.text('📍 WHERE YOU ARE NOW', margin, y);
+  
+  y += 20;
+  
+  doc.setFillColor(250, 250, 249);
+  doc.roundedRect(margin, y, contentWidth, 80, 8, 8, 'F');
+  
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...gray);
+  
+  const roleLabel = currentRoles.find(r => r.v === userData.currentRole)?.l || 'Professional';
+  const expLabel = experienceLevels.find(e => e.v === userData.experience)?.l || '';
+  const satLabel = satisfactionLevels.find(s => s.v === userData.satisfaction)?.l?.slice(2) || '';
+  const timeLabel = timeframes.find(tf => tf.v === userData.timeframe)?.l || '';
+  
+  doc.text('Current role: ' + roleLabel, margin + 15, y + 22);
+  doc.text('Experience: ' + expLabel, margin + 15, y + 40);
+  doc.text('Current feeling: ' + satLabel, margin + 15, y + 58);
+  doc.text('Timeline: ' + timeLabel, margin + 280, y + 22);
+  doc.text('Financial flexibility: ' + (financialFlex.find(f => f.v === userData.financialFlex)?.l?.split(' — ')[0] || ''), margin + 280, y + 40);
+  doc.text('Risk tolerance: ' + (riskTolerance.find(r => r.v === userData.riskTolerance)?.l?.split(' — ')[0] || ''), margin + 280, y + 58);
+  
+  y += 100;
+  
+  // #1 Match Detail
+  const topCareer = userData.results[0];
+  if (topCareer) {
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...primary);
+    doc.text('🎯 YOUR #1 MATCH: ' + topCareer.t.toUpperCase(), margin, y);
+    
+    y += 20;
+    
+    // Card
+    doc.setFillColor(...primaryLight);
+    doc.roundedRect(margin, y, contentWidth, 200, 8, 8, 'F');
+    
+    // Why it fits
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...dark);
+    doc.text('Why this fits you:', margin + 15, y + 22);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...gray);
+    doc.text('• Matches your ' + pType.name.toLowerCase() + ' personality', margin + 15, y + 42);
+    doc.text('• Aligns with your values: ' + chosenValues.slice(0, 2).join(', '), margin + 15, y + 58);
+    doc.text('• Fits your ' + (locationPrefs.find(l => l.v === userData.location)?.l?.split(' — ')[0]?.toLowerCase() || 'flexible') + ' work preference', margin + 15, y + 74);
+    
+    // Reality check
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...dark);
+    doc.text('Reality check:', margin + 15, y + 100);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...gray);
+    (topCareer.truth || []).slice(0, 3).forEach((truth, i) => {
+      doc.text('⚠️ ' + truth, margin + 15, y + 118 + (i * 16));
+    });
+    
+    // Salary & time
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...primary);
+    doc.text('Salary: $' + (topCareer.s?.[0] || 0) + 'K → $' + (topCareer.s?.[2] || 0) + 'K+', margin + 300, y + 22);
+    doc.text('Transition time: ' + topCareer.tm, margin + 300, y + 42);
+    
+    y += 220;
+  }
+  
+  // Other matches
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...primary);
+  doc.text('🥈 OTHER STRONG MATCHES', margin, y);
+  
+  y += 20;
+  
+  userData.results.slice(1, 4).forEach((career, i) => {
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...dark);
+    doc.text('#' + (i + 2) + ' ' + career.e + ' ' + career.t, margin, y);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...gray);
+    doc.text(career.score + '% match  •  $' + (career.s?.[0] || 0) + 'K - $' + (career.s?.[2] || 0) + 'K+  •  ' + career.tm, margin + 200, y);
+    
+    y += 22;
+  });
+  
+  y += 15;
+  
+  // Fear response
+  if (userData.fear && userData.fear !== 'none') {
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...primary);
+    doc.text('💭 ABOUT YOUR CONCERN', margin, y);
+    
+    y += 18;
+    
+    doc.setFillColor(254, 243, 199);
+    const fearText = fearMessages[userData.fear] || '';
+    const fearLines = doc.splitTextToSize(fearText, contentWidth - 30);
+    doc.roundedRect(margin, y, contentWidth, 20 + (fearLines.length * 14), 8, 8, 'F');
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...gray);
+    doc.text(fearLines, margin + 15, y + 18);
+    
+    y += 30 + (fearLines.length * 14);
+  }
+  
+  // Action step
+  y += 10;
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...primary);
+  doc.text('📌 YOUR ACTION FOR TOMORROW', margin, y);
+  
+  y += 18;
+  
+  doc.setFillColor(...primaryLight);
+  doc.roundedRect(margin, y, contentWidth, 80, 8, 8, 'F');
+  
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...gray);
+  const actionText = 'Find 3 people on LinkedIn with the title "' + (topCareer?.t || 'your target role') + '". Send them this message:';
+  doc.text(actionText, margin + 15, y + 18);
+  
+  doc.setFont('helvetica', 'italic');
+  const msgText = '"Hi [Name], I\'m a ' + roleLabel.toLowerCase() + ' exploring a move into ' + (topCareer?.t?.toLowerCase() || 'this field') + '. Would you have 15 minutes to share how you made the transition? Thanks!"';
+  const msgLines = doc.splitTextToSize(msgText, contentWidth - 40);
+  doc.text(msgLines, margin + 15, y + 38);
+  
+  // Footer
+  doc.setFillColor(...primaryLight);
+  doc.rect(0, pageHeight - 50, pageWidth, 50, 'F');
+  
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...primary);
+  doc.text('Generated by Career Clarity  •  careerclarity.com', margin, pageHeight - 22);
+  
+  // Save
+  doc.save(userData.name.replace(/\s+/g, '_') + '_Career_DNA.pdf');
 };
 
 // ============================================
@@ -361,47 +736,21 @@ function App(){
   const[filter,setFilter]=useState({cat:'',search:'',diff:''});
   const[expandedCareer,setExpandedCareer]=useState(null);
   
-  // All user data
   const[d,setD]=useState({
-    // Basic info
-    name:'',
-    email:'',
-    currentRole:'',
-    experience:'',
-    education:'',
-    currentIncome:'',
-    
-    // Satisfaction & timeline
-    satisfaction:null,
-    timeframe:'',
-    financialFlex:'',
-    riskTolerance:'',
-    location:'',
-    
-    // Skills & energy
-    energy:{}, // {questionId: 1-5 rating}
-    workStyle:{}, // {questionId: selected option value}
-    values:{}, // {questionId: 'a' or 'b'}
-    
-    // Constraints
-    dealBreakers:[],
-    fear:'',
-    
-    // Results
-    results:[],
-    topType:''
+    name:'',email:'',currentRole:'',experience:'',education:'',currentIncome:'',
+    satisfaction:null,timeframe:'',financialFlex:'',riskTolerance:'',location:'',
+    energy:{},workStyle:{},values:{},
+    dealBreakers:[],fear:'',
+    results:[],topType:''
   });
   
   const u = x => setD(p=>({...p,...x}));
   
-  // Calculate total steps for progress bar
-  const totalSteps = 28; // Approximate total steps
+  const totalSteps = 33;
   const progress = Math.min(100, (step / totalSteps) * 100);
 
-  // Get all categories
   const categories = useMemo(()=>[...new Set(Object.values(C).map(c=>c.c))].sort(),[]);
   
-  // Filter careers for browse mode
   const filtered = useMemo(()=>{
     return Object.entries(C).filter(([id,c])=>{
       if(filter.cat && c.c !== filter.cat) return false;
@@ -417,65 +766,57 @@ function App(){
   
   const calculateResults = () => {
     const scores = {};
-    const typeScores = {};
+    const typeScores = {builder:0,analyst:0,helper:0,communicator:0,optimizer:0,creative:0,explorer:0,specialist:0};
     
-    // First, calculate personality type scores from energy questions
+    // Calculate personality type from energy questions
     Object.entries(d.energy).forEach(([qId, rating]) => {
       const q = energyQuestions.find(x => x.id === qId);
       if (q?.tags) {
-        const mult = (rating - 3) / 2; // -1 to +1
+        const mult = (rating - 3) / 2;
         Object.entries(q.tags).forEach(([tag, weight]) => {
-          typeScores[tag] = (typeScores[tag] || 0) + mult * weight;
+          if (typeScores.hasOwnProperty(tag)) {
+            typeScores[tag] += mult * weight;
+          }
         });
       }
     });
     
-    // Add work style preferences to type scores
+    // Add work style to type scores
     Object.entries(d.workStyle).forEach(([qId, val]) => {
       const q = workStyleQuestions.find(x => x.id === qId);
       const opt = q?.opts.find(o => o.v === val);
       if (opt?.tags) {
         Object.entries(opt.tags).forEach(([tag, weight]) => {
-          typeScores[tag] = (typeScores[tag] || 0) + weight;
+          if (typeScores.hasOwnProperty(tag)) {
+            typeScores[tag] += weight;
+          }
         });
       }
     });
     
-    // Add values to type scores
-    Object.entries(d.values).forEach(([qId, choice]) => {
-      const q = valueQuestions.find(x => x.id === qId);
-      if (q) {
-        const tag = choice === 'a' ? q.tagA : q.tagB;
-        typeScores[tag] = (typeScores[tag] || 0) + 3;
-      }
-    });
-    
-    // Get top personality types
+    // Get top type
     const sortedTypes = Object.entries(typeScores).sort((a,b) => b[1] - a[1]);
-    const topTypes = sortedTypes.slice(0, 5).map(([type]) => type);
+    const topType = sortedTypes[0]?.[0] || 'explorer';
+    const topTypes = sortedTypes.slice(0, 3).map(([type]) => type);
     
-    // Now score each career
+    // Score careers
     Object.entries(C).forEach(([id, c]) => {
-      let score = 50; // Base score
-      let reasons = [];
+      let score = 50;
       
-      // === PERSONALITY FIT (40% of score) ===
-      
-      // Match traits
+      // Personality fit
       if (c.traits) {
         c.traits.forEach(trait => {
           const traitLower = trait.toLowerCase();
           topTypes.forEach((type, i) => {
-            const weight = 5 - i; // Top type gets 5, second gets 4, etc.
+            const weight = 5 - i;
             if (traitLower.includes(type.slice(0,4)) || type.includes(traitLower.slice(0,4))) {
               score += weight * 3;
-              if (i === 0) reasons.push('Matches your top strength: ' + type);
             }
           });
         });
       }
       
-      // Match values
+      // Values
       if (c.vals) {
         c.vals.forEach(val => {
           Object.entries(d.values).forEach(([qId, choice]) => {
@@ -483,166 +824,80 @@ function App(){
             const chosenTag = choice === 'a' ? q.tagA : q.tagB;
             if (val.includes(chosenTag) || chosenTag.includes(val)) {
               score += 8;
-              reasons.push('Aligns with your value: ' + chosenTag);
             }
           });
         });
       }
       
-      // === PRACTICAL FIT (30% of score) ===
-      
-      // Financial constraints
+      // Financial
       const finFlex = financialFlex.find(f => f.v === d.financialFlex)?.flex || 2;
-      if (finFlex === 1) { // Tight finances
-        if (c.d === 3) score -= 25; // Hard transitions are risky
-        if (c.s?.[0] === 0) score -= 30; // Zero starting salary is a no-go
-        if (c.s?.[0] >= 50) score += 10; // Decent starting salary is good
+      if (finFlex === 1) {
+        if (c.d === 3) score -= 25;
+        if (c.s?.[0] === 0) score -= 30;
+        if (c.s?.[0] >= 50) score += 10;
       }
       
-      // Risk tolerance
+      // Risk
       const riskScore = riskTolerance.find(r => r.v === d.riskTolerance)?.score || 2;
       if (riskScore === 1 && c.d === 3) score -= 15;
       if (riskScore === 3 && c.c === 'Entrepreneurship') score += 10;
       
-      // Timeline/urgency
+      // Timeline
       const urgency = timeframes.find(tf => tf.v === d.timeframe)?.urgency || 3;
-      if (urgency >= 4 && c.d === 3) score -= 20; // Urgent + hard transition = bad match
-      if (urgency >= 4 && c.d === 1) score += 10; // Urgent + easy transition = good match
+      if (urgency >= 4 && c.d === 3) score -= 20;
+      if (urgency >= 4 && c.d === 1) score += 10;
       
-      // Education match
-      const eduScore = educationLevels.find(e => e.v === d.education)?.score || 3;
-      if (c.d === 3 && eduScore < 3) score -= 10; // Hard careers often need degrees
-      
-      // Experience level affects transition difficulty perception
-      const expScore = experienceLevels.find(e => e.v === d.experience)?.score || 3;
-      if (expScore >= 4) score += 5; // More experience = more transferable skills
-      
-      // Location preference
+      // Location
       if (d.location === 'remote') {
-        if (c.life?.r === 'Very common' || c.life?.r === 'Yes' || c.life?.r === 'Often' || c.life?.r === 'Common') {
-          score += 10;
-        } else if (c.life?.r === 'No' || c.life?.r === 'Rarely') {
-          score -= 15;
-        }
-      }
-      if (d.location === 'inperson' && (c.life?.r === 'No' || c.c === 'Trades' || c.c === 'Healthcare')) {
-        score += 5;
+        if (c.life?.r === 'Very common' || c.life?.r === 'Yes' || c.life?.r === 'Often' || c.life?.r === 'Common') score += 10;
+        else if (c.life?.r === 'No' || c.life?.r === 'Rarely') score -= 15;
       }
       
-      // === DEAL BREAKERS (can eliminate careers) ===
-      
+      // Deal breakers
       d.dealBreakers.forEach(dbId => {
         const db = dealBreakers.find(x => x.id === dbId);
         if (!db) return;
-        
         switch(db.tag) {
-          case 'meetings':
-            if (c.truth?.some(t => t.toLowerCase().includes('meeting'))) score -= 25;
-            if (c.t === 'Product Manager' || c.t === 'Project Manager') score -= 20;
-            break;
-          case 'unstable':
-            if (c.s?.[0] === 0) score -= 35;
-            if (c.truth?.some(t => t.toLowerCase().includes('famine') || t.toLowerCase().includes('commission') || t.toLowerCase().includes('variable'))) score -= 25;
-            if (c.c === 'Entrepreneurship' || c.c === 'Creative') score -= 15;
-            break;
-          case 'sales':
-            if (c.traits?.some(t => t.includes('sales'))) score -= 30;
-            if (c.t.includes('Sales') || c.c === 'Entrepreneurship') score -= 25;
-            break;
-          case 'longhours':
-            if (c.truth?.some(t => t.includes('60') || t.includes('80') || t.includes('hour'))) score -= 25;
-            if (c.life?.h?.includes('60') || c.life?.h?.includes('70') || c.life?.h?.includes('80')) score -= 20;
-            break;
-          case 'travel':
-            if (c.truth?.some(t => t.toLowerCase().includes('travel'))) score -= 20;
-            break;
-          case 'physical':
-            if (c.c === 'Trades' || c.c === 'Outdoors') score -= 25;
-            if (c.traits?.some(t => t.includes('physical'))) score -= 20;
-            break;
-          case 'desk':
-            if (c.c === 'Tech' && c.life?.r !== 'No') score -= 10;
-            break;
-          case 'degree':
-            if (c.d === 3) score -= 25;
-            if (c.truth?.some(t => t.toLowerCase().includes('degree') || t.toLowerCase().includes('phd') || t.toLowerCase().includes('master'))) score -= 20;
-            break;
-          case 'stress':
-            if (c.truth?.some(t => t.toLowerCase().includes('stress') || t.toLowerCase().includes('pressure'))) score -= 15;
-            break;
-          case 'management':
-            if (c.traits?.some(t => t.includes('leader') || t.includes('manager'))) score -= 15;
-            break;
-          case 'hours':
-            if (c.truth?.some(t => t.toLowerCase().includes('evening') || t.toLowerCase().includes('weekend') || t.toLowerCase().includes('night'))) score -= 20;
-            break;
-          case 'inoffice':
-            if (c.life?.r === 'No' || c.life?.r === 'Rarely') score -= 15;
-            break;
+          case 'meetings': if (c.truth?.some(t => t.toLowerCase().includes('meeting'))) score -= 25; break;
+          case 'unstable': if (c.s?.[0] === 0 || c.truth?.some(t => t.toLowerCase().includes('famine'))) score -= 30; break;
+          case 'sales': if (c.traits?.some(t => t.includes('sales')) || c.t.includes('Sales')) score -= 25; break;
+          case 'longhours': if (c.truth?.some(t => t.includes('60') || t.includes('80'))) score -= 25; break;
+          case 'travel': if (c.truth?.some(t => t.toLowerCase().includes('travel'))) score -= 20; break;
+          case 'physical': if (c.c === 'Trades' || c.c === 'Outdoors') score -= 25; break;
+          case 'degree': if (c.d === 3) score -= 25; break;
+          case 'stress': if (c.truth?.some(t => t.toLowerCase().includes('stress'))) score -= 15; break;
+          case 'management': if (c.traits?.some(t => t.includes('leader'))) score -= 15; break;
         }
       });
       
-      // === TRANSITION FROM CURRENT ROLE ===
-      
-      // Bonus for related transitions
+      // Role transitions
       const role = d.currentRole;
-      if (role === 'software-engineer' && (c.c === 'Tech' || c.t.includes('Engineer'))) score += 15;
+      if (role === 'software-engineer' && c.c === 'Tech') score += 15;
       if (role === 'designer' && (c.t.includes('Design') || c.c === 'Creative')) score += 15;
-      if (role === 'marketing' && (c.t.includes('Market') || c.t.includes('Growth') || c.t.includes('Content'))) score += 15;
-      if (role === 'sales' && (c.t.includes('Sales') || c.c === 'Business' || c.c === 'Entrepreneurship')) score += 10;
+      if (role === 'marketing' && c.t.includes('Market')) score += 15;
       if (role === 'healthcare' && c.c === 'Healthcare') score += 15;
-      if (role === 'education' && (c.c === 'Education' || c.c === 'Coaching')) score += 15;
-      if (role === 'finance' && c.c === 'Finance') score += 15;
-      if (role === 'consulting' && (c.c === 'Consulting' || c.c === 'Business')) score += 10;
       
-      // === DIFFICULTY ADJUSTMENT ===
+      if (c.d === 1) score += 8;
+      if (c.d === 3) score -= 5;
       
-      if (c.d === 1) score += 8; // Easy transitions get a small boost
-      if (c.d === 3) score -= 5; // Hard transitions get a small penalty
-      
-      // Clamp score
-      scores[id] = {
-        score: Math.max(0, Math.min(100, Math.round(score))),
-        reasons: [...new Set(reasons)].slice(0, 3)
-      };
+      scores[id] = Math.max(0, Math.min(100, Math.round(score)));
     });
     
-    // Sort and get top results
     const sorted = Object.entries(scores)
-      .sort((a, b) => b[1].score - a[1].score)
+      .sort((a, b) => b[1] - a[1])
       .slice(0, 20)
-      .map(([id, {score, reasons}]) => ({id, ...C[id], score, reasons}));
-    
-    // Determine top type for display
-    const topType = sortedTypes[0]?.[0] || 'explorer';
+      .map(([id, score]) => ({id, ...C[id], score}));
     
     u({results: sorted, topType});
     
-    // Send to Google Sheets
-    const top3 = sorted.slice(0, 3);
+    // Send to sheets
     fetch('https://script.google.com/macros/s/AKfycbxi-vcsL2izUXE-UCNb98PFbAZHWv4QFCN-WYJic-o7Qg8W04VDgOb-nrQbUJUzfxWD/exec', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type': 'application/json'},
+      method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        name: d.name,
-        email: d.email,
-        website: '', // Honeypot
-        currentRole: d.currentRole,
-        yearsExp: d.experience,
-        income: d.currentIncome,
-        satisfaction: d.satisfaction,
-        urgency: d.timeframe,
-        financialFlex: d.financialFlex,
-        fear: d.fear,
-        skills: Object.entries(d.energy).filter(([k,v]) => v >= 4).map(([k]) => k).join(', '),
-        dealBreakers: d.dealBreakers.join(', '),
-        topCareer1: top3[0]?.t || '',
-        topCareer2: top3[1]?.t || '',
-        topCareer3: top3[2]?.t || '',
-        topType: topType
+        name: d.name, email: d.email, website: '', currentRole: d.currentRole,
+        topCareer1: sorted[0]?.t || '', topCareer2: sorted[1]?.t || '', topCareer3: sorted[2]?.t || '', topType
       })
-    }).catch(e => console.log('Sheet error:', e));
+    }).catch(e => console.log(e));
     
     setStep(100);
   };
@@ -677,178 +932,106 @@ function App(){
     emojiBtnActive: {fontSize:36,cursor:'pointer',transition:'all .15s ease',opacity:1,transform:'scale(1.2)'},
   };
 
+  // Get personality type for display
+  const pType = personalityTypes[d.topType] || personalityTypes.explorer;
+
   // ============================================
-  // RENDER FUNCTIONS
+  // RENDER
   // ============================================
 
-  // HOME SCREEN
+  // HOME
   if (mode === 'home') return (
-    <div style={s.wrap}>
-      <div style={s.cnt} className="fade">
-        <div style={s.cardHero}>
-          <div style={{fontSize:56,marginBottom:16}}>🧭</div>
-          <h1 style={{...s.h1,color:'#fff'}}>Career Clarity</h1>
-          <p style={{fontSize:17,opacity:0.9,marginBottom:24,lineHeight:1.6}}>
-            Discover careers you never knew existed — matched to who you actually are, not who you think you should be.
-          </p>
-          <button style={{...s.btn,background:'#fff',color:t.pri}} onClick={()=>setMode('quiz')}>
-            Find My Path (5 min)
-          </button>
-        </div>
-        
-        <div style={s.card}>
-          <h3 style={s.h3}>🎯 This isn't another generic career quiz</h3>
-          <p style={{...s.p,marginBottom:8}}>
-            <strong>122 real careers</strong> — from Product Manager to Death Doula, Sommelier to Ethical Hacker. Careers people actually do, not just job titles.
-          </p>
-          <p style={{...s.p,marginBottom:8}}>
-            <strong>Honest truth bombs</strong> — what nobody tells you before you commit. The 3am reality, not the LinkedIn fantasy.
-          </p>
-          <p style={{...s.p,marginBottom:0}}>
-            <strong>Actually personalized</strong> — based on what energizes you, your values, your constraints, and where you're starting from.
-          </p>
-        </div>
-        
-        <button style={{...s.btn,...s.btnS}} onClick={()=>setMode('browse')}>
-          Or just browse all 122 careers →
-        </button>
-        
-        <p style={{...s.pSmall,textAlign:'center',marginTop:16}}>
-          Built for people who know something needs to change but aren't sure what.
+    <div style={s.wrap}><div style={s.cnt} className="fade">
+      <div style={s.cardHero}>
+        <div style={{fontSize:56,marginBottom:16}}>🧭</div>
+        <h1 style={{...s.h1,color:'#fff'}}>Career Clarity</h1>
+        <p style={{fontSize:17,opacity:0.9,marginBottom:24,lineHeight:1.6}}>
+          Discover careers you never knew existed — matched to who you actually are.
         </p>
+        <button style={{...s.btn,background:'#fff',color:t.pri}} onClick={()=>setMode('quiz')}>
+          Find My Path (5 min)
+        </button>
       </div>
-    </div>
+      <div style={s.card}>
+        <h3 style={s.h3}>🎯 This isn't another generic career quiz</h3>
+        <p style={{...s.p,marginBottom:8}}><strong>122 real careers</strong> — from Product Manager to Death Doula</p>
+        <p style={{...s.p,marginBottom:8}}><strong>Honest truth bombs</strong> — what nobody tells you before you commit</p>
+        <p style={{...s.p,marginBottom:0}}><strong>Downloadable PDF</strong> — your Career DNA to share or keep</p>
+      </div>
+      <button style={{...s.btn,...s.btnS}} onClick={()=>setMode('browse')}>Browse all 122 careers →</button>
+    </div></div>
   );
 
-  // BROWSE MODE
+  // BROWSE
   if (mode === 'browse') return (
-    <div style={s.wrap}>
-      <div style={{...s.cnt,maxWidth:900}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
-          <h1 style={{...s.h2,marginBottom:0}}>Browse All Careers</h1>
-          <button style={{...s.btn,...s.btnO,width:'auto',marginBottom:0,padding:'10px 20px'}} onClick={()=>setMode('home')}>← Back</button>
-        </div>
-        
-        <div style={{...s.card,padding:20}}>
-          <input 
-            style={{...s.input,marginBottom:12}} 
-            placeholder="Search careers..." 
-            value={filter.search} 
-            onChange={e=>setFilter(p=>({...p,search:e.target.value}))}
-          />
-          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-            <select style={{...s.select,width:'auto',marginBottom:0}} value={filter.cat} onChange={e=>setFilter(p=>({...p,cat:e.target.value}))}>
-              <option value="">All Categories</option>
-              {categories.map(c=><option key={c} value={c}>{c}</option>)}
-            </select>
-            <select style={{...s.select,width:'auto',marginBottom:0}} value={filter.diff} onChange={e=>setFilter(p=>({...p,diff:e.target.value}))}>
-              <option value="">Any Difficulty</option>
-              <option value="1">🟢 Easier Transition</option>
-              <option value="2">🟡 Medium</option>
-              <option value="3">🔴 Longer Path</option>
-            </select>
-          </div>
-        </div>
-        
-        <p style={{...s.pSmall,marginBottom:16}}>{filtered.length} careers</p>
-        
-        <div style={s.grid}>
-          {filtered.map(c => (
-            <div 
-              key={c.id} 
-              style={{...s.card,cursor:'pointer'}} 
-              className="fade option-card"
-              onClick={() => setExpandedCareer(expandedCareer === c.id ? null : c.id)}
-            >
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
-                <span style={{fontSize:12,padding:'4px 12px',borderRadius:20,background:catColors[c.c]||'#888',color:'#fff',fontWeight:500}}>{c.c}</span>
-                <span style={{fontSize:13,color:t.muted}}>{c.d===1?'🟢 Easier':c.d===2?'🟡 Medium':'🔴 Longer'}</span>
-              </div>
-              <div style={{fontSize:26,marginBottom:6}}>{c.e} <span style={{fontSize:20,fontWeight:600}}>{c.t}</span></div>
-              <p style={{fontSize:14,color:t.sub,marginBottom:12,lineHeight:1.5}}>{c.desc}</p>
-              <div style={{fontSize:15,color:t.pri,fontWeight:600,marginBottom:12}}>${c.s?.[0]}K – ${c.s?.[2]}K+ · {c.tm}</div>
-              
-              {expandedCareer === c.id && (
-                <div style={{borderTop:'1px solid '+t.border,paddingTop:16,marginTop:8}}>
-                  <div style={{fontSize:13,fontWeight:600,color:t.muted,marginBottom:8}}>⚠️ REALITY CHECK</div>
-                  {c.truth?.map((tb,i) => <p key={i} style={{fontSize:14,color:t.sub,marginBottom:6}}>• {tb}</p>)}
-                  
-                  {c.res && (
-                    <>
-                      <div style={{fontSize:13,fontWeight:600,color:t.muted,marginBottom:8,marginTop:16}}>📚 RESOURCES</div>
-                      {c.res?.slice(0,3).map((r,i) => {
-                        const [name,cost] = r.split('|');
-                        return <div key={i} style={{display:'flex',justifyContent:'space-between',fontSize:14,marginBottom:4}}>
-                          <span>{name}</span><span style={{color:t.pri,fontWeight:600}}>{cost}</span>
-                        </div>;
-                      })}
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
+    <div style={s.wrap}><div style={{...s.cnt,maxWidth:900}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
+        <h1 style={{...s.h2,marginBottom:0}}>Browse All Careers</h1>
+        <button style={{...s.btn,...s.btnO,width:'auto',marginBottom:0,padding:'10px 20px'}} onClick={()=>setMode('home')}>← Back</button>
+      </div>
+      <div style={{...s.card,padding:20}}>
+        <input style={{...s.input,marginBottom:12}} placeholder="Search careers..." value={filter.search} onChange={e=>setFilter(p=>({...p,search:e.target.value}))}/>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+          <select style={{...s.select,width:'auto',marginBottom:0}} value={filter.cat} onChange={e=>setFilter(p=>({...p,cat:e.target.value}))}>
+            <option value="">All Categories</option>
+            {categories.map(c=><option key={c} value={c}>{c}</option>)}
+          </select>
+          <select style={{...s.select,width:'auto',marginBottom:0}} value={filter.diff} onChange={e=>setFilter(p=>({...p,diff:e.target.value}))}>
+            <option value="">Any Difficulty</option>
+            <option value="1">🟢 Easier</option><option value="2">🟡 Medium</option><option value="3">🔴 Longer</option>
+          </select>
         </div>
       </div>
-    </div>
+      <p style={{...s.pSmall,marginBottom:16}}>{filtered.length} careers</p>
+      <div style={s.grid}>
+        {filtered.map(c => (
+          <div key={c.id} style={{...s.card,cursor:'pointer'}} className="fade option-card" onClick={() => setExpandedCareer(expandedCareer === c.id ? null : c.id)}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+              <span style={{fontSize:12,padding:'4px 12px',borderRadius:20,background:catColors[c.c]||'#888',color:'#fff',fontWeight:500}}>{c.c}</span>
+              <span style={{fontSize:13,color:t.muted}}>{c.d===1?'🟢 Easier':c.d===2?'🟡 Medium':'🔴 Longer'}</span>
+            </div>
+            <div style={{fontSize:26,marginBottom:6}}>{c.e} <span style={{fontSize:20,fontWeight:600}}>{c.t}</span></div>
+            <p style={{fontSize:14,color:t.sub,marginBottom:12,lineHeight:1.5}}>{c.desc}</p>
+            <div style={{fontSize:15,color:t.pri,fontWeight:600,marginBottom:12}}>${c.s?.[0]}K – ${c.s?.[2]}K+ · {c.tm}</div>
+            {expandedCareer === c.id && (
+              <div style={{borderTop:'1px solid '+t.border,paddingTop:16,marginTop:8}}>
+                <div style={{fontSize:13,fontWeight:600,color:t.muted,marginBottom:8}}>⚠️ REALITY CHECK</div>
+                {c.truth?.map((tb,i) => <p key={i} style={{fontSize:14,color:t.sub,marginBottom:6}}>• {tb}</p>)}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div></div>
   );
 
-  // ============================================
-  // QUIZ FLOW
-  // ============================================
-  
+  // QUIZ STEPS
   if (mode === 'quiz') {
-    
-    // Progress bar component
-    const ProgressBar = () => (
-      <div className="progress-bar">
-        <div className="progress-fill" style={{width: progress + '%'}}></div>
-      </div>
-    );
-    
-    const BackButton = ({onClick}) => (
-      <button 
-        style={{...s.btn,...s.btnO,width:'auto',padding:'8px 16px',marginBottom:20,fontSize:14}} 
-        onClick={onClick || (()=>setStep(Math.max(0,step-1)))}
-      >
-        ← Back
-      </button>
-    );
+    const ProgressBar = () => (<div className="progress-bar"><div className="progress-fill" style={{width: progress + '%'}}></div></div>);
+    const BackButton = ({onClick}) => (<button style={{...s.btn,...s.btnO,width:'auto',padding:'8px 16px',marginBottom:20,fontSize:14}} onClick={onClick || (()=>setStep(Math.max(0,step-1)))}>← Back</button>);
 
-    // STEP 0: Welcome / Name
+    // Step 0: Name
     if (step === 0) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <button style={{...s.btn,...s.btnO,width:'auto',padding:'8px 16px',marginBottom:20,fontSize:14}} onClick={()=>setMode('home')}>← Back</button>
         <div style={s.card}>
           <div style={{fontSize:40,marginBottom:16}}>👋</div>
           <h2 style={s.h2}>Let's find your path</h2>
-          <p style={s.p}>This takes about 5 minutes. Be honest — there are no wrong answers, only your answers.</p>
-          <input 
-            style={s.input} 
-            placeholder="What's your first name?"
-            value={d.name}
-            onChange={e => u({name: e.target.value})}
-            onKeyDown={e => e.key === 'Enter' && d.name && setStep(1)}
-            autoFocus
-          />
+          <p style={s.p}>This takes about 5 minutes. Be honest — there are no wrong answers.</p>
+          <input style={s.input} placeholder="What's your first name?" value={d.name} onChange={e => u({name: e.target.value})} onKeyDown={e => e.key === 'Enter' && d.name && setStep(1)} autoFocus/>
           <button style={{...s.btn,...s.btnP}} disabled={!d.name.trim()} onClick={()=>setStep(1)}>Continue</button>
         </div>
       </div></div>
     );
 
-    // STEP 1: Current Role
+    // Step 1: Current Role
     if (step === 1) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <BackButton />
         <ProgressBar />
         <div style={s.card}>
           <h2 style={s.h2}>What do you currently do, {d.name}?</h2>
-          <p style={s.p}>This helps us understand your starting point and find realistic transitions.</p>
-          <select 
-            style={s.select} 
-            value={d.currentRole} 
-            onChange={e => {u({currentRole: e.target.value}); if(e.target.value) setTimeout(()=>setStep(2), 200);}}
-          >
+          <select style={s.select} value={d.currentRole} onChange={e => {u({currentRole: e.target.value}); if(e.target.value) setTimeout(()=>setStep(2), 200);}}>
             <option value="">Select your current role...</option>
             {currentRoles.map(r => <option key={r.v} value={r.v}>{r.l}</option>)}
           </select>
@@ -856,161 +1039,105 @@ function App(){
       </div></div>
     );
 
-    // STEP 2: Experience
+    // Step 2: Experience
     if (step === 2) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <BackButton />
         <ProgressBar />
         <div style={s.card}>
           <h2 style={s.h2}>How many years have you been working?</h2>
-          <p style={s.p}>Total professional experience, not just your current role.</p>
           {experienceLevels.map(exp => (
-            <div 
-              key={exp.v}
-              style={d.experience === exp.v ? s.optionCardActive : s.optionCard}
-              className="option-card"
-              onClick={() => {u({experience: exp.v}); setTimeout(()=>setStep(3), 200);}}
-            >
-              {exp.l}
-            </div>
+            <div key={exp.v} style={d.experience === exp.v ? s.optionCardActive : s.optionCard} className="option-card" onClick={() => {u({experience: exp.v}); setTimeout(()=>setStep(3), 200);}}>{exp.l}</div>
           ))}
         </div>
       </div></div>
     );
 
-    // STEP 3: Education
+    // Step 3: Education
     if (step === 3) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <BackButton />
         <ProgressBar />
         <div style={s.card}>
-          <h2 style={s.h2}>What's your highest level of education?</h2>
-          <p style={s.p}>Some careers require specific credentials, others don't care at all.</p>
+          <h2 style={s.h2}>Highest level of education?</h2>
           {educationLevels.map(edu => (
-            <div 
-              key={edu.v}
-              style={d.education === edu.v ? s.optionCardActive : s.optionCard}
-              className="option-card"
-              onClick={() => {u({education: edu.v}); setTimeout(()=>setStep(4), 200);}}
-            >
-              {edu.l}
-            </div>
+            <div key={edu.v} style={d.education === edu.v ? s.optionCardActive : s.optionCard} className="option-card" onClick={() => {u({education: edu.v}); setTimeout(()=>setStep(4), 200);}}>{edu.l}</div>
           ))}
         </div>
       </div></div>
     );
 
-    // STEP 4: Current satisfaction
+    // Step 4: Satisfaction
     if (step === 4) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <BackButton />
         <ProgressBar />
         <div style={s.card}>
-          <h2 style={s.h2}>How do you feel about your current work situation?</h2>
-          <p style={s.p}>Be honest — this helps us understand your urgency.</p>
+          <h2 style={s.h2}>How do you feel about your current situation?</h2>
           {satisfactionLevels.map(sat => (
-            <div 
-              key={sat.v}
-              style={d.satisfaction === sat.v ? s.optionCardActive : s.optionCard}
-              className="option-card"
-              onClick={() => {u({satisfaction: sat.v}); setTimeout(()=>setStep(5), 200);}}
-            >
-              {sat.l}
-            </div>
+            <div key={sat.v} style={d.satisfaction === sat.v ? s.optionCardActive : s.optionCard} className="option-card" onClick={() => {u({satisfaction: sat.v}); setTimeout(()=>setStep(5), 200);}}>{sat.l}</div>
           ))}
         </div>
       </div></div>
     );
 
-    // STEP 5: Timeframe
+    // Step 5: Timeframe
     if (step === 5) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <BackButton />
         <ProgressBar />
         <div style={s.card}>
           <h2 style={s.h2}>When are you hoping to make a change?</h2>
-          <p style={s.p}>This affects which careers are realistic recommendations.</p>
           {timeframes.map(tf => (
-            <div 
-              key={tf.v}
-              style={d.timeframe === tf.v ? s.optionCardActive : s.optionCard}
-              className="option-card"
-              onClick={() => {u({timeframe: tf.v}); setTimeout(()=>setStep(6), 200);}}
-            >
-              {tf.l}
-            </div>
+            <div key={tf.v} style={d.timeframe === tf.v ? s.optionCardActive : s.optionCard} className="option-card" onClick={() => {u({timeframe: tf.v}); setTimeout(()=>setStep(6), 200);}}>{tf.l}</div>
           ))}
         </div>
       </div></div>
     );
 
-    // STEP 6: Financial flexibility
+    // Step 6: Financial
     if (step === 6) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <BackButton />
         <ProgressBar />
         <div style={s.card}>
           <h2 style={s.h2}>What's your financial flexibility?</h2>
-          <p style={s.p}>This helps us recommend careers that fit your real situation, not just your dreams.</p>
           {financialFlex.map(ff => (
-            <div 
-              key={ff.v}
-              style={d.financialFlex === ff.v ? s.optionCardActive : s.optionCard}
-              className="option-card"
-              onClick={() => {u({financialFlex: ff.v}); setTimeout(()=>setStep(7), 200);}}
-            >
-              {ff.l}
-            </div>
+            <div key={ff.v} style={d.financialFlex === ff.v ? s.optionCardActive : s.optionCard} className="option-card" onClick={() => {u({financialFlex: ff.v}); setTimeout(()=>setStep(7), 200);}}>{ff.l}</div>
           ))}
         </div>
       </div></div>
     );
 
-    // STEP 7: Risk tolerance
+    // Step 7: Risk
     if (step === 7) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <BackButton />
         <ProgressBar />
         <div style={s.card}>
           <h2 style={s.h2}>What's your risk tolerance?</h2>
-          <p style={s.p}>Some paths are stable, others are high-risk/high-reward.</p>
           {riskTolerance.map(rt => (
-            <div 
-              key={rt.v}
-              style={d.riskTolerance === rt.v ? s.optionCardActive : s.optionCard}
-              className="option-card"
-              onClick={() => {u({riskTolerance: rt.v}); setTimeout(()=>setStep(8), 200);}}
-            >
-              {rt.l}
-            </div>
+            <div key={rt.v} style={d.riskTolerance === rt.v ? s.optionCardActive : s.optionCard} className="option-card" onClick={() => {u({riskTolerance: rt.v}); setTimeout(()=>setStep(8), 200);}}>{rt.l}</div>
           ))}
         </div>
       </div></div>
     );
 
-    // STEP 8: Location preference
+    // Step 8: Location
     if (step === 8) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <BackButton />
         <ProgressBar />
         <div style={s.card}>
           <h2 style={s.h2}>Where do you want to work?</h2>
-          <p style={s.p}>Location flexibility varies a lot by career.</p>
           {locationPrefs.map(lp => (
-            <div 
-              key={lp.v}
-              style={d.location === lp.v ? s.optionCardActive : s.optionCard}
-              className="option-card"
-              onClick={() => {u({location: lp.v}); setTimeout(()=>setStep(9), 200);}}
-            >
-              {lp.l}
-            </div>
+            <div key={lp.v} style={d.location === lp.v ? s.optionCardActive : s.optionCard} className="option-card" onClick={() => {u({location: lp.v}); setTimeout(()=>setStep(9), 200);}}>{lp.l}</div>
           ))}
         </div>
       </div></div>
     );
 
-    // STEPS 9-20: Energy questions (12 questions)
+    // Steps 9-20: Energy questions
     if (step >= 9 && step <= 20) {
       const qIndex = step - 9;
       const q = energyQuestions[qIndex];
@@ -1019,34 +1146,26 @@ function App(){
           <BackButton />
           <ProgressBar />
           <div style={s.card}>
-            <p style={{...s.pSmall,marginBottom:4}}>Energy Check {qIndex + 1} of {energyQuestions.length}</p>
+            <p style={{...s.pSmall,marginBottom:4}}>Energy Check {qIndex + 1} of 12</p>
             <h2 style={{...s.h2,marginBottom:20}}>How do you feel about...</h2>
             <p style={{fontSize:18,color:t.text,marginBottom:28,lineHeight:1.5,fontWeight:500}}>"{q.q}"</p>
             <div style={s.emojiRow}>
               {['😫','😕','😐','🙂','😍'].map((em, i) => (
-                <span 
-                  key={i} 
-                  className="emoji-btn"
-                  style={d.energy[q.id] === i+1 ? s.emojiBtnActive : s.emojiBtn}
-                  onClick={() => {
-                    u({energy: {...d.energy, [q.id]: i+1}});
-                    setTimeout(() => setStep(step + 1), 250);
-                  }}
-                >
+                <span key={i} className="emoji-btn" style={d.energy[q.id] === i+1 ? s.emojiBtnActive : s.emojiBtn}
+                  onClick={() => {u({energy: {...d.energy, [q.id]: i+1}}); setTimeout(() => setStep(step + 1), 250);}}>
                   {em}
                 </span>
               ))}
             </div>
             <div style={{display:'flex',justifyContent:'space-between',fontSize:13,color:t.muted,marginTop:8}}>
-              <span>Drains me</span>
-              <span>Energizes me</span>
+              <span>Drains me</span><span>Energizes me</span>
             </div>
           </div>
         </div></div>
       );
     }
 
-    // STEPS 21-24: Work style questions (4 questions)
+    // Steps 21-24: Work style
     if (step >= 21 && step <= 24) {
       const qIndex = step - 21;
       const q = workStyleQuestions[qIndex];
@@ -1055,19 +1174,11 @@ function App(){
           <BackButton />
           <ProgressBar />
           <div style={s.card}>
-            <p style={{...s.pSmall,marginBottom:4}}>Work Style {qIndex + 1} of {workStyleQuestions.length}</p>
+            <p style={{...s.pSmall,marginBottom:4}}>Work Style {qIndex + 1} of 4</p>
             <h2 style={s.h2}>{q.q}</h2>
-            <p style={s.p}>Choose what feels most true, not what sounds impressive.</p>
             {q.opts.map(opt => (
-              <div 
-                key={opt.v}
-                style={d.workStyle[q.id] === opt.v ? s.optionCardActive : s.optionCard}
-                className="option-card"
-                onClick={() => {
-                  u({workStyle: {...d.workStyle, [q.id]: opt.v}});
-                  setTimeout(() => setStep(step + 1), 200);
-                }}
-              >
+              <div key={opt.v} style={d.workStyle[q.id] === opt.v ? s.optionCardActive : s.optionCard} className="option-card"
+                onClick={() => {u({workStyle: {...d.workStyle, [q.id]: opt.v}}); setTimeout(() => setStep(step + 1), 200);}}>
                 {opt.l}
               </div>
             ))}
@@ -1076,7 +1187,7 @@ function App(){
       );
     }
 
-    // STEPS 25-30: Values questions (6 questions)
+    // Steps 25-30: Values
     if (step >= 25 && step <= 30) {
       const qIndex = step - 25;
       const q = valueQuestions[qIndex];
@@ -1085,27 +1196,15 @@ function App(){
           <BackButton />
           <ProgressBar />
           <div style={s.card}>
-            <p style={{...s.pSmall,marginBottom:4}}>Values {qIndex + 1} of {valueQuestions.length}</p>
+            <p style={{...s.pSmall,marginBottom:4}}>Values {qIndex + 1} of 6</p>
             <h2 style={s.h2}>{q.q}</h2>
             <p style={s.p}>If you had to choose, which matters more?</p>
-            <div 
-              style={d.values[q.id] === 'a' ? s.optionCardActive : s.optionCard}
-              className="option-card"
-              onClick={() => {
-                u({values: {...d.values, [q.id]: 'a'}});
-                setTimeout(() => setStep(step + 1), 200);
-              }}
-            >
+            <div style={d.values[q.id] === 'a' ? s.optionCardActive : s.optionCard} className="option-card"
+              onClick={() => {u({values: {...d.values, [q.id]: 'a'}}); setTimeout(() => setStep(step + 1), 200);}}>
               {q.a}
             </div>
-            <div 
-              style={d.values[q.id] === 'b' ? s.optionCardActive : s.optionCard}
-              className="option-card"
-              onClick={() => {
-                u({values: {...d.values, [q.id]: 'b'}});
-                setTimeout(() => setStep(step + 1), 200);
-              }}
-            >
+            <div style={d.values[q.id] === 'b' ? s.optionCardActive : s.optionCard} className="option-card"
+              onClick={() => {u({values: {...d.values, [q.id]: 'b'}}); setTimeout(() => setStep(step + 1), 200);}}>
               {q.b}
             </div>
           </div>
@@ -1113,24 +1212,18 @@ function App(){
       );
     }
 
-    // STEP 31: Deal breakers
+    // Step 31: Deal breakers
     if (step === 31) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <BackButton />
         <ProgressBar />
         <div style={s.card}>
           <h2 style={s.h2}>Any absolute deal breakers?</h2>
-          <p style={s.p}>Select anything you truly cannot or will not tolerate. We'll filter those out.</p>
+          <p style={s.p}>Select anything you truly cannot tolerate.</p>
           <div style={{display:'flex',flexWrap:'wrap',marginBottom:20}}>
             {dealBreakers.map(db => (
-              <span 
-                key={db.id}
-                style={d.dealBreakers.includes(db.id) ? s.chipActive : s.chip}
-                onClick={() => u({dealBreakers: d.dealBreakers.includes(db.id) 
-                  ? d.dealBreakers.filter(x => x !== db.id) 
-                  : [...d.dealBreakers, db.id]
-                })}
-              >
+              <span key={db.id} style={d.dealBreakers.includes(db.id) ? s.chipActive : s.chip}
+                onClick={() => u({dealBreakers: d.dealBreakers.includes(db.id) ? d.dealBreakers.filter(x => x !== db.id) : [...d.dealBreakers, db.id]})}>
                 {db.l}
               </span>
             ))}
@@ -1140,37 +1233,21 @@ function App(){
       </div></div>
     );
 
-    // STEP 32: Biggest fear
+    // Step 32: Fear
     if (step === 32) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <BackButton />
         <ProgressBar />
         <div style={s.card}>
           <h2 style={s.h2}>What's your biggest fear about changing careers?</h2>
-          <p style={s.p}>Everyone has one. Being honest helps us address it.</p>
-          {[
-            {v:'wrong-choice',l:'Making the wrong choice'},
-            {v:'not-qualified',l:'Not being qualified enough'},
-            {v:'money',l:'Taking a financial hit'},
-            {v:'starting-over',l:'Starting over / losing progress'},
-            {v:'age',l:'Being too old to change'},
-            {v:'judgment',l:'What others will think'},
-            {v:'none',l:'I\'m not really afraid'}
-          ].map(fear => (
-            <div 
-              key={fear.v}
-              style={d.fear === fear.v ? s.optionCardActive : s.optionCard}
-              className="option-card"
-              onClick={() => {u({fear: fear.v}); setTimeout(()=>setStep(33), 200);}}
-            >
-              {fear.l}
-            </div>
+          {[{v:'wrong-choice',l:'Making the wrong choice'},{v:'not-qualified',l:'Not being qualified enough'},{v:'money',l:'Taking a financial hit'},{v:'starting-over',l:'Starting over / losing progress'},{v:'age',l:'Being too old to change'},{v:'judgment',l:'What others will think'},{v:'none',l:'I\'m not really afraid'}].map(fear => (
+            <div key={fear.v} style={d.fear === fear.v ? s.optionCardActive : s.optionCard} className="option-card" onClick={() => {u({fear: fear.v}); setTimeout(()=>setStep(33), 200);}}>{fear.l}</div>
           ))}
         </div>
       </div></div>
     );
 
-    // STEP 33: Email capture
+    // Step 33: Email
     if (step === 33) return (
       <div style={s.wrap}><div style={s.cnt} className="fade">
         <BackButton />
@@ -1178,35 +1255,40 @@ function App(){
         <div style={s.card}>
           <div style={{fontSize:40,marginBottom:16}}>🎉</div>
           <h2 style={s.h2}>Almost done!</h2>
-          <p style={s.p}>Where should we send your personalized career matches?</p>
-          <input 
-            style={s.input}
-            type="email"
-            placeholder="your@email.com"
-            value={d.email}
-            onChange={e => u({email: e.target.value})}
-            onKeyDown={e => e.key === 'Enter' && calculateResults()}
-          />
-          <button style={{...s.btn,...s.btnP}} onClick={calculateResults}>
-            See My Career Matches →
-          </button>
-          <button style={{...s.btn,...s.btnO}} onClick={calculateResults}>
-            Skip — just show me results
-          </button>
+          <p style={s.p}>Where should we send your Career DNA report?</p>
+          <input style={s.input} type="email" placeholder="your@email.com" value={d.email} onChange={e => u({email: e.target.value})} onKeyDown={e => e.key === 'Enter' && calculateResults()}/>
+          <button style={{...s.btn,...s.btnP}} onClick={calculateResults}>See My Results →</button>
+          <button style={{...s.btn,...s.btnO}} onClick={calculateResults}>Skip — just show me</button>
         </div>
       </div></div>
     );
 
-    // STEP 100: Results
+    // RESULTS
     if (step === 100) return (
       <div style={s.wrap}><div style={s.cnt}>
+        {/* Hero */}
         <div style={{...s.cardHero,textAlign:'left'}} className="fade">
           <p style={{fontSize:14,opacity:0.8,marginBottom:8}}>Hey {d.name} 👋</p>
-          <h1 style={{...s.h1,color:'#fff',fontSize:28}}>Your career matches are ready</h1>
-          <p style={{fontSize:15,opacity:0.9,lineHeight:1.6,marginBottom:0}}>
-            Based on your energy patterns, values, work style, and constraints — here's what we found.
-          </p>
+          <h1 style={{...s.h1,color:'#fff',fontSize:28}}>Your Career DNA</h1>
         </div>
+
+        {/* Personality Type Card */}
+        <div style={{...s.card,background:t.priL,border:'2px solid '+t.pri}} className="fade">
+          <div style={{fontSize:48,marginBottom:8}}>{pType.emoji}</div>
+          <h2 style={{fontSize:24,fontWeight:700,color:t.pri,marginBottom:8}}>{pType.name}</h2>
+          <p style={{fontSize:15,color:t.sub,lineHeight:1.6,marginBottom:16}}>{pType.desc}</p>
+          <div style={{fontSize:13,fontWeight:600,color:t.muted,marginBottom:8}}>YOUR STRENGTHS</div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+            {pType.strengths.map((s,i) => (
+              <span key={i} style={{background:'#fff',padding:'6px 12px',borderRadius:20,fontSize:13,color:t.pri}}>{s}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* Download Button */}
+        <button className="download-btn" onClick={() => generatePDF(d)}>
+          📥 Download Your Career DNA (PDF)
+        </button>
 
         {/* Fear response */}
         {d.fear && d.fear !== 'none' && (
@@ -1217,12 +1299,8 @@ function App(){
         )}
 
         {/* Results */}
-        {d.results.slice(0, 7).map((c, i) => (
-          <div 
-            key={c.id} 
-            style={{...s.card, border: i === 0 ? '2px solid '+t.pri : '1px solid '+t.border, background: i === 0 ? t.priL : t.card}}
-            className="fade"
-          >
+        {d.results.slice(0, 5).map((c, i) => (
+          <div key={c.id} style={{...s.card, border: i === 0 ? '2px solid '+t.pri : '1px solid '+t.border}} className="fade">
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
               <div style={{display:'flex',alignItems:'center',gap:12}}>
                 <span style={{fontSize:12,fontWeight:700,color:t.pri}}>#{i+1}</span>
@@ -1230,70 +1308,38 @@ function App(){
               </div>
               <span style={{fontSize:13,fontWeight:600,color:i===0?t.pri:t.muted}}>{c.score}% match</span>
             </div>
-            
             <div style={{fontSize:28,marginBottom:6}}>{c.e} <span style={{fontSize:22,fontWeight:600}}>{c.t}</span></div>
             <p style={{fontSize:15,color:t.sub,marginBottom:16,lineHeight:1.5}}>{c.desc}</p>
-            
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:20}}>
-              <div style={{background:i===0?'#fff':t.bg,padding:14,borderRadius:12}}>
+              <div style={{background:t.bg,padding:14,borderRadius:12}}>
                 <div style={{fontSize:12,color:t.muted,marginBottom:4}}>SALARY RANGE</div>
                 <div style={{fontSize:17,fontWeight:700,color:t.pri}}>${c.s?.[0]}K – ${c.s?.[2]}K+</div>
               </div>
-              <div style={{background:i===0?'#fff':t.bg,padding:14,borderRadius:12}}>
+              <div style={{background:t.bg,padding:14,borderRadius:12}}>
                 <div style={{fontSize:12,color:t.muted,marginBottom:4}}>TRANSITION TIME</div>
                 <div style={{fontSize:17,fontWeight:700}}>{c.tm}</div>
               </div>
             </div>
-            
-            <div style={{marginBottom:20}}>
+            <div style={{marginBottom:0}}>
               <div style={{fontSize:12,fontWeight:600,color:t.muted,marginBottom:10}}>⚠️ REALITY CHECK</div>
-              {c.truth?.map((tb, j) => (
-                <p key={j} style={{fontSize:14,color:t.sub,marginBottom:6,paddingLeft:12,borderLeft:'2px solid '+t.border}}>
-                  {tb}
-                </p>
-              ))}
+              {c.truth?.map((tb, j) => (<p key={j} style={{fontSize:14,color:t.sub,marginBottom:6,paddingLeft:12,borderLeft:'2px solid '+t.border}}>{tb}</p>))}
             </div>
-            
-            {c.res && (
-              <div>
-                <div style={{fontSize:12,fontWeight:600,color:t.muted,marginBottom:10}}>📚 GET STARTED</div>
-                {c.res.slice(0, 3).map((r, j) => {
-                  const [name, cost] = r.split('|');
-                  return (
-                    <div key={j} style={{display:'flex',justifyContent:'space-between',padding:'10px 0',borderBottom:j<2?'1px solid '+t.border:'none'}}>
-                      <span style={{fontSize:14}}>{name}</span>
-                      <span style={{fontSize:14,fontWeight:600,color:t.pri}}>{cost}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </div>
         ))}
 
+        {/* Action */}
         <div style={s.card} className="fade">
           <h3 style={s.h3}>📌 Your action for tomorrow</h3>
-          <p style={s.p}>
-            Pick your #1 match (<strong>{d.results[0]?.t}</strong>). Find 3 people on LinkedIn who have that title. Send this message:
-          </p>
+          <p style={s.p}>Find 3 people on LinkedIn with the title "<strong>{d.results[0]?.t}</strong>". Send this message:</p>
           <div style={{background:t.bg,padding:16,borderRadius:12,fontSize:14,color:t.sub,lineHeight:1.6,fontStyle:'italic'}}>
-            "Hi [Name], I'm a {currentRoles.find(r=>r.v===d.currentRole)?.l || 'professional'} exploring a move into {d.results[0]?.t?.toLowerCase()}. Would you have 15 minutes to share how you made the transition? No ask beyond the conversation. Thanks!"
+            "Hi [Name], I'm exploring a move into {d.results[0]?.t?.toLowerCase()}. Would you have 15 minutes to share how you got there? No ask beyond the conversation. Thanks!"
           </div>
         </div>
 
-        <button style={{...s.btn,...s.btnS}} onClick={()=>setMode('browse')}>
-          Browse All 122 Careers
-        </button>
-        <button style={{...s.btn,...s.btnO}} onClick={()=>{
-          setStep(0);
-          setD({name:'',email:'',currentRole:'',experience:'',education:'',currentIncome:'',satisfaction:null,timeframe:'',financialFlex:'',riskTolerance:'',location:'',energy:{},workStyle:{},values:{},dealBreakers:[],fear:'',results:[],topType:''});
-        }}>
-          Retake Quiz
-        </button>
+        <button style={{...s.btn,...s.btnS}} onClick={()=>setMode('browse')}>Browse All 122 Careers</button>
+        <button style={{...s.btn,...s.btnO}} onClick={()=>{setStep(0);setD({name:'',email:'',currentRole:'',experience:'',education:'',currentIncome:'',satisfaction:null,timeframe:'',financialFlex:'',riskTolerance:'',location:'',energy:{},workStyle:{},values:{},dealBreakers:[],fear:'',results:[],topType:''});}}>Retake Quiz</button>
         
-        <p style={{...s.pSmall,textAlign:'center',marginTop:20}}>
-          Found this helpful? Share it with a friend who's stuck.
-        </p>
+        <p style={{...s.pSmall,textAlign:'center',marginTop:20}}>Found this helpful? Share it with a friend who's stuck.</p>
       </div></div>
     );
   }
