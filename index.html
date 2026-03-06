@@ -280,72 +280,180 @@ const generatePDF=(userData)=>{
   const pageWidth=612,pageHeight=792,margin=50;
   const pType=personalityTypes[userData.topType]||personalityTypes.explorer;
   
-  doc.setFillColor(255,251,245);doc.rect(0,0,pageWidth,pageHeight,'F');
-  doc.setFillColor(26,26,46);doc.rect(0,0,pageWidth,100,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
+  // Helper to strip emojis for PDF (jsPDF can't render them)
+  const stripEmoji=(str)=>str.replace(/[\u{1F600}-\u{1F6FF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu,'').trim();
+  
+  // PAGE 1 - Summary
+  doc.setFillColor(255,251,245);
+  doc.rect(0,0,pageWidth,pageHeight,'F');
+  
+  // Header
+  doc.setFillColor(26,26,46);
+  doc.rect(0,0,pageWidth,100,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(14);
+  doc.setFont('helvetica','bold');
   doc.text('CAREER CLARITY',margin,45);
-  doc.setFontSize(28);doc.text(userData.name+"'s Career DNA",margin,75);
+  doc.setFontSize(28);
+  doc.text(userData.name+"'s Career DNA",margin,75);
   
+  // Personality type card
   let y=130;
-  doc.setFillColor(255,230,109);doc.roundedRect(margin,y,pageWidth-margin*2,120,12,12,'F');
-  doc.setFillColor(26,26,46);doc.roundedRect(margin+3,y+3,pageWidth-margin*2,120,12,12,'S');
-  doc.setTextColor(26,26,46);doc.setFontSize(36);doc.text(pType.emoji+' '+pType.name.toUpperCase(),margin+20,y+50);
-  doc.setFontSize(12);doc.setFont('helvetica','normal');
+  doc.setFillColor(255,230,109);
+  doc.roundedRect(margin,y,pageWidth-margin*2,100,12,12,'F');
+  doc.setDrawColor(26,26,46);
+  doc.setLineWidth(2);
+  doc.roundedRect(margin,y,pageWidth-margin*2,100,12,12,'S');
+  
+  doc.setTextColor(26,26,46);
+  doc.setFontSize(28);
+  doc.setFont('helvetica','bold');
+  doc.text(stripEmoji(pType.name).toUpperCase(),margin+20,y+40);
+  
+  doc.setFontSize(11);
+  doc.setFont('helvetica','normal');
   const descLines=doc.splitTextToSize(pType.desc,pageWidth-margin*2-40);
-  doc.text(descLines,margin+20,y+75);
+  doc.text(descLines.slice(0,2),margin+20,y+60);
   
-  y+=150;
-  doc.setFontSize(16);doc.setFont('helvetica','bold');doc.text('YOUR TOP MATCHES',margin,y);y+=30;
-  
-  userData.results.slice(0,3).forEach((c,i)=>{
-    doc.setFillColor(255,255,255);doc.roundedRect(margin,y,pageWidth-margin*2,60,8,8,'F');
-    doc.setDrawColor(26,26,46);doc.setLineWidth(2);doc.roundedRect(margin,y,pageWidth-margin*2,60,8,8,'S');
-    doc.setFontSize(24);doc.setFont('helvetica','bold');doc.setTextColor(26,26,46);
-    doc.text((i+1)+'.',margin+15,y+35);doc.text(c.e+' '+c.t,margin+50,y+35);
-    doc.setFontSize(14);doc.setTextColor(78,205,196);doc.text(c.score+'%',pageWidth-margin-50,y+35);
-    y+=75;
+  // Strengths
+  y+=120;
+  doc.setFontSize(14);
+  doc.setFont('helvetica','bold');
+  doc.text('YOUR STRENGTHS',margin,y);
+  y+=20;
+  doc.setFontSize(11);
+  doc.setFont('helvetica','normal');
+  pType.strengths.forEach((s,i)=>{
+    doc.text('•  '+s,margin+10,y+i*18);
   });
   
-  doc.setFillColor(26,26,46);doc.rect(0,pageHeight-60,pageWidth,60,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(12);doc.text('careerclarity.com',margin,pageHeight-28);
+  // Top matches
+  y+=80;
+  doc.setFontSize(14);
+  doc.setFont('helvetica','bold');
+  doc.text('YOUR TOP CAREER MATCHES',margin,y);
+  y+=25;
   
+  userData.results.slice(0,3).forEach((c,i)=>{
+    doc.setFillColor(255,255,255);
+    doc.roundedRect(margin,y,pageWidth-margin*2,50,8,8,'F');
+    doc.setDrawColor(26,26,46);
+    doc.setLineWidth(1.5);
+    doc.roundedRect(margin,y,pageWidth-margin*2,50,8,8,'S');
+    
+    doc.setFontSize(18);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(26,26,46);
+    doc.text('#'+(i+1),margin+15,y+30);
+    doc.text(stripEmoji(c.t),margin+50,y+30);
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(78,205,196);
+    doc.text(c.score+'% match',pageWidth-margin-90,y+30);
+    y+=60;
+  });
+  
+  // Footer
+  doc.setFillColor(26,26,46);
+  doc.rect(0,pageHeight-50,pageWidth,50,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(11);
+  doc.setFont('helvetica','normal');
+  doc.text('careerclarity.com',margin,pageHeight-22);
+  doc.text('Share with a friend who needs clarity',pageWidth-margin-180,pageHeight-22);
+  
+  // PAGE 2 - Details
   doc.addPage();
-  doc.setFillColor(255,251,245);doc.rect(0,0,pageWidth,pageHeight,'F');
-  doc.setFillColor(26,26,46);doc.rect(0,0,pageWidth,70,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(20);doc.setFont('helvetica','bold');
-  doc.text('Detailed Results',margin,45);
+  doc.setFillColor(255,251,245);
+  doc.rect(0,0,pageWidth,pageHeight,'F');
+  
+  // Header
+  doc.setFillColor(26,26,46);
+  doc.rect(0,0,pageWidth,70,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(20);
+  doc.setFont('helvetica','bold');
+  doc.text('Your Detailed Results',margin,45);
   
   y=100;
   const topCareer=userData.results[0];
+  
   if(topCareer){
-    doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(26,26,46);
-    doc.text('YOUR #1 MATCH',margin,y);y+=25;
-    doc.setFillColor(232,245,233);doc.roundedRect(margin,y,pageWidth-margin*2,150,10,10,'F');
-    doc.setFontSize(22);doc.text(topCareer.e+' '+topCareer.t,margin+20,y+35);
-    doc.setFontSize(11);doc.setFont('helvetica','normal');doc.setTextColor(82,82,91);
-    doc.text('$'+(topCareer.s?.[0]||0)+'K - $'+(topCareer.s?.[2]||0)+'K+  •  '+topCareer.tm,margin+20,y+58);
-    doc.setFont('helvetica','bold');doc.setTextColor(26,26,46);doc.text('What to know:',margin+20,y+85);
-    doc.setFont('helvetica','normal');doc.setTextColor(82,82,91);
-    (topCareer.truth||[]).slice(0,3).forEach((t,i)=>{doc.text('• '+t,margin+20,y+100+i*15);});
-    y+=170;
+    // #1 Match detail
+    doc.setFontSize(14);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(26,26,46);
+    doc.text('YOUR #1 MATCH: '+stripEmoji(topCareer.t).toUpperCase(),margin,y);
+    y+=25;
+    
+    doc.setFillColor(232,245,233);
+    doc.roundedRect(margin,y,pageWidth-margin*2,140,10,10,'F');
+    
+    doc.setFontSize(11);
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(52,52,52);
+    doc.text(topCareer.desc,margin+15,y+25);
+    
+    doc.setFont('helvetica','bold');
+    doc.text('Salary Range:',margin+15,y+50);
+    doc.setFont('helvetica','normal');
+    doc.text('$'+(topCareer.s?.[0]||0)+'K - $'+(topCareer.s?.[2]||0)+'K+',margin+100,y+50);
+    
+    doc.setFont('helvetica','bold');
+    doc.text('Transition Time:',margin+15,y+68);
+    doc.setFont('helvetica','normal');
+    doc.text(topCareer.tm,margin+115,y+68);
+    
+    doc.setFont('helvetica','bold');
+    doc.text('What to know:',margin+15,y+90);
+    doc.setFont('helvetica','normal');
+    (topCareer.truth||[]).slice(0,3).forEach((t,i)=>{
+      const lines=doc.splitTextToSize('• '+t,pageWidth-margin*2-40);
+      doc.text(lines[0],margin+15,y+106+i*14);
+    });
+    
+    y+=160;
   }
   
-  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(26,26,46);
-  doc.text('ALSO WORTH EXPLORING',margin,y);y+=25;
-  userData.results.slice(1,5).forEach((c,i)=>{
-    doc.setFontSize(12);doc.setFont('helvetica','bold');doc.text('#'+(i+2)+' '+c.e+' '+c.t,margin,y);
-    doc.setFont('helvetica','normal');doc.setTextColor(82,82,91);
-    doc.text(c.score+'%  •  $'+(c.s?.[0]||0)+'K-$'+(c.s?.[2]||0)+'K+',margin+200,y);
-    doc.setTextColor(26,26,46);y+=22;
+  // Other matches
+  doc.setFontSize(14);
+  doc.setFont('helvetica','bold');
+  doc.setTextColor(26,26,46);
+  doc.text('OTHER MATCHES TO EXPLORE',margin,y);
+  y+=22;
+  
+  userData.results.slice(1,6).forEach((c,i)=>{
+    doc.setFontSize(11);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(26,26,46);
+    doc.text('#'+(i+2)+' '+stripEmoji(c.t),margin,y);
+    
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(100,100,100);
+    doc.text(c.score+'%  |  $'+(c.s?.[0]||0)+'K-$'+(c.s?.[2]||0)+'K+  |  '+c.tm,margin+180,y);
+    y+=20;
   });
   
+  // Next step
   y+=25;
-  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.text('NEXT STEP',margin,y);y+=20;
-  doc.setFillColor(255,230,109);doc.roundedRect(margin,y,pageWidth-margin*2,60,8,8,'F');
-  doc.setFontSize(11);doc.setFont('helvetica','normal');doc.setTextColor(26,26,46);
-  doc.text('Find 3 people on LinkedIn with the title "'+topCareer?.t+'".',margin+20,y+25);
-  doc.text('Ask for 15 minutes to learn about their path. Most say yes.',margin+20,y+42);
+  doc.setFontSize(14);
+  doc.setFont('helvetica','bold');
+  doc.setTextColor(26,26,46);
+  doc.text('YOUR NEXT STEP',margin,y);
+  y+=20;
   
+  doc.setFillColor(255,230,109);
+  doc.roundedRect(margin,y,pageWidth-margin*2,70,8,8,'F');
+  
+  doc.setFontSize(11);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(26,26,46);
+  const nextStepText='Find 3 people on LinkedIn with the title "'+stripEmoji(topCareer?.t)+'". Send them a short message asking for 15 minutes to learn about their path. Most people are happy to help.';
+  const nextStepLines=doc.splitTextToSize(nextStepText,pageWidth-margin*2-30);
+  doc.text(nextStepLines,margin+15,y+25);
+  
+  // Save
   doc.save(userData.name.replace(/\s+/g,'_')+'_Career_DNA.pdf');
 };
 
