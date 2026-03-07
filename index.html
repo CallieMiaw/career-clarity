@@ -1785,14 +1785,7 @@ const fearMessages={
 
 // Generate LinkedIn message for a career
 const generateLinkedInMessage=(career, userName)=>{
-  return \`Hi [Name],
-
-I came across your profile and noticed you work as a \${career.t}. I'm currently exploring a career transition into this field and would love to learn from someone with your experience.
-
-Would you be open to a 15-minute call sometime in the next few weeks? I'd be grateful to hear about your path and any advice you might have.
-
-Thanks so much,
-\${userName}\`;
+  return "Hi [Name],\n\nI came across your profile and noticed you work as a "+career.t+". I'm currently exploring a career transition into this field and would love to learn from someone with your experience.\n\nWould you be open to a 15-minute call sometime in the next few weeks? I'd be grateful to hear about your path and any advice you might have.\n\nThanks so much,\n"+userName;
 };
 
 // Coffee chat questions
@@ -2229,7 +2222,7 @@ function App(){
               <div style={{fontSize:32,marginBottom:8}}>{c.e}</div>
               <h3 style={{fontSize:20,fontWeight:700,marginBottom:8}}>{c.t}</h3>
               <p style={{fontSize:14,color:'#52525B',marginBottom:16}}>{c.desc}</p>
-              <div style={{fontSize:16,fontWeight:700,color:'#4ECDC4'}}>\${c.s?.[0]}K – \${c.s?.[2]}K+</div>
+              <div style={{fontSize:16,fontWeight:700,color:'#4ECDC4'}}>${c.s?.[0]}K – ${c.s?.[2]}K+</div>
             </div>
           ))}
         </div>
@@ -2457,6 +2450,6 @@ function App(){
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-<\/script>
+</script>
 </body>
 </html>
