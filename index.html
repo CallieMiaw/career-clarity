@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Career Clarity — Discover Careers You Didn't Know Existed</title>
-  <meta name="description" content="A 5-minute quiz that matches you with careers based on your personality and interests. 180 real paths. Free.">
+  <title>Career Clarity — Find Your Path</title>
+  <meta name="description" content="A 5-minute quiz that matches you with careers and gives you a clear action plan. 180 careers. Free.">
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -22,17 +22,19 @@
     .delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}.delay-3{animation-delay:.3s}
     .float{animation:float 6s ease-in-out infinite}
     @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-    .pop{transition:all .2s cubic-bezier(.68,-.55,.265,1.55)}
+    .pop{transition:all .2s}
     .pop:hover{transform:scale(1.02)}
     .card{background:#fff;border-radius:24px;border:3px solid #1a1a2e;box-shadow:6px 6px 0 #1a1a2e;transition:all .2s ease}
     .card:hover{box-shadow:8px 8px 0 #1a1a2e;transform:translate(-2px,-2px)}
     .card-flat{background:#fff;border-radius:20px;border:2px solid #e8e8e8}
+    .card-subtle{background:#fff;border-radius:16px;border:2px solid #e8e8e8}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:18px 36px;border-radius:100px;font-size:18px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;border:3px solid #1a1a2e}
     .btn-primary{background:#FFE66D;color:#1a1a2e;box-shadow:4px 4px 0 #1a1a2e}
     .btn-primary:hover{box-shadow:6px 6px 0 #1a1a2e;transform:translate(-2px,-2px)}
     .btn-secondary{background:#fff;color:#1a1a2e;box-shadow:4px 4px 0 #1a1a2e}
     .btn-ghost{background:transparent;border:2px solid #1a1a2e;box-shadow:none}
     .btn-ghost:hover{background:#1a1a2e;color:#fff}
+    .btn-small{padding:12px 24px;font-size:14px}
     .pill{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;font-size:14px;font-weight:600;border:2px solid #1a1a2e;cursor:pointer;transition:all .15s ease;background:#fff}
     .pill:hover{transform:translateY(-2px)}
     .pill.active{background:#1a1a2e;color:#fff}
@@ -47,12 +49,21 @@
     .domain-card{padding:16px;border-radius:16px;cursor:pointer;border:3px solid #e8e8e8;background:#fff;transition:all .15s ease;text-align:center}
     .domain-card:hover{border-color:#1a1a2e}
     .domain-card.active{border-color:#1a1a2e;background:#E8F5E9}
+    .section{padding:32px;background:#fff;border-radius:20px;border:2px solid #e8e8e8;margin-bottom:20px}
+    .section-header{font-size:14px;font-weight:700;color:#A1A1AA;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+    .step-card{display:flex;gap:16px;padding:20px;background:#f9f9f9;border-radius:16px;margin-bottom:12px}
+    .step-number{width:32px;height:32px;border-radius:50%;background:#1a1a2e;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+    .copy-box{background:#f5f5f5;border:2px dashed #ccc;border-radius:12px;padding:16px;font-size:14px;line-height:1.6;cursor:pointer;transition:all .2s}
+    .copy-box:hover{border-color:#1a1a2e;background:#fff}
+    .copy-box.copied{border-color:#4ECDC4;background:#E8F5E9}
     h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;line-height:1.1}
     .confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000}
     .confetti-piece{position:absolute;width:12px;height:12px;animation:confettiFall 3s linear forwards}
     @keyframes confettiFall{0%{transform:translateY(-100px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
     .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:24px}
-    @media(max-width:640px){.btn{padding:16px 28px;font-size:16px}.emoji-btn{font-size:36px}h1{font-size:32px!important}.blob{opacity:0.3}}
+    .tag{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600}
+    .week-header{display:flex;align-items:center;gap:12px;padding:16px 20px;background:#1a1a2e;color:#fff;border-radius:12px;margin-bottom:12px;font-weight:700}
+    @media(max-width:640px){.btn{padding:16px 28px;font-size:16px}.emoji-btn{font-size:36px}h1{font-size:28px!important}.blob{opacity:0.3}.section{padding:24px}}
   </style>
 </head>
 <body>
@@ -1683,21 +1694,19 @@ const C={
   res:[{n:'ACRP certification',c:'$500+'},{n:'Clinical experience',c:'Helpful'}]},
 
 };
-
 const catColors={Tech:'#4ECDC4',Creative:'#FF6B6B',Consulting:'#A8E6CF',Business:'#95E1D3',Finance:'#F38181',Wellness:'#AA96DA',Healthcare:'#FF6B6B',Trades:'#F9B208',Outdoors:'#A8E6CF',Education:'#DDA0DD',Coaching:'#AA96DA',Legal:'#95E1D3',Government:'#4ECDC4',Food:'#F9B208',Hospitality:'#FF6B6B',Unique:'#AA96DA',Science:'#4ECDC4',Sales:'#FFE66D',Marketing:'#FF6B6B',HR:'#A8E6CF','Customer Success':'#4ECDC4'};
 
 const personalityTypes={
   builder:{name:'The Builder',emoji:'🔨',color:'#F9B208',bg:'#FFF8E1',desc:'You think by doing. Ideas are nice, but you need to make things real.',strengths:['Creating from scratch','Shipping things','Hands-on problem solving']},
   analyst:{name:'The Analyst',emoji:'🔬',color:'#4ECDC4',bg:'#E0F7FA',desc:'You notice what others miss. Patterns, data, deeper meanings.',strengths:['Finding patterns','Research','Data-driven thinking']},
-  helper:{name:'The Helper',emoji:'💚',color:'#A8E6CF',bg:'#E8F5E9',desc:'Other people\'s wins feel like your wins. You measure success by impact on people.',strengths:['Empathy','Guiding others','Building trust']},
+  helper:{name:'The Helper',emoji:'💚',color:'#A8E6CF',bg:'#E8F5E9',desc:'Other people\\'s wins feel like your wins. You measure success by impact on people.',strengths:['Empathy','Guiding others','Building trust']},
   communicator:{name:'The Communicator',emoji:'📣',color:'#FF6B6B',bg:'#FFEBEE',desc:'You think out loud. Ideas become real when you share them.',strengths:['Presenting','Relationships','Translating ideas']},
   optimizer:{name:'The Optimizer',emoji:'⚙️',color:'#AA96DA',bg:'#F3E5F5',desc:'Inefficiency bothers you. You see how things could work better.',strengths:['Process improvement','Organization','Systems thinking']},
   creative:{name:'The Creator',emoji:'🎨',color:'#FF6B6B',bg:'#FCE4EC',desc:'You see the world differently. You make things beautiful or thought-provoking.',strengths:['Original thinking','Visual sense','New perspectives']},
-  explorer:{name:'The Explorer',emoji:'🧭',color:'#4ECDC4',bg:'#E0F7FA',desc:'Routine is the enemy. You\'re drawn to new challenges and unfamiliar territory.',strengths:['Adapting quickly','Learning fast','Handling uncertainty']},
+  explorer:{name:'The Explorer',emoji:'🧭',color:'#4ECDC4',bg:'#E0F7FA',desc:'Routine is the enemy. You\\'re drawn to new challenges and unfamiliar territory.',strengths:['Adapting quickly','Learning fast','Handling uncertainty']},
   specialist:{name:'The Specialist',emoji:'🎯',color:'#F9B208',bg:'#FFF8E1',desc:'You go deep while others go wide. Mastery matters to you.',strengths:['Deep expertise','Focus','Technical mastery']}
 };
 
-// New domain options
 const domainOptions=[
   {id:'tech',emoji:'💻',label:'Technology'},
   {id:'health',emoji:'🏥',label:'Healthcare'},
@@ -1705,8 +1714,8 @@ const domainOptions=[
   {id:'creative',emoji:'🎨',label:'Arts & Design'},
   {id:'science',emoji:'🔬',label:'Science'},
   {id:'education',emoji:'📚',label:'Education'},
-  {id:'legal',emoji:'⚖️',label:'Law & Policy'},
-  {id:'nature',emoji:'🌿',label:'Nature & Environment'},
+  {id:'legal',emoji:'⚖️',label:'Law'},
+  {id:'nature',emoji:'🌿',label:'Nature'},
   {id:'food',emoji:'🍳',label:'Food'},
   {id:'trades',emoji:'🏗️',label:'Trades'},
   {id:'media',emoji:'🎬',label:'Media'},
@@ -1716,7 +1725,6 @@ const domainOptions=[
   {id:'retail',emoji:'🛍️',label:'Retail'}
 ];
 
-// Activity options
 const activityOptions=[
   {id:'writing',emoji:'✍️',label:'Writing'},
   {id:'speaking',emoji:'🎤',label:'Speaking'},
@@ -1732,7 +1740,6 @@ const activityOptions=[
   {id:'fixing',emoji:'🔌',label:'Fixing'}
 ];
 
-// Avoid options
 const avoidOptions=[
   {id:'writing',label:'Writing all day'},
   {id:'meetings',label:'Constant meetings'},
@@ -1747,7 +1754,6 @@ const avoidOptions=[
 
 const currentRoles=[{v:'software',l:'Software / Tech'},{v:'design',l:'Design'},{v:'data',l:'Data'},{v:'product',l:'Product'},{v:'marketing',l:'Marketing'},{v:'sales',l:'Sales'},{v:'finance',l:'Finance'},{v:'operations',l:'Operations'},{v:'hr',l:'HR'},{v:'healthcare',l:'Healthcare'},{v:'education',l:'Education'},{v:'creative',l:'Creative / Arts'},{v:'trades',l:'Trades'},{v:'student',l:'Student'},{v:'searching',l:'Looking for work'},{v:'other',l:'Other'}];
 const experienceLevels=[{v:'0-1',l:'Less than a year'},{v:'1-3',l:'1–3 years'},{v:'3-5',l:'3–5 years'},{v:'5-10',l:'5–10 years'},{v:'10+',l:'10+ years'}];
-const satisfactionLevels=[{v:1,e:'😫'},{v:2,e:'😕'},{v:3,e:'😐'},{v:4,e:'🙂'},{v:5,e:'😊'}];
 const timeframes=[{v:'asap',l:'ASAP'},{v:'soon',l:'6 months'},{v:'year',l:'This year'},{v:'exploring',l:'Just exploring'}];
 const financialFlex=[{v:'tight',l:'Need stability now'},{v:'some',l:'Some flexibility'},{v:'comfortable',l:'Can invest in transition'},{v:'runway',l:'Have savings'}];
 const locationPrefs=[{v:'remote',l:'Remote'},{v:'hybrid',l:'Hybrid'},{v:'inperson',l:'In-person'},{v:'flexible',l:'Flexible'}];
@@ -1770,12 +1776,36 @@ const energyQuestions=[
 const fearMessages={
   'wrong-choice':"No single right answer. The bigger risk is staying stuck.",
   'not-qualified':"Most skills transfer. What doesn't? You can learn.",
-  'money':"Real constraint. We factored it in. Every career here pays.",
+  'money':"Real constraint. We factored it in.",
   'starting-over':"You're not at zero. Career changers have fresh perspective.",
-  'age':"People change careers at every age. Experience is valuable.",
-  'judgment':"Others' opinions fade fast. They'll just see you made a change.",
+  'age':"People change careers at every age.",
+  'judgment':"Others' opinions fade fast.",
   'none':"Good. Let's find your path."
 };
+
+// Generate LinkedIn message for a career
+const generateLinkedInMessage=(career, userName)=>{
+  return \`Hi [Name],
+
+I came across your profile and noticed you work as a \${career.t}. I'm currently exploring a career transition into this field and would love to learn from someone with your experience.
+
+Would you be open to a 15-minute call sometime in the next few weeks? I'd be grateful to hear about your path and any advice you might have.
+
+Thanks so much,
+\${userName}\`;
+};
+
+// Coffee chat questions
+const coffeeChatQuestions=[
+  "What does a typical day or week look like for you?",
+  "What surprised you most when you started this role?",
+  "What skills are most important for success in this field?",
+  "What would you do differently if you were starting over?",
+  "What's the hardest part of the job that people don't see?",
+  "How did you break into this field?",
+  "What resources helped you most when learning?",
+  "Who else should I talk to?"
+];
 
 const Confetti=()=>{
   const colors=['#FF6B6B','#FFE66D','#4ECDC4','#A8E6CF','#AA96DA'];
@@ -1783,61 +1813,242 @@ const Confetti=()=>{
   return(<div className="confetti">{pieces.map(p=>(<div key={p.id} className="confetti-piece" style={{left:p.left,animationDelay:p.delay,background:p.color,width:p.size,height:p.size,borderRadius:Math.random()>.5?'50%':'2px'}}/>))}</div>);
 };
 
-const SaveModal=({onSave,onClose})=>{
-  const[email,setEmail]=useState('');
+const CopyBox=({text,label})=>{
+  const[copied,setCopied]=useState(false);
+  const handleCopy=()=>{
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(()=>setCopied(false),2000);
+  };
   return(
-    <div className="modal">
-      <div className="card" style={{maxWidth:400,width:'100%',padding:32,textAlign:'center'}}>
-        <div style={{fontSize:48,marginBottom:16}}>💾</div>
-        <h2 style={{fontSize:24,fontWeight:700,marginBottom:12}}>Save your results?</h2>
-        <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Enter your email to access your results anytime.</p>
-        <input type="email" placeholder="your@email.com" value={email} onChange={e=>setEmail(e.target.value)} style={{width:'100%',padding:'16px 20px',borderRadius:12,border:'3px solid #e8e8e8',fontSize:16,fontFamily:'DM Sans',marginBottom:16}}/>
-        <button className="btn btn-primary" style={{width:'100%',marginBottom:12}} onClick={()=>onSave(email)} disabled={!email.includes('@')}>Save</button>
-        <button className="btn btn-ghost" style={{width:'100%'}} onClick={onClose}>No thanks</button>
+    <div>
+      {label&&<div style={{fontSize:13,fontWeight:600,marginBottom:8,color:'#52525B'}}>{label}</div>}
+      <div className={"copy-box"+(copied?' copied':'')} onClick={handleCopy}>
+        {text}
+        <div style={{marginTop:12,fontSize:12,color:copied?'#4ECDC4':'#A1A1AA',fontWeight:600}}>
+          {copied?'✓ Copied!':'Click to copy'}
+        </div>
       </div>
     </div>
   );
 };
+// Career Detail Page Component
+const CareerDetailPage=({career,userData,onBack,onExploreAnother})=>{
+  const[activeTab,setActiveTab]=useState('overview');
+  const[copiedMessage,setCopiedMessage]=useState(false);
+  
+  const matchReasons=useMemo(()=>{
+    const reasons=[];
+    if(career.domains&&userData.domains){
+      const matches=career.domains.filter(d=>userData.domains.includes(d));
+      if(matches.length>0){
+        const labels=matches.map(m=>domainOptions.find(o=>o.id===m)?.label).filter(Boolean);
+        reasons.push({emoji:'🎯',text:'Matches your interest in '+labels.join(', ')});
+      }
+    }
+    if(career.activities&&userData.activities){
+      const matches=career.activities.filter(a=>userData.activities.includes(a));
+      if(matches.length>0){
+        const labels=matches.map(m=>activityOptions.find(o=>o.id===m)?.label).filter(Boolean);
+        reasons.push({emoji:'⚡',text:'Involves '+labels.join(', ').toLowerCase()+' — things you enjoy'});
+      }
+    }
+    if(career.fit){
+      const topFit=Object.entries(career.fit).sort((a,b)=>b[1]-a[1])[0];
+      if(topFit&&personalityTypes[topFit[0]]){
+        reasons.push({emoji:personalityTypes[topFit[0]].emoji,text:'Great fit for '+personalityTypes[topFit[0]].name.toLowerCase()+'s'});
+      }
+    }
+    return reasons;
+  },[career,userData]);
 
-const stripEmoji=(str)=>str.replace(/[\u{1F600}-\u{1F6FF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu,'').trim();
+  const difficultyLabel={1:'Accessible',2:'Moderate',3:'Significant'}[career.d]||'Moderate';
+  const difficultyColor={1:'#4ECDC4',2:'#FFE66D',3:'#FF6B6B'}[career.d]||'#FFE66D';
 
-const generatePDF=(userData)=>{
-  const{jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:'portrait',unit:'pt',format:'letter'});
-  const pageWidth=612,pageHeight=792,margin=50;
-  const pType=personalityTypes[userData.topType]||personalityTypes.explorer;
-  
-  doc.setFillColor(255,251,245);doc.rect(0,0,pageWidth,pageHeight,'F');
-  doc.setFillColor(26,26,46);doc.rect(0,0,pageWidth,100,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
-  doc.text('CAREER CLARITY',margin,45);
-  doc.setFontSize(28);doc.text(userData.name+"'s Career DNA",margin,75);
-  
-  let y=130;
-  doc.setFillColor(255,230,109);doc.roundedRect(margin,y,pageWidth-margin*2,80,12,12,'F');
-  doc.setTextColor(26,26,46);doc.setFontSize(24);doc.setFont('helvetica','bold');
-  doc.text(stripEmoji(pType.name).toUpperCase(),margin+20,y+35);
-  doc.setFontSize(11);doc.setFont('helvetica','normal');
-  doc.text(pType.desc.slice(0,80)+'...',margin+20,y+55);
-  
-  y+=100;
-  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.text('TOP MATCHES',margin,y);y+=25;
-  
-  userData.results.slice(0,5).forEach((c,i)=>{
-    doc.setFillColor(255,255,255);doc.roundedRect(margin,y,pageWidth-margin*2,45,6,6,'F');
-    doc.setDrawColor(26,26,46);doc.setLineWidth(1.5);doc.roundedRect(margin,y,pageWidth-margin*2,45,6,6,'S');
-    doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(26,26,46);
-    doc.text('#'+(i+1)+' '+stripEmoji(c.t),margin+15,y+28);
-    doc.setFontSize(12);doc.setTextColor(78,205,196);doc.text(c.score+'%',pageWidth-margin-50,y+28);
-    y+=55;
-  });
-  
-  doc.setFillColor(26,26,46);doc.rect(0,pageHeight-50,pageWidth,50,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(11);doc.text('careerclarity.com',margin,pageHeight-22);
-  
-  doc.save(userData.name.replace(/\s+/g,'_')+'_Career_DNA.pdf');
+  const linkedInMessage=generateLinkedInMessage(career,userData.name||'[Your name]');
+
+  return(
+    <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
+      <div style={{maxWidth:700,margin:'0 auto'}}>
+        
+        {/* Header */}
+        <button className="btn btn-ghost btn-small" style={{marginBottom:20}} onClick={onBack}>← Back to results</button>
+        
+        <div className="card fade-up" style={{padding:32,marginBottom:24,background:'linear-gradient(135deg,'+( catColors[career.c]||'#4ECDC4')+'22,#fff)'}}>
+          <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:16}}>
+            <span className="tag" style={{background:catColors[career.c]||'#ddd',color:'#fff'}}>{career.c}</span>
+            <span style={{fontSize:18,fontWeight:700,color:'#4ECDC4'}}>{career.score}% match</span>
+          </div>
+          <div style={{fontSize:64,marginBottom:12}}>{career.e}</div>
+          <h1 style={{fontSize:32,fontWeight:800,marginBottom:12}}>{career.t}</h1>
+          <p style={{fontSize:18,color:'#52525B',marginBottom:24}}>{career.desc}</p>
+          
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16}}>
+            <div style={{background:'#fff',padding:16,borderRadius:12,border:'2px solid #e8e8e8'}}>
+              <div style={{fontSize:12,color:'#A1A1AA',marginBottom:4}}>SALARY RANGE</div>
+              <div style={{fontSize:18,fontWeight:700,color:'#4ECDC4'}}>${career.s?.[0]}K – ${career.s?.[2]}K</div>
+            </div>
+            <div style={{background:'#fff',padding:16,borderRadius:12,border:'2px solid #e8e8e8'}}>
+              <div style={{fontSize:12,color:'#A1A1AA',marginBottom:4}}>TRANSITION TIME</div>
+              <div style={{fontSize:18,fontWeight:700}}>{career.tm}</div>
+            </div>
+            <div style={{background:'#fff',padding:16,borderRadius:12,border:'2px solid #e8e8e8'}}>
+              <div style={{fontSize:12,color:'#A1A1AA',marginBottom:4}}>DIFFICULTY</div>
+              <div style={{fontSize:18,fontWeight:700,color:difficultyColor}}>{difficultyLabel}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Why it fits you */}
+        {matchReasons.length>0&&(
+          <div className="section fade-up delay-1">
+            <div className="section-header">Why this fits you</div>
+            {matchReasons.map((r,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 0',borderBottom:i<matchReasons.length-1?'1px solid #f0f0f0':'none'}}>
+                <span style={{fontSize:24}}>{r.emoji}</span>
+                <span style={{fontSize:16}}>{r.text}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* The Reality */}
+        <div className="section fade-up delay-2">
+          <div className="section-header">The reality</div>
+          <p style={{fontSize:15,color:'#52525B',marginBottom:20}}>What people in this role wish they knew before starting:</p>
+          {career.truth?.map((t,i)=>(
+            <div key={i} style={{display:'flex',gap:12,marginBottom:12}}>
+              <span style={{color:'#FFE66D',fontSize:18}}>→</span>
+              <span style={{fontSize:15,lineHeight:1.5}}>{t}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Resources */}
+        {career.res&&career.res.length>0&&(
+          <div className="section fade-up delay-3">
+            <div className="section-header">Where to learn</div>
+            <div style={{display:'grid',gap:12}}>
+              {career.res.map((r,i)=>(
+                <div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:16,background:'#f9f9f9',borderRadius:12}}>
+                  <span style={{fontWeight:600}}>{r.n}</span>
+                  <span className="tag" style={{background:'#E8F5E9',color:'#4ECDC4'}}>{r.c}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 4-Week Action Plan */}
+        <div className="section fade-up">
+          <div className="section-header">Your 4-week action plan</div>
+          <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>A realistic plan to validate whether {career.t} is right for you.</p>
+          
+          <div className="week-header">📅 Week 1: Research</div>
+          <div className="step-card">
+            <div className="step-number">1</div>
+            <div>
+              <div style={{fontWeight:600,marginBottom:4}}>Deep dive on the role</div>
+              <div style={{fontSize:14,color:'#52525B'}}>Spend 2 hours researching what {career.t}s actually do. Read job descriptions, day-in-the-life posts, and Reddit threads.</div>
+            </div>
+          </div>
+          <div className="step-card">
+            <div className="step-number">2</div>
+            <div>
+              <div style={{fontWeight:600,marginBottom:4}}>Identify 10 people to reach out to</div>
+              <div style={{fontSize:14,color:'#52525B'}}>Search LinkedIn for "{career.t}" and find 10 people whose paths look interesting. Prioritize people who transitioned from similar backgrounds.</div>
+            </div>
+          </div>
+
+          <div className="week-header" style={{marginTop:24}}>💬 Week 2: Outreach</div>
+          <div className="step-card">
+            <div className="step-number">3</div>
+            <div>
+              <div style={{fontWeight:600,marginBottom:4}}>Send 5 connection requests</div>
+              <div style={{fontSize:14,color:'#52525B'}}>Use the message template below. Expect ~20-30% response rate, so cast a wide net.</div>
+            </div>
+          </div>
+          <div className="step-card">
+            <div className="step-number">4</div>
+            <div>
+              <div style={{fontWeight:600,marginBottom:4}}>Start learning basics</div>
+              <div style={{fontSize:14,color:'#52525B'}}>
+                {career.res?.[0]?`Begin with ${career.res[0].n} (${career.res[0].c}). `:''}
+                Even 30 minutes helps you ask better questions.
+              </div>
+            </div>
+          </div>
+
+          <div className="week-header" style={{marginTop:24}}>☕ Week 3: Conversations</div>
+          <div className="step-card">
+            <div className="step-number">5</div>
+            <div>
+              <div style={{fontWeight:600,marginBottom:4}}>Have 2-3 coffee chats</div>
+              <div style={{fontSize:14,color:'#52525B'}}>15-30 minutes each. Take notes. Ask the questions listed below.</div>
+            </div>
+          </div>
+          <div className="step-card">
+            <div className="step-number">6</div>
+            <div>
+              <div style={{fontWeight:600,marginBottom:4}}>Ask for referrals</div>
+              <div style={{fontSize:14,color:'#52525B'}}>End each call with "Who else should I talk to?" This expands your network exponentially.</div>
+            </div>
+          </div>
+
+          <div className="week-header" style={{marginTop:24}}>🎯 Week 4: Decide</div>
+          <div className="step-card">
+            <div className="step-number">7</div>
+            <div>
+              <div style={{fontWeight:600,marginBottom:4}}>Reflect on what you learned</div>
+              <div style={{fontSize:14,color:'#52525B'}}>Does this still excite you? Could you see yourself doing this daily? What concerns came up?</div>
+            </div>
+          </div>
+          <div className="step-card">
+            <div className="step-number">8</div>
+            <div>
+              <div style={{fontWeight:600,marginBottom:4}}>Make a decision</div>
+              <div style={{fontSize:14,color:'#52525B'}}>Either commit to pursuing this path (and make a 90-day plan), or return here to explore your other matches.</div>
+            </div>
+          </div>
+        </div>
+
+        {/* LinkedIn Outreach Template */}
+        <div className="section fade-up">
+          <div className="section-header">LinkedIn message template</div>
+          <p style={{fontSize:15,color:'#52525B',marginBottom:16}}>Copy and personalize this for your outreach:</p>
+          <CopyBox text={linkedInMessage}/>
+        </div>
+
+        {/* Coffee Chat Questions */}
+        <div className="section fade-up">
+          <div className="section-header">Questions to ask</div>
+          <p style={{fontSize:15,color:'#52525B',marginBottom:16}}>Pick 4-5 of these for your conversations:</p>
+          <div style={{display:'grid',gap:8}}>
+            {coffeeChatQuestions.map((q,i)=>(
+              <div key={i} style={{display:'flex',gap:12,padding:'12px 16px',background:'#f9f9f9',borderRadius:10}}>
+                <span style={{color:'#4ECDC4',fontWeight:700}}>{i+1}.</span>
+                <span style={{fontSize:15}}>{q}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom CTAs */}
+        <div style={{display:'flex',gap:12,flexWrap:'wrap',marginTop:32}}>
+          <button className="btn btn-primary pop" style={{flex:1,minWidth:200}} onClick={()=>window.open('https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(career.t),'_blank')}>
+            Find {career.t}s on LinkedIn →
+          </button>
+          <button className="btn btn-secondary pop" style={{flex:1,minWidth:200}} onClick={onExploreAnother}>
+            Explore another match
+          </button>
+        </div>
+
+        <button className="btn btn-ghost" style={{width:'100%',marginTop:12}} onClick={onBack}>Back to all results</button>
+      </div>
+    </div>
+  );
 };
-
+// Main App
 function App(){
   const getSavedData=()=>{try{const s=localStorage.getItem('careerClarity_v2');return s?JSON.parse(s):null;}catch(e){return null;}};
   const savedData=getSavedData();
@@ -1845,7 +2056,7 @@ function App(){
   const[mode,setMode]=useState(savedData?'quiz':'home');
   const[step,setStep]=useState(savedData?.results?.length?100:0);
   const[showConfetti,setShowConfetti]=useState(false);
-  const[showSaveModal,setShowSaveModal]=useState(false);
+  const[selectedCareer,setSelectedCareer]=useState(null);
   const[filter,setFilter]=useState({cat:'',search:''});
   const[d,setD]=useState(savedData||{
     name:'',email:'',currentRole:'',experience:'',satisfaction:null,timeframe:'',financialFlex:'',location:'',
@@ -1853,13 +2064,6 @@ function App(){
     fear:'',results:[],topType:''
   });
   const u=x=>setD(p=>({...p,...x}));
-  
-  useEffect(()=>{
-    if(step===100&&!d.email&&!showSaveModal){
-      const timer=setTimeout(()=>setShowSaveModal(true),45000);
-      return()=>clearTimeout(timer);
-    }
-  },[step,d.email,showSaveModal]);
   
   const totalSteps=22;
   const progress=Math.min(100,(step/totalSteps)*100);
@@ -1876,7 +2080,6 @@ function App(){
     const scores={};
     const typeScores={builder:0,analyst:0,helper:0,communicator:0,optimizer:0,creative:0,explorer:0,specialist:0};
     
-    // Energy questions
     Object.entries(d.energy).forEach(([qId,rating])=>{
       const q=energyQuestions.find(x=>x.id===qId);
       if(q?.tags){const mult=(rating-3)/2;Object.entries(q.tags).forEach(([tag,w])=>{if(typeScores[tag]!==undefined)typeScores[tag]+=mult*w;});}
@@ -1887,55 +2090,34 @@ function App(){
     
     Object.entries(C).forEach(([id,c])=>{
       let score=40;
-      
-      // DOMAIN MATCH (big weight)
       if(c.domains&&d.domains.length){
         const domainMatches=c.domains.filter(dom=>d.domains.includes(dom)).length;
         score+=domainMatches*15;
       }
-      
-      // ACTIVITY MATCH (big weight)
       if(c.activities&&d.activities.length){
         const actMatches=c.activities.filter(act=>d.activities.includes(act)).length;
         score+=actMatches*12;
-      }
-      
-      // AVOID penalties
-      if(c.avoids&&d.avoids.length){
-        // If career involves things user wants to avoid, penalize
-        // But also if user avoids things this career requires
       }
       if(c.activities&&d.avoids.length){
         const avoidMatches=c.activities.filter(act=>d.avoids.includes(act)).length;
         score-=avoidMatches*10;
       }
-      
-      // Personality fit
       if(c.fit){
         Object.entries(c.fit).forEach(([type,fitScore])=>{
           const userTypeScore=typeScores[type]||0;
           score+=userTypeScore*fitScore*3;
         });
       }
-      
-      // Practical constraints
       if(d.financialFlex==='tight'&&c.d===3)score-=15;
       if(d.financialFlex==='tight'&&c.s?.[0]<40)score-=20;
       if(d.timeframe==='asap'&&c.d===3)score-=15;
       if(d.timeframe==='asap'&&c.d===1)score+=10;
-      
-      // Location
-      if(d.location==='remote'&&c.life?.r==='No')score-=10;
-      
-      // Difficulty bonus for easier transitions
       if(c.d===1)score+=5;
-      
       scores[id]=Math.max(0,Math.min(100,Math.round(score)));
     });
     
-    const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]).slice(0,25).map(([id,score])=>({id,...C[id],score}));
+    const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([id,score])=>({id,...C[id],score}));
     
-    // Save
     const newData={...d,results:sorted,topType};
     u({results:sorted,topType});
     try{localStorage.setItem('careerClarity_v2',JSON.stringify(newData));}catch(e){}
@@ -1952,9 +2134,23 @@ function App(){
   
   const clearResults=()=>{
     try{localStorage.removeItem('careerClarity_v2');}catch(e){}
-    setStep(0);
+    setStep(0);setSelectedCareer(null);
     setD({name:'',email:'',currentRole:'',experience:'',satisfaction:null,timeframe:'',financialFlex:'',location:'',domains:[],activities:[],avoids:[],energy:{},fear:'',results:[],topType:''});
   };
+
+  // Career Detail View
+  if(selectedCareer){
+    return <CareerDetailPage 
+      career={selectedCareer} 
+      userData={d} 
+      onBack={()=>setSelectedCareer(null)}
+      onExploreAnother={()=>{
+        const others=d.results.filter(r=>r.id!==selectedCareer.id);
+        if(others.length)setSelectedCareer(others[0]);
+        else setSelectedCareer(null);
+      }}
+    />;
+  }
 
   // HOME
   if(mode==='home')return(
@@ -1965,7 +2161,7 @@ function App(){
       
       <nav style={{padding:'20px 24px',display:'flex',justifyContent:'space-between',alignItems:'center',position:'relative',zIndex:10}}>
         <div style={{fontFamily:"'Bricolage Grotesque'",fontSize:22,fontWeight:800}}>🧭 Career Clarity</div>
-        <button className="btn btn-ghost" style={{padding:'10px 20px',fontSize:14}} onClick={()=>setMode('browse')}>Explore careers</button>
+        <button className="btn btn-ghost btn-small" onClick={()=>setMode('browse')}>Explore careers</button>
       </nav>
       
       <div style={{maxWidth:800,margin:'0 auto',padding:'60px 24px',textAlign:'center',position:'relative',zIndex:10}}>
@@ -1975,23 +2171,23 @@ function App(){
             What if the right career is one<br/>you haven't heard of yet?
           </h1>
           <p style={{fontSize:20,color:'#52525B',maxWidth:540,margin:'0 auto 40px',lineHeight:1.6}}>
-            Take a 5-minute quiz to see what careers could be a great match — based on your personality and interests.
+            Take a 5-minute quiz to see what careers match you — then get a clear action plan to explore them.
           </p>
           
           <button className="btn btn-primary pop" style={{fontSize:20,padding:'22px 48px'}} onClick={()=>setMode('quiz')}>
             Take the quiz
           </button>
           
-          <p style={{marginTop:20,fontSize:14,color:'#A1A1AA'}}>Free · No signup · 180 careers · PDF results</p>
+          <p style={{marginTop:20,fontSize:14,color:'#A1A1AA'}}>Free · 180 careers · Action plan included</p>
         </div>
         
         <div style={{marginTop:80,textAlign:'left'}}>
           <h2 style={{fontSize:24,fontWeight:700,marginBottom:24,textAlign:'center'}}>What you'll get</h2>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:20}}>
             {[
-              {emoji:'🎯',title:'Your work personality',desc:'Understand why some work energizes you and other work drains you'},
-              {emoji:'🗺️',title:'180 career paths',desc:'See careers you\'d never find on a job board'},
-              {emoji:'⚡',title:'Honest trade-offs',desc:'Know the real trade-offs before you commit'}
+              {emoji:'🎯',title:'Your top 3 matches',desc:'Not a list of 50 options — just the careers that actually fit you'},
+              {emoji:'📋',title:'4-week action plan',desc:'Step-by-step guide to validate each career before committing'},
+              {emoji:'💬',title:'Outreach templates',desc:'Ready-to-send LinkedIn messages for coffee chats'}
             ].map((f,i)=>(
               <div key={i} className={"card fade-up delay-"+(i+1)} style={{padding:24}}>
                 <div style={{fontSize:36,marginBottom:12}}>{f.emoji}</div>
@@ -2011,7 +2207,7 @@ function App(){
       <div style={{maxWidth:1100,margin:'0 auto'}}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24,flexWrap:'wrap',gap:16}}>
           <h1 style={{fontSize:28,fontWeight:800}}>Explore 180 careers</h1>
-          <button className="btn btn-ghost" onClick={()=>setMode('home')}>← Back</button>
+          <button className="btn btn-ghost btn-small" onClick={()=>setMode('home')}>← Back</button>
         </div>
         
         <div className="card" style={{padding:20,marginBottom:24}}>
@@ -2028,31 +2224,27 @@ function App(){
         
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:20}}>
           {filtered.map(c=>(
-            <div key={c.id} className="card pop" style={{padding:24}}>
-              <div style={{display:'flex',justifyContent:'space-between',marginBottom:12}}>
-                <span style={{padding:'6px 14px',borderRadius:100,fontSize:12,fontWeight:600,background:catColors[c.c]||'#ddd',color:'#fff'}}>{c.c}</span>
-              </div>
+            <div key={c.id} className="card pop" style={{padding:24,cursor:'pointer'}} onClick={()=>{setSelectedCareer({...c,score:null});setMode('quiz');}}>
+              <span className="tag" style={{background:catColors[c.c]||'#ddd',color:'#fff',marginBottom:12}}>{c.c}</span>
               <div style={{fontSize:32,marginBottom:8}}>{c.e}</div>
               <h3 style={{fontSize:20,fontWeight:700,marginBottom:8}}>{c.t}</h3>
               <p style={{fontSize:14,color:'#52525B',marginBottom:16}}>{c.desc}</p>
-              <div style={{fontSize:16,fontWeight:700,color:'#4ECDC4'}}>${c.s?.[0]}K – ${c.s?.[2]}K+</div>
+              <div style={{fontSize:16,fontWeight:700,color:'#4ECDC4'}}>\${c.s?.[0]}K – \${c.s?.[2]}K+</div>
             </div>
           ))}
         </div>
       </div>
     </div>
   );
-
   // QUIZ
   if(mode==='quiz'){
     const ProgressBar=()=>(<div className="progress-track" style={{marginBottom:24}}><div className="progress-fill" style={{width:progress+'%'}}></div></div>);
-    const BackBtn=()=>(<button className="btn btn-ghost" style={{padding:'10px 20px',fontSize:14,marginBottom:20}} onClick={()=>setStep(Math.max(0,step-1))}>← Back</button>);
+    const BackBtn=()=>(<button className="btn btn-ghost btn-small" style={{marginBottom:20}} onClick={()=>setStep(Math.max(0,step-1))}>← Back</button>);
 
-    // Step 0: Name
     if(step===0)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
-          <button className="btn btn-ghost" style={{padding:'10px 20px',fontSize:14,marginBottom:20}} onClick={()=>setMode('home')}>← Back</button>
+          <button className="btn btn-ghost btn-small" style={{marginBottom:20}} onClick={()=>setMode('home')}>← Back</button>
           <div className="card" style={{padding:32,textAlign:'center'}}>
             <div style={{fontSize:56,marginBottom:16}}>👋</div>
             <h1 style={{fontSize:28,fontWeight:800,marginBottom:12}}>Let's start</h1>
@@ -2064,8 +2256,7 @@ function App(){
       </div>
     );
 
-    // Step 1-4: Context questions
-    const OptionStep=({title,options,value,onChange,multi})=>(
+    const OptionStep=({title,options,value,onChange})=>(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
           <BackBtn/>
@@ -2074,7 +2265,7 @@ function App(){
             <h2 style={{fontSize:22,fontWeight:700,marginBottom:20}}>{title}</h2>
             <div style={{display:'flex',flexDirection:'column',gap:10}}>
               {options.map(opt=>(
-                <div key={opt.v||opt.l} className={"option"+(value===(opt.v??opt.l)?' active':'')} onClick={()=>{onChange(opt.v??opt.l);if(!multi)setTimeout(()=>setStep(step+1),200);}}>{opt.e?opt.e+' ':''}{opt.l}</div>
+                <div key={opt.v||opt.l} className={"option"+(value===(opt.v??opt.l)?' active':'')} onClick={()=>{onChange(opt.v??opt.l);setTimeout(()=>setStep(step+1),200);}}>{opt.e?opt.e+' ':''}{opt.l}</div>
               ))}
             </div>
           </div>
@@ -2088,22 +2279,15 @@ function App(){
     if(step===4)return<OptionStep title="Financial flexibility?" options={financialFlex} value={d.financialFlex} onChange={v=>u({financialFlex:v})}/>;
     if(step===5)return<OptionStep title="Where do you want to work?" options={locationPrefs} value={d.location} onChange={v=>u({location:v})}/>;
 
-    // Step 6: Domains (multi-select)
     if(step===6)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:600,margin:'0 auto'}} className="fade-up">
-          <BackBtn/>
-          <ProgressBar/>
+          <BackBtn/><ProgressBar/>
           <div className="card" style={{padding:32}}>
             <h2 style={{fontSize:22,fontWeight:700,marginBottom:8}}>What worlds interest you?</h2>
-            <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Pick 2-5 that appeal to you.</p>
+            <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Pick 2-5.</p>
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(100px,1fr))',gap:12,marginBottom:24}}>
-              {domainOptions.map(opt=>(
-                <div key={opt.id} className={"domain-card"+(d.domains.includes(opt.id)?' active':'')} onClick={()=>u({domains:d.domains.includes(opt.id)?d.domains.filter(x=>x!==opt.id):[...d.domains,opt.id]})}>
-                  <div style={{fontSize:28}}>{opt.emoji}</div>
-                  <div style={{fontSize:12,marginTop:4}}>{opt.label}</div>
-                </div>
-              ))}
+              {domainOptions.map(opt=>(<div key={opt.id} className={"domain-card"+(d.domains.includes(opt.id)?' active':'')} onClick={()=>u({domains:d.domains.includes(opt.id)?d.domains.filter(x=>x!==opt.id):[...d.domains,opt.id]})}><div style={{fontSize:28}}>{opt.emoji}</div><div style={{fontSize:12,marginTop:4}}>{opt.label}</div></div>))}
             </div>
             <button className="btn btn-primary" style={{width:'100%'}} disabled={d.domains.length<2} onClick={()=>setStep(7)}>Continue</button>
           </div>
@@ -2111,22 +2295,15 @@ function App(){
       </div>
     );
 
-    // Step 7: Activities (multi-select)
     if(step===7)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:600,margin:'0 auto'}} className="fade-up">
-          <BackBtn/>
-          <ProgressBar/>
+          <BackBtn/><ProgressBar/>
           <div className="card" style={{padding:32}}>
-            <h2 style={{fontSize:22,fontWeight:700,marginBottom:8}}>What do you want to spend your time doing?</h2>
-            <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Pick 3-5 activities.</p>
+            <h2 style={{fontSize:22,fontWeight:700,marginBottom:8}}>What do you want to spend time doing?</h2>
+            <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Pick 3-5.</p>
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(100px,1fr))',gap:12,marginBottom:24}}>
-              {activityOptions.map(opt=>(
-                <div key={opt.id} className={"domain-card"+(d.activities.includes(opt.id)?' active':'')} onClick={()=>u({activities:d.activities.includes(opt.id)?d.activities.filter(x=>x!==opt.id):[...d.activities,opt.id]})}>
-                  <div style={{fontSize:28}}>{opt.emoji}</div>
-                  <div style={{fontSize:12,marginTop:4}}>{opt.label}</div>
-                </div>
-              ))}
+              {activityOptions.map(opt=>(<div key={opt.id} className={"domain-card"+(d.activities.includes(opt.id)?' active':'')} onClick={()=>u({activities:d.activities.includes(opt.id)?d.activities.filter(x=>x!==opt.id):[...d.activities,opt.id]})}><div style={{fontSize:28}}>{opt.emoji}</div><div style={{fontSize:12,marginTop:4}}>{opt.label}</div></div>))}
             </div>
             <button className="btn btn-primary" style={{width:'100%'}} disabled={d.activities.length<3} onClick={()=>setStep(8)}>Continue</button>
           </div>
@@ -2134,15 +2311,13 @@ function App(){
       </div>
     );
 
-    // Step 8: Avoids (multi-select)
     if(step===8)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
-          <BackBtn/>
-          <ProgressBar/>
+          <BackBtn/><ProgressBar/>
           <div className="card" style={{padding:32}}>
             <h2 style={{fontSize:22,fontWeight:700,marginBottom:8}}>What do you want to avoid?</h2>
-            <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Select any that apply.</p>
+            <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Select any.</p>
             <div style={{display:'flex',flexWrap:'wrap',gap:10,marginBottom:24}}>
               {avoidOptions.map(opt=>(<span key={opt.id} className={"pill"+(d.avoids.includes(opt.id)?' active':'')} onClick={()=>u({avoids:d.avoids.includes(opt.id)?d.avoids.filter(x=>x!==opt.id):[...d.avoids,opt.id]})}>{opt.label}</span>))}
             </div>
@@ -2152,23 +2327,19 @@ function App(){
       </div>
     );
 
-    // Steps 9-20: Energy questions
     if(step>=9&&step<=20){
       const qi=step-9;const q=energyQuestions[qi];
       if(!q){setStep(21);return null;}
       return(
         <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
           <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
-            <BackBtn/>
-            <ProgressBar/>
+            <BackBtn/><ProgressBar/>
             <div className="card" style={{padding:32,textAlign:'center'}}>
               <p style={{fontSize:13,color:'#A1A1AA',marginBottom:16}}>{qi+1} of 12</p>
               <h2 style={{fontSize:18,fontWeight:600,marginBottom:8,color:'#52525B'}}>How does this feel?</h2>
               <p style={{fontSize:20,color:'#1a1a2e',marginBottom:32,fontWeight:600}}>"{q.q}"</p>
               <div style={{display:'flex',justifyContent:'space-between',marginBottom:16}}>
-                {['😫','😕','😐','🙂','😍'].map((em,i)=>(
-                  <span key={i} className={"emoji-btn"+(d.energy[q.id]===i+1?' active':'')} onClick={()=>{u({energy:{...d.energy,[q.id]:i+1}});setTimeout(()=>setStep(step+1),250);}}>{em}</span>
-                ))}
+                {['😫','😕','😐','🙂','😍'].map((em,i)=>(<span key={i} className={"emoji-btn"+(d.energy[q.id]===i+1?' active':'')} onClick={()=>{u({energy:{...d.energy,[q.id]:i+1}});setTimeout(()=>setStep(step+1),250);}}>{em}</span>))}
               </div>
               <div style={{display:'flex',justifyContent:'space-between',fontSize:13,color:'#A1A1AA'}}><span>Drains me</span><span>Energizes me</span></div>
             </div>
@@ -2177,12 +2348,10 @@ function App(){
       );
     }
 
-    // Step 21: Fear
     if(step===21)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
-          <BackBtn/>
-          <ProgressBar/>
+          <BackBtn/><ProgressBar/>
           <div className="card" style={{padding:32}}>
             <h2 style={{fontSize:22,fontWeight:700,marginBottom:20}}>Biggest concern about change?</h2>
             <div style={{display:'flex',flexDirection:'column',gap:10}}>
@@ -2195,99 +2364,88 @@ function App(){
       </div>
     );
 
-    // Step 22: Email & Calculate
     if(step===22)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
-          <BackBtn/>
-          <ProgressBar/>
+          <BackBtn/><ProgressBar/>
           <div className="card" style={{padding:32,textAlign:'center'}}>
             <div style={{fontSize:56,marginBottom:16}}>🎉</div>
             <h2 style={{fontSize:24,fontWeight:700,marginBottom:12}}>Ready!</h2>
             <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>Where should we send your results?</p>
-            <input type="email" placeholder="your@email.com" value={d.email} onChange={e=>u({email:e.target.value})} style={{width:'100%',padding:'18px 24px',borderRadius:16,border:'3px solid #e8e8e8',fontSize:18,fontFamily:'DM Sans',textAlign:'center',marginBottom:16}}/>
-            <button className="btn btn-primary" style={{width:'100%',marginBottom:12}} onClick={calculateResults}>See my results</button>
-            <button className="btn btn-ghost" style={{width:'100%'}} onClick={calculateResults}>Skip</button>
+            <input type="email" placeholder="your@email.com (optional)" value={d.email} onChange={e=>u({email:e.target.value})} style={{width:'100%',padding:'18px 24px',borderRadius:16,border:'3px solid #e8e8e8',fontSize:18,fontFamily:'DM Sans',textAlign:'center',marginBottom:16}}/>
+            <button className="btn btn-primary" style={{width:'100%'}} onClick={calculateResults}>See my matches →</button>
           </div>
         </div>
       </div>
     );
 
-    // RESULTS
+    // RESULTS - Simplified to Top 3
     if(step===100){
-      const handleSaveEmail=(email)=>{
-        u({email});
-        try{localStorage.setItem('careerClarity_v2',JSON.stringify({...d,email}));}catch(e){}
-        setShowSaveModal(false);
-      };
+      const top3=d.results.slice(0,3);
       
       return(
         <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24,position:'relative'}}>
           {showConfetti&&<Confetti/>}
-          {showSaveModal&&!d.email&&<SaveModal onSave={handleSaveEmail} onClose={()=>setShowSaveModal(false)}/>}
           <div style={{maxWidth:600,margin:'0 auto'}}>
             
+            {/* Header */}
             <div className="card fade-up" style={{padding:32,textAlign:'center',background:'linear-gradient(135deg,#FFE66D,#FF6B6B)',marginBottom:24}}>
-              <p style={{fontSize:16,marginBottom:8}}>Hey {d.name}</p>
-              <h1 style={{fontSize:32,fontWeight:800}}>Here's what we found</h1>
+              <p style={{fontSize:16,marginBottom:8}}>Hey {d.name} 👋</p>
+              <h1 style={{fontSize:28,fontWeight:800}}>We found your top 3 matches</h1>
             </div>
-            
-            <div className="card fade-up delay-1" style={{padding:32,textAlign:'center',background:pType.bg,marginBottom:24}}>
-              <div style={{fontSize:64,marginBottom:12}}>{pType.emoji}</div>
-              <h2 style={{fontSize:28,fontWeight:800,color:pType.color,marginBottom:12}}>{pType.name}</h2>
-              <p style={{fontSize:16,color:'#52525B',marginBottom:20}}>{pType.desc}</p>
-              <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',gap:8}}>
-                {pType.strengths.map((s,i)=>(<span key={i} style={{background:'#fff',padding:'8px 16px',borderRadius:100,fontSize:14,fontWeight:600,border:'2px solid '+pType.color}}>{s}</span>))}
-              </div>
+
+            {/* Personality */}
+            <div className="card fade-up delay-1" style={{padding:24,textAlign:'center',background:pType.bg,marginBottom:24}}>
+              <div style={{fontSize:48,marginBottom:8}}>{pType.emoji}</div>
+              <h2 style={{fontSize:22,fontWeight:700,color:pType.color,marginBottom:8}}>{pType.name}</h2>
+              <p style={{fontSize:15,color:'#52525B'}}>{pType.desc}</p>
             </div>
+
+            {/* Top 3 Cards */}
+            <div className="section-header" style={{marginBottom:16}}>Your matches</div>
             
-            <button className="btn btn-primary pop" style={{width:'100%',marginBottom:24}} onClick={()=>generatePDF(d)}>📥 Download PDF</button>
-            
-            {d.fear&&d.fear!=='none'&&(
-              <div className="card fade-up" style={{padding:24,background:'#FFF8E1',marginBottom:24}}>
-                <div style={{fontSize:13,fontWeight:700,color:'#F9B208',marginBottom:8}}>About your concern</div>
-                <p style={{fontSize:15,margin:0}}>{fearMessages[d.fear]}</p>
-              </div>
-            )}
-            
-            <h2 style={{fontSize:22,fontWeight:700,marginBottom:16}}>Your top matches</h2>
-            
-            {d.results.slice(0,7).map((c,i)=>(
-              <div key={c.id} className="card fade-up" style={{padding:24,marginBottom:16,border:i===0?'3px solid #4ECDC4':'3px solid #1a1a2e'}}>
-                <div style={{display:'flex',justifyContent:'space-between',marginBottom:12}}>
-                  <div style={{display:'flex',alignItems:'center',gap:12}}>
-                    <span style={{width:28,height:28,borderRadius:'50%',background:'#1a1a2e',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14}}>{i+1}</span>
-                    <span style={{padding:'4px 12px',borderRadius:100,fontSize:12,fontWeight:600,background:catColors[c.c]||'#ddd',color:'#fff'}}>{c.c}</span>
+            {top3.map((c,i)=>(
+              <div key={c.id} className="card fade-up pop" style={{padding:24,marginBottom:16,cursor:'pointer',border:i===0?'3px solid #4ECDC4':'3px solid #1a1a2e'}} onClick={()=>setSelectedCareer(c)}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
+                  <div style={{display:'flex',alignItems:'center',gap:10}}>
+                    <span style={{width:32,height:32,borderRadius:'50%',background:i===0?'#4ECDC4':'#1a1a2e',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:800,fontSize:16}}>{i+1}</span>
+                    <span className="tag" style={{background:catColors[c.c]||'#ddd',color:'#fff'}}>{c.c}</span>
                   </div>
-                  <span style={{fontSize:16,fontWeight:700,color:'#4ECDC4'}}>{c.score}%</span>
+                  <span style={{fontSize:18,fontWeight:700,color:'#4ECDC4'}}>{c.score}%</span>
                 </div>
                 
-                <div style={{fontSize:32,marginBottom:8}}>{c.e}</div>
-                <h3 style={{fontSize:20,fontWeight:700,marginBottom:8}}>{c.t}</h3>
-                <p style={{fontSize:15,color:'#52525B',marginBottom:16}}>{c.desc}</p>
-                
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
-                  <div style={{background:'#f5f5f5',padding:12,borderRadius:12}}>
-                    <div style={{fontSize:11,color:'#A1A1AA'}}>SALARY</div>
-                    <div style={{fontSize:16,fontWeight:700,color:'#4ECDC4'}}>${c.s?.[0]}K – ${c.s?.[2]}K+</div>
-                  </div>
-                  <div style={{background:'#f5f5f5',padding:12,borderRadius:12}}>
-                    <div style={{fontSize:11,color:'#A1A1AA'}}>TRANSITION</div>
-                    <div style={{fontSize:16,fontWeight:700}}>{c.tm}</div>
+                <div style={{display:'flex',gap:16,alignItems:'flex-start'}}>
+                  <div style={{fontSize:40}}>{c.e}</div>
+                  <div style={{flex:1}}>
+                    <h3 style={{fontSize:20,fontWeight:700,marginBottom:6}}>{c.t}</h3>
+                    <p style={{fontSize:14,color:'#52525B',marginBottom:12}}>{c.desc}</p>
+                    <div style={{display:'flex',gap:16,fontSize:13}}>
+                      <span><strong>${c.s?.[0]}K–${c.s?.[2]}K</strong></span>
+                      <span style={{color:'#A1A1AA'}}>•</span>
+                      <span>{c.tm}</span>
+                    </div>
                   </div>
                 </div>
                 
-                <div style={{fontSize:12,fontWeight:700,color:'#A1A1AA',marginBottom:8}}>What to know</div>
-                {c.truth?.slice(0,2).map((t,j)=>(<p key={j} style={{fontSize:14,color:'#52525B',marginBottom:4,paddingLeft:12,borderLeft:'3px solid #FFE66D'}}>{t}</p>))}
+                <div style={{marginTop:16,padding:'12px 16px',background:'#f9f9f9',borderRadius:10,fontSize:14,color:'#4ECDC4',fontWeight:600,textAlign:'center'}}>
+                  Explore this career →
+                </div>
               </div>
             ))}
-            
-            <div className="card" style={{padding:24,background:'#E8F5E9',marginBottom:24}}>
-              <h3 style={{fontSize:18,fontWeight:700,marginBottom:12}}>Next step</h3>
-              <p style={{fontSize:15,margin:0}}>Find 3 people on LinkedIn with the title "<strong>{d.results[0]?.t}</strong>". Ask for 15 minutes to learn about their path.</p>
+
+            {/* Next Step CTA */}
+            <div className="card fade-up" style={{padding:24,background:'#E8F5E9',marginBottom:24}}>
+              <div style={{fontSize:24,marginBottom:12}}>👆</div>
+              <h3 style={{fontSize:18,fontWeight:700,marginBottom:8}}>Your next step</h3>
+              <p style={{fontSize:15,color:'#52525B',margin:0}}>
+                Pick one career above and click into it. You'll get a 4-week action plan and templates to start exploring it today.
+              </p>
             </div>
-            
-            <button className="btn btn-secondary" style={{width:'100%',marginBottom:12}} onClick={()=>setMode('browse')}>Explore all careers</button>
+
+            {/* Footer buttons */}
+            <button className="btn btn-secondary pop" style={{width:'100%',marginBottom:12}} onClick={()=>setMode('browse')}>
+              Browse all 180 careers
+            </button>
             <button className="btn btn-ghost" style={{width:'100%'}} onClick={clearResults}>Start over</button>
           </div>
         </div>
@@ -2299,6 +2457,6 @@ function App(){
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-</script>
+<\/script>
 </body>
 </html>
