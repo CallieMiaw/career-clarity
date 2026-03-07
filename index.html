@@ -1825,6 +1825,239 @@ const CopyBox=({text,label})=>{
     </div>
   );
 };
+// Personalized Outreach Component
+const PersonalizedOutreach=({career,userName})=>{
+  const[outreachData,setOutreachData]=useState(()=>{
+    try{const s=localStorage.getItem('careerClarity_outreach');return s?JSON.parse(s):{};}catch(e){return {};}
+  });
+  const[isEditing,setIsEditing]=useState(!outreachData.school&&!outreachData.companies);
+  const[selectedTemplate,setSelectedTemplate]=useState(0);
+  
+  const updateOutreach=(updates)=>{
+    const newData={...outreachData,...updates};
+    setOutreachData(newData);
+    try{localStorage.setItem('careerClarity_outreach',JSON.stringify(newData));}catch(e){}
+  };
+
+  const hasPersonalization=outreachData.school||outreachData.companies||outreachData.city;
+
+  const generateTemplates=()=>{
+    const templates=[];
+    const name=userName||'[Your name]';
+    const careerTitle=career.t;
+    
+    // Alumni template
+    if(outreachData.school){
+      templates.push({
+        id:'alumni',
+        label:'Alumni Connection',
+        emoji:'🎓',
+        description:'Best for fellow graduates',
+        searchQuery:'"'+careerTitle+'" AND "'+outreachData.school+'"',
+        message:"Hi [Name],\n\nI noticed we're both "+outreachData.school+" alums! I'm currently exploring a transition into "+careerTitle+" and would love to learn from someone who's made it in this field.\n\nWould you have 15 minutes for a quick call? I'd really appreciate any insights about your path.\n\nThanks so much,\n"+name
+      });
+    }
+    
+    // Industry/company transition template
+    if(outreachData.companies){
+      const companyList=outreachData.companies.split(',')[0].trim();
+      templates.push({
+        id:'industry',
+        label:'Industry Insider',
+        emoji:'🏢',
+        description:'For people who made similar transitions',
+        searchQuery:'"'+careerTitle+'" AND ("'+companyList+'" OR "career change")',
+        message:"Hi [Name],\n\nI came across your profile and was impressed by your journey to "+careerTitle+". I'm currently at "+companyList+" and exploring a similar transition.\n\nWould you be open to a brief 15-minute chat about how you made the move? I'd love to hear what you wish you'd known earlier.\n\nBest,\n"+name
+      });
+    }
+    
+    // Location-based template
+    if(outreachData.city){
+      templates.push({
+        id:'local',
+        label:'Local Connection',
+        emoji:'📍',
+        description:'For people in your area',
+        searchQuery:'"'+careerTitle+'" AND "'+outreachData.city+'"',
+        message:"Hi [Name],\n\nAs a fellow "+outreachData.city+" professional, I wanted to reach out. I'm exploring a career transition into "+careerTitle+" and noticed your experience in this space.\n\nWould you have 15 minutes for a coffee chat (virtual or in-person)? I'd love to hear about the local landscape for this role.\n\nThanks,\n"+name
+      });
+    }
+    
+    // Mutual interest template (if they have hobbies)
+    if(outreachData.interests){
+      templates.push({
+        id:'interests',
+        label:'Shared Interests',
+        emoji:'🤝',
+        description:'Connect over common ground',
+        searchQuery:'"'+careerTitle+'" AND "'+outreachData.interests.split(',')[0].trim()+'"',
+        message:"Hi [Name],\n\nI came across your profile and noticed we share an interest in "+outreachData.interests.split(',')[0].trim()+"! I'm currently exploring "+careerTitle+" as a career path and would love to connect with someone who's built a career in this space.\n\nWould you have 15 minutes to chat? I'd really appreciate your perspective.\n\nBest,\n"+name
+      });
+    }
+    
+    // Generic fallback (always included)
+    templates.push({
+      id:'generic',
+      label:'Direct Approach',
+      emoji:'💬',
+      description:'Simple and professional',
+      searchQuery:'"'+careerTitle+'"',
+      message:"Hi [Name],\n\nI came across your profile and noticed you work as a "+careerTitle+". I'm currently exploring a career transition into this field and would love to learn from someone with your experience.\n\nWould you be open to a 15-minute call sometime in the next few weeks? I'd be grateful to hear about your path and any advice you might have.\n\nThanks so much,\n"+name
+    });
+    
+    return templates;
+  };
+
+  const templates=generateTemplates();
+  const currentTemplate=templates[selectedTemplate]||templates[0];
+
+  return(
+    <div className="section fade-up">
+      <div className="section-header">Personalize your outreach</div>
+      
+      {isEditing?(
+        <div style={{background:'#f9f9f9',borderRadius:16,padding:24,marginBottom:20}}>
+          <p style={{fontSize:15,color:'#52525B',marginBottom:20}}>
+            Add your background to generate tailored messages with <strong>2-3x better response rates</strong>.
+          </p>
+          
+          <div style={{display:'grid',gap:16}}>
+            <div>
+              <label style={{fontSize:13,fontWeight:600,color:'#52525B',marginBottom:6,display:'block'}}>🎓 School / University</label>
+              <input 
+                type="text" 
+                placeholder="e.g., UC Berkeley, Stanford, UT Austin" 
+                value={outreachData.school||''} 
+                onChange={e=>updateOutreach({school:e.target.value})}
+                style={{width:'100%',padding:'14px 16px',borderRadius:12,border:'2px solid #e8e8e8',fontSize:15,fontFamily:'DM Sans'}}
+              />
+            </div>
+            
+            <div>
+              <label style={{fontSize:13,fontWeight:600,color:'#52525B',marginBottom:6,display:'block'}}>🏢 Current/Past Companies</label>
+              <input 
+                type="text" 
+                placeholder="e.g., Google, McKinsey, JPMorgan" 
+                value={outreachData.companies||''} 
+                onChange={e=>updateOutreach({companies:e.target.value})}
+                style={{width:'100%',padding:'14px 16px',borderRadius:12,border:'2px solid #e8e8e8',fontSize:15,fontFamily:'DM Sans'}}
+              />
+            </div>
+            
+            <div>
+              <label style={{fontSize:13,fontWeight:600,color:'#52525B',marginBottom:6,display:'block'}}>📍 City / Region</label>
+              <input 
+                type="text" 
+                placeholder="e.g., San Francisco, NYC, Austin" 
+                value={outreachData.city||''} 
+                onChange={e=>updateOutreach({city:e.target.value})}
+                style={{width:'100%',padding:'14px 16px',borderRadius:12,border:'2px solid #e8e8e8',fontSize:15,fontFamily:'DM Sans'}}
+              />
+            </div>
+            
+            <div>
+              <label style={{fontSize:13,fontWeight:600,color:'#52525B',marginBottom:6,display:'block'}}>🎯 Interests / Hobbies (optional)</label>
+              <input 
+                type="text" 
+                placeholder="e.g., running, photography, AI" 
+                value={outreachData.interests||''} 
+                onChange={e=>updateOutreach({interests:e.target.value})}
+                style={{width:'100%',padding:'14px 16px',borderRadius:12,border:'2px solid #e8e8e8',fontSize:15,fontFamily:'DM Sans'}}
+              />
+            </div>
+          </div>
+          
+          <button 
+            className="btn btn-primary" 
+            style={{width:'100%',marginTop:20}} 
+            onClick={()=>setIsEditing(false)}
+          >
+            Generate personalized messages →
+          </button>
+          
+          <p style={{fontSize:12,color:'#A1A1AA',marginTop:12,textAlign:'center'}}>
+            🔒 Stored locally on your device only
+          </p>
+        </div>
+      ):(
+        <>
+          {hasPersonalization&&(
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+              <div style={{fontSize:14,color:'#52525B'}}>
+                <span style={{fontWeight:600}}>Your background:</span>{' '}
+                {[outreachData.school,outreachData.companies,outreachData.city].filter(Boolean).join(' · ')}
+              </div>
+              <button 
+                onClick={()=>setIsEditing(true)} 
+                style={{fontSize:13,color:'#4ECDC4',fontWeight:600,background:'none',border:'none',cursor:'pointer'}}
+              >
+                Edit
+              </button>
+            </div>
+          )}
+          
+          {/* Template selector */}
+          <div style={{marginBottom:20}}>
+            <p style={{fontSize:14,color:'#52525B',marginBottom:12}}>Choose your approach:</p>
+            <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+              {templates.map((t,i)=>(
+                <button
+                  key={t.id}
+                  onClick={()=>setSelectedTemplate(i)}
+                  className={selectedTemplate===i?'btn btn-primary btn-small':'btn btn-ghost btn-small'}
+                  style={{padding:'8px 14px',fontSize:13}}
+                >
+                  {t.emoji} {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Selected template info */}
+          <div style={{background:'#E8F5E9',padding:16,borderRadius:12,marginBottom:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+              <span style={{fontSize:20}}>{currentTemplate.emoji}</span>
+              <span style={{fontWeight:700,color:'#1a1a2e'}}>{currentTemplate.label}</span>
+            </div>
+            <p style={{fontSize:14,color:'#52525B',margin:0}}>{currentTemplate.description}</p>
+          </div>
+          
+          {/* Message template */}
+          <CopyBox text={currentTemplate.message} label="Message template"/>
+          
+          {/* LinkedIn search suggestion */}
+          <div style={{marginTop:20,padding:16,background:'#f9f9f9',borderRadius:12}}>
+            <div style={{fontSize:13,fontWeight:600,color:'#52525B',marginBottom:8}}>🔍 LinkedIn search tip</div>
+            <p style={{fontSize:14,color:'#52525B',marginBottom:12}}>
+              Use this search to find people who match this template:
+            </p>
+            <div style={{background:'#fff',padding:12,borderRadius:8,border:'2px solid #e8e8e8',fontFamily:'monospace',fontSize:13,wordBreak:'break-all'}}>
+              {currentTemplate.searchQuery}
+            </div>
+            <button 
+              className="btn btn-secondary btn-small" 
+              style={{marginTop:12,width:'100%'}}
+              onClick={()=>window.open('https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(currentTemplate.searchQuery),'_blank')}
+            >
+              Search LinkedIn →
+            </button>
+          </div>
+          
+          {!hasPersonalization&&(
+            <button 
+              className="btn btn-ghost btn-small" 
+              style={{width:'100%',marginTop:16}}
+              onClick={()=>setIsEditing(true)}
+            >
+              + Add your background for personalized templates
+            </button>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
 // Career Detail Page Component
 const CareerDetailPage=({career,userData,onBack,onExploreAnother})=>{
   const[activeTab,setActiveTab]=useState('overview');
@@ -1857,8 +2090,6 @@ const CareerDetailPage=({career,userData,onBack,onExploreAnother})=>{
 
   const difficultyLabel={1:'Accessible',2:'Moderate',3:'Significant'}[career.d]||'Moderate';
   const difficultyColor={1:'#4ECDC4',2:'#FFE66D',3:'#FF6B6B'}[career.d]||'#FFE66D';
-
-  const linkedInMessage=generateLinkedInMessage(career,userData.name||'[Your name]');
 
   return(
     <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
@@ -1957,8 +2188,8 @@ const CareerDetailPage=({career,userData,onBack,onExploreAnother})=>{
           <div className="step-card">
             <div className="step-number">3</div>
             <div>
-              <div style={{fontWeight:600,marginBottom:4}}>Send 5 connection requests</div>
-              <div style={{fontSize:14,color:'#52525B'}}>Use the message template below. Expect ~20-30% response rate, so cast a wide net.</div>
+              <div style={{fontWeight:600,marginBottom:4}}>Send 5 personalized connection requests</div>
+              <div style={{fontSize:14,color:'#52525B'}}>Use the personalized templates below — they get 2-3x better response rates than generic messages.</div>
             </div>
           </div>
           <div className="step-card">
@@ -2005,12 +2236,8 @@ const CareerDetailPage=({career,userData,onBack,onExploreAnother})=>{
           </div>
         </div>
 
-        {/* LinkedIn Outreach Template */}
-        <div className="section fade-up">
-          <div className="section-header">LinkedIn message template</div>
-          <p style={{fontSize:15,color:'#52525B',marginBottom:16}}>Copy and personalize this for your outreach:</p>
-          <CopyBox text={linkedInMessage}/>
-        </div>
+        {/* Personalized Outreach Section */}
+        <PersonalizedOutreach career={career} userName={userData.name}/>
 
         {/* Coffee Chat Questions */}
         <div className="section fade-up">
@@ -2028,15 +2255,13 @@ const CareerDetailPage=({career,userData,onBack,onExploreAnother})=>{
 
         {/* Bottom CTAs */}
         <div style={{display:'flex',gap:12,flexWrap:'wrap',marginTop:32}}>
-          <button className="btn btn-primary pop" style={{flex:1,minWidth:200}} onClick={()=>window.open('https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(career.t),'_blank')}>
-            Find {career.t}s on LinkedIn →
-          </button>
-          <button className="btn btn-secondary pop" style={{flex:1,minWidth:200}} onClick={onExploreAnother}>
+          <button className="btn btn-primary pop" style={{flex:1,minWidth:200}} onClick={onExploreAnother}>
             Explore another match
           </button>
+          <button className="btn btn-secondary pop" style={{flex:1,minWidth:200}} onClick={onBack}>
+            Back to all results
+          </button>
         </div>
-
-        <button className="btn btn-ghost" style={{width:'100%',marginTop:12}} onClick={onBack}>Back to all results</button>
       </div>
     </div>
   );
