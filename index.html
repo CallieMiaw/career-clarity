@@ -1846,28 +1846,34 @@ const PersonalizedOutreach=({career,userName})=>{
     const name=userName||'[Your name]';
     const careerTitle=career.t;
     
+    // Helper to build X-ray query
+    const xray=(terms)=>'site:linkedin.com/in '+terms;
+    
     // Alumni template
     if(outreachData.school){
+      const schoolVariants=outreachData.school.toLowerCase().includes('university')?
+        '"'+outreachData.school+'"':
+        '"'+outreachData.school+'" OR "'+outreachData.school+' university"';
       templates.push({
         id:'alumni',
         label:'Alumni Connection',
         emoji:'🎓',
-        description:'Best for fellow graduates',
-        searchQuery:'"'+careerTitle+'" AND "'+outreachData.school+'"',
+        description:'Best for fellow graduates — highest response rates',
+        searchQuery:xray('"'+careerTitle+'" ('+schoolVariants+')'),
         message:"Hi [Name],\n\nI noticed we're both "+outreachData.school+" alums! I'm currently exploring a transition into "+careerTitle+" and would love to learn from someone who's made it in this field.\n\nWould you have 15 minutes for a quick call? I'd really appreciate any insights about your path.\n\nThanks so much,\n"+name
       });
     }
     
     // Industry/company transition template
     if(outreachData.companies){
-      const companyList=outreachData.companies.split(',')[0].trim();
+      const companyList=outreachData.companies.split(',').map(c=>'"'+c.trim()+'"').join(' OR ');
       templates.push({
         id:'industry',
         label:'Industry Insider',
         emoji:'🏢',
-        description:'For people who made similar transitions',
-        searchQuery:'"'+careerTitle+'" AND ("'+companyList+'" OR "career change")',
-        message:"Hi [Name],\n\nI came across your profile and was impressed by your journey to "+careerTitle+". I'm currently at "+companyList+" and exploring a similar transition.\n\nWould you be open to a brief 15-minute chat about how you made the move? I'd love to hear what you wish you'd known earlier.\n\nBest,\n"+name
+        description:'Find people from your company who made the switch',
+        searchQuery:xray('"'+careerTitle+'" ('+companyList+')'),
+        message:"Hi [Name],\n\nI came across your profile and was impressed by your journey to "+careerTitle+". I'm currently at "+outreachData.companies.split(',')[0].trim()+" and exploring a similar transition.\n\nWould you be open to a brief 15-minute chat about how you made the move? I'd love to hear what you wish you'd known earlier.\n\nBest,\n"+name
       });
     }
     
@@ -1877,21 +1883,35 @@ const PersonalizedOutreach=({career,userName})=>{
         id:'local',
         label:'Local Connection',
         emoji:'📍',
-        description:'For people in your area',
-        searchQuery:'"'+careerTitle+'" AND "'+outreachData.city+'"',
+        description:'For people in your area — can lead to in-person coffee',
+        searchQuery:xray('"'+careerTitle+'" "'+outreachData.city+'"'),
         message:"Hi [Name],\n\nAs a fellow "+outreachData.city+" professional, I wanted to reach out. I'm exploring a career transition into "+careerTitle+" and noticed your experience in this space.\n\nWould you have 15 minutes for a coffee chat (virtual or in-person)? I'd love to hear about the local landscape for this role.\n\nThanks,\n"+name
       });
     }
     
     // Mutual interest template (if they have hobbies)
     if(outreachData.interests){
+      const interest=outreachData.interests.split(',')[0].trim();
       templates.push({
         id:'interests',
         label:'Shared Interests',
         emoji:'🤝',
-        description:'Connect over common ground',
-        searchQuery:'"'+careerTitle+'" AND "'+outreachData.interests.split(',')[0].trim()+'"',
-        message:"Hi [Name],\n\nI came across your profile and noticed we share an interest in "+outreachData.interests.split(',')[0].trim()+"! I'm currently exploring "+careerTitle+" as a career path and would love to connect with someone who's built a career in this space.\n\nWould you have 15 minutes to chat? I'd really appreciate your perspective.\n\nBest,\n"+name
+        description:'Connect over common ground outside work',
+        searchQuery:xray('"'+careerTitle+'" "'+interest+'"'),
+        message:"Hi [Name],\n\nI came across your profile and noticed we share an interest in "+interest+"! I'm currently exploring "+careerTitle+" as a career path and would love to connect with someone who's built a career in this space.\n\nWould you have 15 minutes to chat? I'd really appreciate your perspective.\n\nBest,\n"+name
+      });
+    }
+    
+    // Combined power search (if they have school AND company)
+    if(outreachData.school&&outreachData.companies){
+      const company=outreachData.companies.split(',')[0].trim();
+      templates.push({
+        id:'power',
+        label:'Power Search',
+        emoji:'⚡',
+        description:'School + company combo — very warm leads',
+        searchQuery:xray('"'+careerTitle+'" "'+outreachData.school+'" "'+company+'"'),
+        message:"Hi [Name],\n\nSmall world — I noticed we're both "+outreachData.school+" alums and you spent time at "+company+"! I'm currently exploring "+careerTitle+" and would love to hear how your background shaped your path.\n\nWould you have 15 minutes to chat? I'd really appreciate your perspective.\n\nBest,\n"+name
       });
     }
     
@@ -1900,8 +1920,8 @@ const PersonalizedOutreach=({career,userName})=>{
       id:'generic',
       label:'Direct Approach',
       emoji:'💬',
-      description:'Simple and professional',
-      searchQuery:'"'+careerTitle+'"',
+      description:'Simple and professional — use when no shared connection',
+      searchQuery:xray('"'+careerTitle+'"'),
       message:"Hi [Name],\n\nI came across your profile and noticed you work as a "+careerTitle+". I'm currently exploring a career transition into this field and would love to learn from someone with your experience.\n\nWould you be open to a 15-minute call sometime in the next few weeks? I'd be grateful to hear about your path and any advice you might have.\n\nThanks so much,\n"+name
     });
     
@@ -1910,6 +1930,9 @@ const PersonalizedOutreach=({career,userName})=>{
 
   const templates=generateTemplates();
   const currentTemplate=templates[selectedTemplate]||templates[0];
+  
+  // Build Google X-ray search URL
+  const getXrayUrl=()=>'https://www.google.com/search?q='+encodeURIComponent(currentTemplate.searchQuery);
 
   return(
     <div className="section fade-up">
@@ -2025,22 +2048,29 @@ const PersonalizedOutreach=({career,userName})=>{
           {/* Message template */}
           <CopyBox text={currentTemplate.message} label="Message template"/>
           
-          {/* LinkedIn search suggestion */}
-          <div style={{marginTop:20,padding:16,background:'#f9f9f9',borderRadius:12}}>
-            <div style={{fontSize:13,fontWeight:600,color:'#52525B',marginBottom:8}}>🔍 LinkedIn search tip</div>
-            <p style={{fontSize:14,color:'#52525B',marginBottom:12}}>
-              Use this search to find people who match this template:
+          {/* X-ray search section */}
+          <div style={{marginTop:20,padding:16,background:'linear-gradient(135deg,#4285f422,#ea433522)',borderRadius:12,border:'2px solid #e8e8e8'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+              <span style={{fontSize:16}}>🔍</span>
+              <span style={{fontSize:13,fontWeight:700,color:'#1a1a2e'}}>LinkedIn X-Ray Search</span>
+              <span style={{fontSize:11,background:'#4ECDC4',color:'#fff',padding:'2px 8px',borderRadius:100,fontWeight:600}}>Pro tip</span>
+            </div>
+            <p style={{fontSize:13,color:'#52525B',marginBottom:12}}>
+              X-ray search uses Google to find LinkedIn profiles — bypasses LinkedIn's search limits and finds people you'd never see otherwise.
             </p>
-            <div style={{background:'#fff',padding:12,borderRadius:8,border:'2px solid #e8e8e8',fontFamily:'monospace',fontSize:13,wordBreak:'break-all'}}>
+            <div style={{background:'#fff',padding:12,borderRadius:8,border:'1px solid #ddd',fontFamily:'monospace',fontSize:12,wordBreak:'break-all',color:'#333'}}>
               {currentTemplate.searchQuery}
             </div>
             <button 
-              className="btn btn-secondary btn-small" 
-              style={{marginTop:12,width:'100%'}}
-              onClick={()=>window.open('https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(currentTemplate.searchQuery),'_blank')}
+              className="btn btn-primary" 
+              style={{marginTop:12,width:'100%',background:'#4285f4',borderColor:'#4285f4'}}
+              onClick={()=>window.open(getXrayUrl(),'_blank')}
             >
-              Search LinkedIn →
+              🔎 Search with Google →
             </button>
+            <p style={{fontSize:11,color:'#A1A1AA',marginTop:8,textAlign:'center'}}>
+              Opens Google with pre-built LinkedIn search query
+            </p>
           </div>
           
           {!hasPersonalization&&(
