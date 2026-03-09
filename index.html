@@ -1758,19 +1758,14 @@ const timeframes=[{v:'asap',l:'ASAP'},{v:'soon',l:'6 months'},{v:'year',l:'This 
 const financialFlex=[{v:'tight',l:'Need stability now'},{v:'some',l:'Some flexibility'},{v:'comfortable',l:'Can invest in transition'},{v:'runway',l:'Have savings'}];
 const locationPrefs=[{v:'remote',l:'Remote'},{v:'hybrid',l:'Hybrid'},{v:'inperson',l:'In-person'},{v:'flexible',l:'Flexible'}];
 
-const energyQuestions=[
-  {id:'e1',q:'Researching until you really get it',tags:{analyst:3,specialist:2}},
-  {id:'e2',q:'Building something from scratch',tags:{builder:3,creative:1}},
-  {id:'e3',q:'Helping someone through a problem',tags:{helper:3}},
-  {id:'e4',q:'Bringing order to chaos',tags:{optimizer:3}},
-  {id:'e5',q:'Explaining ideas to others',tags:{communicator:3}},
-  {id:'e6',q:'Deep focused work alone',tags:{specialist:3,analyst:1}},
-  {id:'e7',q:'Convincing someone of your point',tags:{communicator:2,explorer:1}},
-  {id:'e8',q:'Making something beautiful',tags:{creative:3}},
-  {id:'e9',q:'Leading a team',tags:{optimizer:2,communicator:1}},
-  {id:'e10',q:'Solving puzzles',tags:{analyst:3,builder:2}},
-  {id:'e11',q:'Being physically active',tags:{explorer:2,builder:1}},
-  {id:'e12',q:'Meeting new people',tags:{communicator:3,explorer:2}}
+// Trade-off questions - force real choices instead of "yes to everything"
+const tradeoffQuestions=[
+  {id:'t1',q:'Spend your day...',a:'Building things',b:'Helping people',aTag:'builder',bTag:'helper'},
+  {id:'t2',q:'Work style...',a:'Deep focus alone',b:'Collaborating with others',aTag:'specialist',bTag:'communicator'},
+  {id:'t3',q:'Problem solving...',a:'Analyze data & research',b:'Talk to people & observe',aTag:'analyst',bTag:'explorer'},
+  {id:'t4',q:'Your energy comes from...',a:'Creating something new',b:'Improving what exists',aTag:'creative',bTag:'optimizer'},
+  {id:'t5',q:'You prefer to...',a:'Be the expert',b:'Be the connector',aTag:'specialist',bTag:'communicator'},
+  {id:'t6',q:'Success means...',a:'Mastering a craft',b:'Making an impact on people',aTag:'specialist',bTag:'helper'}
 ];
 
 const fearMessages={
@@ -2186,7 +2181,7 @@ const CareerDetailPage=({career,userData,onBack,onExploreAnother})=>{
           </div>
         </div>
 
-        {/* Why it fits you */}
+        {/* Why it fits you - more specific */}
         {matchReasons.length>0&&(
           <div className="section fade-up delay-1">
             <div className="section-header">Why this fits you</div>
@@ -2199,7 +2194,7 @@ const CareerDetailPage=({career,userData,onBack,onExploreAnother})=>{
           </div>
         )}
 
-        {/* The Reality */}
+        {/* The Reality - kept as is, it's useful */}
         <div className="section fade-up delay-2">
           <div className="section-header">The reality</div>
           <p style={{fontSize:15,color:'#52525B',marginBottom:20}}>What people in this role wish they knew before starting:</p>
@@ -2211,90 +2206,37 @@ const CareerDetailPage=({career,userData,onBack,onExploreAnother})=>{
           ))}
         </div>
 
-        {/* Resources */}
-        {career.res&&career.res.length>0&&(
-          <div className="section fade-up delay-3">
-            <div className="section-header">Where to learn</div>
-            <div style={{display:'grid',gap:12}}>
-              {career.res.map((r,i)=>(
-                <div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:16,background:'#f9f9f9',borderRadius:12}}>
-                  <span style={{fontWeight:600}}>{r.n}</span>
-                  <span className="tag" style={{background:'#E8F5E9',color:'#4ECDC4'}}>{r.c}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 4-Week Action Plan */}
-        <div className="section fade-up">
-          <div className="section-header">Your 4-week action plan</div>
-          <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>A realistic plan to validate whether {career.t} is right for you.</p>
+        {/* Simplified Next Steps - replaced 4-week plan */}
+        <div className="section fade-up" style={{background:'linear-gradient(135deg,#E8F5E9,#fff)'}}>
+          <div className="section-header">Your next step</div>
+          <p style={{fontSize:16,color:'#1a1a2e',marginBottom:20,fontWeight:600}}>
+            Have ONE conversation with someone who does this job.
+          </p>
+          <p style={{fontSize:15,color:'#52525B',marginBottom:24}}>
+            That's it. One 15-minute coffee chat will tell you more than hours of research. Here's how:
+          </p>
           
-          <div className="week-header">📅 Week 1: Research</div>
-          <div className="step-card">
-            <div className="step-number">1</div>
-            <div>
-              <div style={{fontWeight:600,marginBottom:4}}>Deep dive on the role</div>
-              <div style={{fontSize:14,color:'#52525B'}}>Spend 2 hours researching what {career.t}s actually do. Read job descriptions, day-in-the-life posts, and Reddit threads.</div>
-            </div>
-          </div>
-          <div className="step-card">
-            <div className="step-number">2</div>
-            <div>
-              <div style={{fontWeight:600,marginBottom:4}}>Identify 10 people to reach out to</div>
-              <div style={{fontSize:14,color:'#52525B'}}>Search LinkedIn for "{career.t}" and find 10 people whose paths look interesting. Prioritize people who transitioned from similar backgrounds.</div>
-            </div>
-          </div>
-
-          <div className="week-header" style={{marginTop:24}}>💬 Week 2: Outreach</div>
-          <div className="step-card">
-            <div className="step-number">3</div>
-            <div>
-              <div style={{fontWeight:600,marginBottom:4}}>Send 5 personalized connection requests</div>
-              <div style={{fontSize:14,color:'#52525B'}}>Use the personalized templates below — they get 2-3x better response rates than generic messages.</div>
-            </div>
-          </div>
-          <div className="step-card">
-            <div className="step-number">4</div>
-            <div>
-              <div style={{fontWeight:600,marginBottom:4}}>Start learning basics</div>
-              <div style={{fontSize:14,color:'#52525B'}}>
-                {career.res?.[0]?`Begin with ${career.res[0].n} (${career.res[0].c}). `:''}
-                Even 30 minutes helps you ask better questions.
+          <div style={{display:'grid',gap:16}}>
+            <div style={{display:'flex',gap:16,alignItems:'flex-start'}}>
+              <span style={{width:32,height:32,borderRadius:'50%',background:'#4ECDC4',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,flexShrink:0}}>1</span>
+              <div>
+                <div style={{fontWeight:600,marginBottom:4}}>Find someone to talk to</div>
+                <div style={{fontSize:14,color:'#52525B'}}>Use the X-ray search below to find {career.t}s on LinkedIn. Prioritize alumni or people from similar backgrounds.</div>
               </div>
             </div>
-          </div>
-
-          <div className="week-header" style={{marginTop:24}}>☕ Week 3: Conversations</div>
-          <div className="step-card">
-            <div className="step-number">5</div>
-            <div>
-              <div style={{fontWeight:600,marginBottom:4}}>Have 2-3 coffee chats</div>
-              <div style={{fontSize:14,color:'#52525B'}}>15-30 minutes each. Take notes. Ask the questions listed below.</div>
+            <div style={{display:'flex',gap:16,alignItems:'flex-start'}}>
+              <span style={{width:32,height:32,borderRadius:'50%',background:'#4ECDC4',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,flexShrink:0}}>2</span>
+              <div>
+                <div style={{fontWeight:600,marginBottom:4}}>Send a message</div>
+                <div style={{fontSize:14,color:'#52525B'}}>Copy one of the templates below. Personalized messages get 2-3x more responses.</div>
+              </div>
             </div>
-          </div>
-          <div className="step-card">
-            <div className="step-number">6</div>
-            <div>
-              <div style={{fontWeight:600,marginBottom:4}}>Ask for referrals</div>
-              <div style={{fontSize:14,color:'#52525B'}}>End each call with "Who else should I talk to?" This expands your network exponentially.</div>
-            </div>
-          </div>
-
-          <div className="week-header" style={{marginTop:24}}>🎯 Week 4: Decide</div>
-          <div className="step-card">
-            <div className="step-number">7</div>
-            <div>
-              <div style={{fontWeight:600,marginBottom:4}}>Reflect on what you learned</div>
-              <div style={{fontSize:14,color:'#52525B'}}>Does this still excite you? Could you see yourself doing this daily? What concerns came up?</div>
-            </div>
-          </div>
-          <div className="step-card">
-            <div className="step-number">8</div>
-            <div>
-              <div style={{fontWeight:600,marginBottom:4}}>Make a decision</div>
-              <div style={{fontSize:14,color:'#52525B'}}>Either commit to pursuing this path (and make a 90-day plan), or return here to explore your other matches.</div>
+            <div style={{display:'flex',gap:16,alignItems:'flex-start'}}>
+              <span style={{width:32,height:32,borderRadius:'50%',background:'#4ECDC4',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,flexShrink:0}}>3</span>
+              <div>
+                <div style={{fontWeight:600,marginBottom:4}}>Ask the right questions</div>
+                <div style={{fontSize:14,color:'#52525B'}}>Use the questions at the bottom. End with "Who else should I talk to?"</div>
+              </div>
             </div>
           </div>
         </div>
@@ -2302,12 +2244,12 @@ const CareerDetailPage=({career,userData,onBack,onExploreAnother})=>{
         {/* Personalized Outreach Section */}
         <PersonalizedOutreach career={career} userName={userData.name}/>
 
-        {/* Coffee Chat Questions */}
+        {/* Coffee Chat Questions - condensed */}
         <div className="section fade-up">
           <div className="section-header">Questions to ask</div>
-          <p style={{fontSize:15,color:'#52525B',marginBottom:16}}>Pick 4-5 of these for your conversations:</p>
+          <p style={{fontSize:15,color:'#52525B',marginBottom:16}}>Pick 3-4 for your conversation:</p>
           <div style={{display:'grid',gap:8}}>
-            {coffeeChatQuestions.map((q,i)=>(
+            {coffeeChatQuestions.slice(0,5).map((q,i)=>(
               <div key={i} style={{display:'flex',gap:12,padding:'12px 16px',background:'#f9f9f9',borderRadius:10}}>
                 <span style={{color:'#4ECDC4',fontWeight:700}}>{i+1}.</span>
                 <span style={{fontSize:15}}>{q}</span>
@@ -2342,11 +2284,11 @@ function App(){
   const[d,setD]=useState(savedData||{
     name:'',email:'',currentRole:'',experience:'',satisfaction:null,timeframe:'',financialFlex:'',location:'',
     domains:[],activities:[],avoids:[],energy:{},
-    fear:'',results:[],topType:''
+    fear:'',results:[],topType:'',tradeoffs:{}
   });
   const u=x=>setD(p=>({...p,...x}));
   
-  const totalSteps=22;
+  const totalSteps=16;
   const progress=Math.min(100,(step/totalSteps)*100);
   const categories=useMemo(()=>[...new Set(Object.values(C).map(c=>c.c))].sort(),[]);
   const filtered=useMemo(()=>Object.entries(C).filter(([id,c])=>{
@@ -2361,9 +2303,13 @@ function App(){
     const scores={};
     const typeScores={builder:0,analyst:0,helper:0,communicator:0,optimizer:0,creative:0,explorer:0,specialist:0};
     
-    Object.entries(d.energy).forEach(([qId,rating])=>{
-      const q=energyQuestions.find(x=>x.id===qId);
-      if(q?.tags){const mult=(rating-3)/2;Object.entries(q.tags).forEach(([tag,w])=>{if(typeScores[tag]!==undefined)typeScores[tag]+=mult*w;});}
+    // Calculate personality from tradeoff questions
+    Object.entries(d.tradeoffs||{}).forEach(([qId,choice])=>{
+      const q=tradeoffQuestions.find(x=>x.id===qId);
+      if(q){
+        if(choice==='a'&&q.aTag&&typeScores[q.aTag]!==undefined)typeScores[q.aTag]+=2;
+        if(choice==='b'&&q.bTag&&typeScores[q.bTag]!==undefined)typeScores[q.bTag]+=2;
+      }
     });
     
     const sortedTypes=Object.entries(typeScores).sort((a,b)=>b[1]-a[1]);
@@ -2416,7 +2362,7 @@ function App(){
   const clearResults=()=>{
     try{localStorage.removeItem('careerClarity_v2');}catch(e){}
     setStep(0);setSelectedCareer(null);
-    setD({name:'',email:'',currentRole:'',experience:'',satisfaction:null,timeframe:'',financialFlex:'',location:'',domains:[],activities:[],avoids:[],energy:{},fear:'',results:[],topType:''});
+    setD({name:'',email:'',currentRole:'',experience:'',satisfaction:null,timeframe:'',financialFlex:'',location:'',domains:[],activities:[],avoids:[],tradeoffs:{},fear:'',results:[],topType:''});
   };
 
   // Career Detail View
@@ -2627,28 +2573,41 @@ function App(){
       </div>
     );
 
-    if(step>=9&&step<=20){
-      const qi=step-9;const q=energyQuestions[qi];
-      if(!q){setStep(21);return null;}
+    if(step>=9&&step<=14){
+      const qi=step-9;const q=tradeoffQuestions[qi];
+      if(!q){setStep(15);return null;}
       return(
         <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
           <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
             <BackBtn/><ProgressBar/>
             <div className="card" style={{padding:32,textAlign:'center'}}>
-              <p style={{fontSize:13,color:'#A1A1AA',marginBottom:16}}>{qi+1} of 12</p>
-              <h2 style={{fontSize:18,fontWeight:600,marginBottom:8,color:'#52525B'}}>How does this feel?</h2>
-              <p style={{fontSize:20,color:'#1a1a2e',marginBottom:32,fontWeight:600}}>"{q.q}"</p>
-              <div style={{display:'flex',justifyContent:'space-between',marginBottom:16}}>
-                {['😫','😕','😐','🙂','😍'].map((em,i)=>(<span key={i} className={"emoji-btn"+(d.energy[q.id]===i+1?' active':'')} onClick={()=>{u({energy:{...d.energy,[q.id]:i+1}});setTimeout(()=>setStep(step+1),250);}}>{em}</span>))}
+              <p style={{fontSize:13,color:'#A1A1AA',marginBottom:16}}>{qi+1} of 6</p>
+              <h2 style={{fontSize:18,fontWeight:600,marginBottom:24,color:'#52525B'}}>{q.q}</h2>
+              <p style={{fontSize:14,color:'#A1A1AA',marginBottom:20}}>If you had to choose one:</p>
+              <div style={{display:'flex',flexDirection:'column',gap:12}}>
+                <div 
+                  className={"option"+(d.tradeoffs?.[q.id]==='a'?' active':'')} 
+                  style={{padding:20,fontSize:17,fontWeight:600}}
+                  onClick={()=>{u({tradeoffs:{...d.tradeoffs,[q.id]:'a'}});setTimeout(()=>setStep(step+1),200);}}
+                >
+                  {q.a}
+                </div>
+                <div style={{fontSize:13,color:'#A1A1AA'}}>or</div>
+                <div 
+                  className={"option"+(d.tradeoffs?.[q.id]==='b'?' active':'')} 
+                  style={{padding:20,fontSize:17,fontWeight:600}}
+                  onClick={()=>{u({tradeoffs:{...d.tradeoffs,[q.id]:'b'}});setTimeout(()=>setStep(step+1),200);}}
+                >
+                  {q.b}
+                </div>
               </div>
-              <div style={{display:'flex',justifyContent:'space-between',fontSize:13,color:'#A1A1AA'}}><span>Drains me</span><span>Energizes me</span></div>
             </div>
           </div>
         </div>
       );
     }
 
-    if(step===21)return(
+    if(step===15)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
           <BackBtn/><ProgressBar/>
@@ -2656,7 +2615,7 @@ function App(){
             <h2 style={{fontSize:22,fontWeight:700,marginBottom:20}}>Biggest concern about change?</h2>
             <div style={{display:'flex',flexDirection:'column',gap:10}}>
               {[{v:'wrong-choice',l:'Choosing wrong'},{v:'not-qualified',l:'Not qualified'},{v:'money',l:'Financial impact'},{v:'starting-over',l:'Starting over'},{v:'age',l:'Too old/young'},{v:'judgment',l:'What others think'},{v:'none',l:'Not worried'}].map(opt=>(
-                <div key={opt.v} className={"option"+(d.fear===opt.v?' active':'')} onClick={()=>{u({fear:opt.v});setTimeout(()=>setStep(22),200);}}>{opt.l}</div>
+                <div key={opt.v} className={"option"+(d.fear===opt.v?' active':'')} onClick={()=>{u({fear:opt.v});setTimeout(()=>setStep(16),200);}}>{opt.l}</div>
               ))}
             </div>
           </div>
@@ -2664,7 +2623,7 @@ function App(){
       </div>
     );
 
-    if(step===22)return(
+    if(step===16)return(
       <div style={{minHeight:'100vh',background:'#FFFBF5',padding:24}}>
         <div style={{maxWidth:500,margin:'0 auto'}} className="fade-up">
           <BackBtn/><ProgressBar/>
